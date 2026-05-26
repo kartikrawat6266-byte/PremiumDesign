@@ -24,11 +24,9 @@ UPI_ID = os.environ.get("UPI_ID", "example@okhdfcbank")
 IST = timezone(timedelta(hours=5, minutes=30))
 
 def get_current_ist():
-    """Get current Indian time with seconds"""
     return datetime.now(IST).strftime("%d/%m/%Y, %I:%M:%S %p")
 
 def get_joined_date():
-    """Get current date with seconds for joined date"""
     return datetime.now(IST).strftime("%d/%m/%Y, %I:%M:%S %p")
 
 # Products
@@ -69,7 +67,7 @@ def get_user(user_id):
             "username": "",
             "total_orders": 0,
             "referral_earnings": 0.0,
-            "referral_history": [],  # List of referral transactions
+            "referral_history": [],
             "total_refers": 0,
             "referred_users": [],
             "free_key_claimed": False,
@@ -107,7 +105,6 @@ def add_referral(referrer_id, new_user_id, new_username):
     new_refers_count = len(referred_users)
     new_earnings = new_refers_count * 1.0
     
-    # Add to referral history
     referral_history = referrer_data.get("referral_history", [])
     referral_history.append({
         "user_id": new_user_id,
@@ -154,16 +151,23 @@ def check_and_grant_free_key(user_id):
         return True, license_key
     return False, None
 
-# --- EXACT SCREENSHOT KEYBOARDS ---
+# --- KEYBOARD BUILDERS - EXACT SCREENSHOT STYLE ---
 
 def main_menu_keyboard():
+    """
+    Exact screenshot style layout:
+         Shop Now
+    My Orders   Profile
+    How to use   Support
+        Refer & Earn
+    """
     keyboard = [
-        [InlineKeyboardButton("🛍️ Shop Now", callback_data="shop_now")],
-        [InlineKeyboardButton("📦 My Orders", callback_data="my_orders")],
-        [InlineKeyboardButton("👤 Profile", callback_data="profile")],
-        [InlineKeyboardButton("📖 How to Use", callback_data="how_to_use")],
-        [InlineKeyboardButton("🆘 Support", callback_data="support")],
-        [InlineKeyboardButton("💰 Refer & Earn", callback_data="refer_earn")],
+        [InlineKeyboardButton("🛍️ Shop Now", callback_data="shop_now")],  # Row 1: Single center
+        [InlineKeyboardButton("📦 My Orders", callback_data="my_orders"), 
+         InlineKeyboardButton("👤 Profile", callback_data="profile")],  # Row 2: Two buttons
+        [InlineKeyboardButton("📖 How to Use", callback_data="how_to_use"), 
+         InlineKeyboardButton("🆘 Support", callback_data="support")],  # Row 3: Two buttons
+        [InlineKeyboardButton("💰 Refer & Earn", callback_data="refer_earn")],  # Row 4: Single center
     ]
     return InlineKeyboardMarkup(keyboard)
 
@@ -364,7 +368,6 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.edit_message_text(text, reply_markup=back_to_menu_button(), parse_mode="Markdown")
 
 async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Profile - exact format with snowflake emoji and seconds"""
     query = update.callback_query
     await query.answer()
     user_id = str(query.from_user.id)
@@ -374,15 +377,13 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
     username = u.get('username', '')
     username_display = f"@{username}" if username else "Not set"
     
-    # Get referral history summary
     referral_history = u.get("referral_history", [])
     referral_text = ""
     if referral_history:
         referral_text = "\n\n📜 *Referral History:*"
-        for ref in referral_history[-5:]:  # Last 5 referrals
+        for ref in referral_history[-5:]:
             referral_text += f"\n   • {ref.get('username', 'Unknown')} - ₹{ref.get('earned', 0):.2f} ({ref.get('date', '')})"
     
-    # Exact format as requested
     text = (
         f"❄️ *User Account Information*\n\n"
         f"• Name : {u.get('name', 'N/A')}\n"

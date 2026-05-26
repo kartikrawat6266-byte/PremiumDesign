@@ -1,45 +1,60 @@
-from pyrogram import Client, filters
+# ===================================================
+# PREMIUM TELEGRAM STORE BOT
+# PYROGRAM VERSION
+# FULL BUTTON + BACK SYSTEM
+# ===================================================
+
+from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-API_ID = 123456
+# ===================================================
+# API INFO
+# ===================================================
+
+API_ID = 12345678
 API_HASH = "YOUR_API_HASH"
 BOT_TOKEN = "YOUR_BOT_TOKEN"
+OWNER_USERNAME = "YourUsername"
+
+# ===================================================
+# BOT CLIENT
+# ===================================================
 
 app = Client(
-    "CrazyGamingBot",
+    "PremiumStoreBot",
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN
 )
 
-# =========================
-# START MESSAGE
-# =========================
+# ===================================================
+# START TEXT
+# ===================================================
 
 START_TEXT = """
-✨ 𝗪𝗘𝗟𝗖𝗢𝗠𝗘 𝗧𝗢 SHAHID Gaming 100K Store ✨
+✨ <b>WELCOME TO Crazy Gaming 100K Store</b> ✨
 
-👋 Hello, ◈ I’m ➤ HeaVen!
+👋 Hello, ◈ I’m ➤ <b>HeaVen!</b>
 
 ━━━━━━━━━━━━━━━━━━━
 
-🛍 Store: Buy premium services.
-Instant Delivery !!
+🛍 <b>Store:</b> Buy premium services.
+⚡ Instant Delivery !!
 
-👤 Profile: Your Account Details.
+👤 <b>Profile:</b> Your Account Details.
 
-📄 History: Track your Orders.
+📄 <b>History:</b> Track your Orders.
 
-🎬 How to Use: How to buy Key
+🎬 <b>How to Use:</b> Learn how to buy keys.
 
-🛑 Help: Get Support from Owner.
+🛑 <b>Help:</b> Get Support from Owner.
 
 ━━━━━━━━━━━━━━━━━━━
 """
 
-# =========================
-# BUTTONS
-# =========================
+# ===================================================
+# MAIN BUTTONS
+# ===================================================
 
 START_BUTTONS = InlineKeyboardMarkup(
     [
@@ -72,69 +87,303 @@ START_BUTTONS = InlineKeyboardMarkup(
     ]
 )
 
-# =========================
+# ===================================================
+# BACK BUTTON
+# ===================================================
+
+BACK_BUTTON = InlineKeyboardMarkup(
+    [
+        [
+            InlineKeyboardButton(
+                "🔙 Back To Main Menu",
+                callback_data="back"
+            )
+        ]
+    ]
+)
+
+# ===================================================
 # START COMMAND
-# =========================
+# ===================================================
 
 @app.on_message(filters.command("start"))
-async def start_cmd(client, message):
+async def start_command(client, message):
 
     await message.reply_text(
         text=START_TEXT,
-        reply_markup=START_BUTTONS
+        reply_markup=START_BUTTONS,
+        parse_mode=enums.ParseMode.HTML
     )
 
-# =========================
-# CALLBACK BUTTONS
-# =========================
+# ===================================================
+# CALLBACK SYSTEM
+# ===================================================
 
 @app.on_callback_query()
-async def callbacks(client, query):
+async def callback_handler(client, query):
 
     data = query.data
 
+    await query.answer()
+
+    # ================= SHOP =================
+
     if data == "shop":
-        await query.message.edit_text(
-            "🛒 Welcome To Shop Section"
+
+        SHOP_TEXT = """
+🛒 <b>WELCOME TO SHOP</b>
+
+━━━━━━━━━━━━━━━━━━━
+
+🎮 Premium Gaming Keys
+📺 OTT Accounts
+🎵 Music Premium
+🎬 Streaming Services
+💎 Instant Delivery
+
+━━━━━━━━━━━━━━━━━━━
+"""
+
+        SHOP_BUTTONS = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        "🎮 Buy Keys",
+                        callback_data="buy_keys"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "💳 Payment",
+                        callback_data="payment"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "🔙 Back",
+                        callback_data="back"
+                    )
+                ]
+            ]
         )
+
+        await query.message.edit_text(
+            SHOP_TEXT,
+            reply_markup=SHOP_BUTTONS,
+            parse_mode=enums.ParseMode.HTML
+        )
+
+    # ================= PROFILE =================
 
     elif data == "profile":
-        await query.message.edit_text(
-            f"""
-👤 YOUR PROFILE
 
-🆔 User ID: `{query.from_user.id}`
+        PROFILE_TEXT = f"""
+👤 <b>YOUR PROFILE</b>
+
+━━━━━━━━━━━━━━━━━━━
+
+🆔 User ID: <code>{query.from_user.id}</code>
+
 📛 Name: {query.from_user.first_name}
+
+🚀 Username: @{query.from_user.username}
+
+━━━━━━━━━━━━━━━━━━━
 """
+
+        await query.message.edit_text(
+            PROFILE_TEXT,
+            reply_markup=BACK_BUTTON,
+            parse_mode=enums.ParseMode.HTML
         )
+
+    # ================= HISTORY =================
 
     elif data == "history":
+
+        HISTORY_TEXT = """
+📄 <b>ORDER HISTORY</b>
+
+━━━━━━━━━━━━━━━━━━━
+
+❌ No Orders Found Yet.
+
+━━━━━━━━━━━━━━━━━━━
+"""
+
         await query.message.edit_text(
-            "📄 No Order History Found."
+            HISTORY_TEXT,
+            reply_markup=BACK_BUTTON,
+            parse_mode=enums.ParseMode.HTML
         )
+
+    # ================= HOW TO USE =================
 
     elif data == "howto":
-        await query.message.edit_text(
-            """
-🎬 HOW TO USE
 
-1. Open Shop
-2. Select Product
-3. Complete Payment
-4. Receive Key Instantly
-5. Enjoy Service 🚀
+        HOW_TEXT = """
+🎬 <b>HOW TO USE</b>
+
+━━━━━━━━━━━━━━━━━━━
+
+1️⃣ Open Shop Section
+
+2️⃣ Select Your Product
+
+3️⃣ Complete Payment
+
+4️⃣ Send Screenshot
+
+5️⃣ Receive Product Instantly 🚀
+
+━━━━━━━━━━━━━━━━━━━
 """
+
+        await query.message.edit_text(
+            HOW_TEXT,
+            reply_markup=BACK_BUTTON,
+            parse_mode=enums.ParseMode.HTML
         )
+
+    # ================= HELP =================
 
     elif data == "help":
-        await query.message.edit_text(
-            "📞 Contact Owner: @YourUsername"
+
+        HELP_TEXT = f"""
+📞 <b>SUPPORT CENTER</b>
+
+━━━━━━━━━━━━━━━━━━━
+
+👨‍💻 Owner Support:
+@{OWNER_USERNAME}
+
+⏰ Fast Reply Available
+
+━━━━━━━━━━━━━━━━━━━
+"""
+
+        HELP_BUTTONS = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        "📞 Contact Owner",
+                        url=f"https://t.me/{OWNER_USERNAME}"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "🔙 Back",
+                        callback_data="back"
+                    )
+                ]
+            ]
         )
 
-# =========================
-# RUN BOT
-# =========================
+        await query.message.edit_text(
+            HELP_TEXT,
+            reply_markup=HELP_BUTTONS,
+            parse_mode=enums.ParseMode.HTML
+        )
 
-print("Bot Started Successfully 🚀")
+    # ================= BUY KEYS =================
+
+    elif data == "buy_keys":
+
+        BUY_TEXT = """
+🎮 <b>BUY GAMING KEYS</b>
+
+━━━━━━━━━━━━━━━━━━━
+
+🔥 BGMI Key
+🔥 Free Fire Key
+🔥 Netflix Premium
+🔥 Spotify Premium
+
+⚡ Instant Delivery Available
+
+━━━━━━━━━━━━━━━━━━━
+"""
+
+        BUY_BUTTONS = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        "💳 Buy Now",
+                        callback_data="payment"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "🔙 Back",
+                        callback_data="shop"
+                    )
+                ]
+            ]
+        )
+
+        await query.message.edit_text(
+            BUY_TEXT,
+            reply_markup=BUY_BUTTONS,
+            parse_mode=enums.ParseMode.HTML
+        )
+
+    # ================= PAYMENT =================
+
+    elif data == "payment":
+
+        PAYMENT_TEXT = """
+💳 <b>PAYMENT SECTION</b>
+
+━━━━━━━━━━━━━━━━━━━
+
+🏦 UPI ID:
+<code>yourupi@upi</code>
+
+📸 Send Payment Screenshot
+To Owner After Payment.
+
+⚡ Instant Verification
+
+━━━━━━━━━━━━━━━━━━━
+"""
+
+        PAYMENT_BUTTONS = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        "📞 Send Screenshot",
+                        url="https://t.me/YourUsername"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "🔙 Back",
+                        callback_data="shop"
+                    )
+                ]
+            ]
+        )
+
+        await query.message.edit_text(
+            PAYMENT_TEXT,
+            reply_markup=PAYMENT_BUTTONS,
+            parse_mode=enums.ParseMode.HTML
+        )
+
+    # ================= BACK =================
+
+    elif data == "back":
+
+        await query.message.edit_text(
+            START_TEXT,
+            reply_markup=START_BUTTONS,
+            parse_mode=enums.ParseMode.HTML
+        )
+
+# ===================================================
+# BOT START
+# ===================================================
+
+print("🚀 Premium Store Bot Started Successfully")
 
 app.run()

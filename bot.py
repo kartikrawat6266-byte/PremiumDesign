@@ -148,7 +148,7 @@ def check_and_grant_free_key(user_id):
     return False, None
 
 # ==================== KEYBOARD BUILDERS ====================
-# MAIN MENU - VERTICAL LIST
+# MAIN MENU - VERTICAL LIST (FIXED SIZE)
 def main_menu_keyboard():
     keyboard = [
         [InlineKeyboardButton("🛍️ Shop Now", callback_data="shop_now")],
@@ -160,7 +160,7 @@ def main_menu_keyboard():
     ]
     return InlineKeyboardMarkup(keyboard)
 
-# IMPORTANT: BACK BUTTON SAME AS MAIN MENU - SIZE SAME RAHEGA
+# BACK BUTTON - SAME AS MAIN MENU (SIZE SAME RAHEGA)
 def back_to_menu_button():
     return main_menu_keyboard()
 
@@ -253,7 +253,6 @@ async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
     await query.answer()
     user_id = str(query.from_user.id)
     update_last_activity(user_id)
-    # IMPORTANT: Same main_menu_keyboard use kar rahe - size same rahega
     await query.edit_message_text(
         "🏠 *Main Menu*\n\nChoose an option:",
         reply_markup=main_menu_keyboard(),
@@ -365,24 +364,21 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
     u = get_user(user_id)
     
     username = u.get('username', '')
-    username_display = f"@{username}" if username else "Not set"
+    if username:
+        username_display = f"@{username}"
+    else:
+        username_display = "Not set"
     
-    referral_history = u.get("referral_history", [])
-    referral_text = ""
-    if referral_history:
-        referral_text = "\n\n📜 *Referral History:*"
-        for ref in referral_history[-5:]:
-            referral_text += f"\n   • {ref.get('username', 'Unknown')} - ₹{ref.get('earned', 0):.2f} ({ref.get('date', '')})"
-    
+    # EXACT FORMAT - Bilkul aapne bataya tha
     text = (
         f"❄️ *User Account Information*\n\n"
         f"• Name : {u.get('name', 'N/A')}\n"
         f"• Username : {username_display}\n"
         f"• User Id : `{user_id}`\n\n"
         f"• Total Orders : {u.get('total_orders', 0)}\n"
-        f"• Referral Earnings : ₹{u.get('referral_earnings', 0):.2f}{referral_text}\n\n"
-        f"• Joined : {u.get('joined', get_joined_date())}\n"
-        f"⭐ Last Activity : {u.get('last_activity', get_current_ist())}"
+        f"• Referral Earnings : ₹{u.get('referral_earnings', 0):.2f}\n\n"
+        f"• JoiNeD DaTe : {u.get('joined', get_joined_date())}\n"
+        f"• Last Activity : {u.get('last_activity', get_current_ist())}"
     )
     
     await query.edit_message_text(text, reply_markup=back_to_menu_button(), parse_mode="Markdown")
@@ -485,7 +481,7 @@ async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message:
         await update.message.reply_text("❌ Please use menu buttons.", reply_markup=main_menu_keyboard())
 
-# ==================== SET BOT MENU BUTTONS (BOTTOM NAVIGATION) ====================
+# ==================== SET BOT MENU BUTTONS ====================
 async def set_bot_commands(app: Application):
     commands = [
         BotCommand("shop", "🛍️ Browse products & purchase"),

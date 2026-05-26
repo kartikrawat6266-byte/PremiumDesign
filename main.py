@@ -113,20 +113,16 @@ async def product_page(client, callback_query):
     key = callback_query.data.split("product_")[1]
     product = products[key]
 
-    text = f"🔥 Features:
-"
-    text += "• NON ROOT
-"
-    text += "• ESP
-"
-    text += "• AIM ASSIST
-"
-    text += "• HIGH DAMAGE
+text = f"""🔥 Features:
 
-"
-    text += "🟢 SAFE STATUS
+• NON ROOT
+• ESP
+• AIM ASSIST
+• HIGH DAMAGE
 
-"
+⚠️ Status:
+🟢 SAFE
+"""
 
     buttons = []
 

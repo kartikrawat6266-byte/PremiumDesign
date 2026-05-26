@@ -1,20 +1,22 @@
 # ===================================================
 # PREMIUM TELEGRAM STORE BOT
-# PYROGRAM VERSION
-# FULL BUTTON + BACK SYSTEM
+# FULL FIXED VERSION
+# RAILWAY READY
 # ===================================================
+
+import os
 
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # ===================================================
-# API INFO
+# VARIABLES FROM RAILWAY
 # ===================================================
 
-API_ID = 12345678
-API_HASH = "YOUR_API_HASH"
-BOT_TOKEN = "YOUR_BOT_TOKEN"
-OWNER_USERNAME = "YourUsername"
+API_ID = int(os.getenv("API_ID"))
+API_HASH = os.getenv("API_HASH")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+OWNER_USERNAME = os.getenv("OWNER_USERNAME")
 
 # ===================================================
 # BOT CLIENT
@@ -126,7 +128,9 @@ async def callback_handler(client, query):
 
     await query.answer()
 
-    # ================= SHOP =================
+    # ===================================================
+    # SHOP
+    # ===================================================
 
     if data == "shop":
 
@@ -168,36 +172,50 @@ async def callback_handler(client, query):
         )
 
         await query.message.edit_text(
-            SHOP_TEXT,
+            text=SHOP_TEXT,
             reply_markup=SHOP_BUTTONS,
             parse_mode=enums.ParseMode.HTML
         )
 
-    # ================= PROFILE =================
+    # ===================================================
+    # PROFILE
+    # ===================================================
 
     elif data == "profile":
+
+        username = query.from_user.username
+
+        if username:
+            username = f"@{username}"
+        else:
+            username = "No Username"
 
         PROFILE_TEXT = f"""
 👤 <b>YOUR PROFILE</b>
 
 ━━━━━━━━━━━━━━━━━━━
 
-🆔 User ID: <code>{query.from_user.id}</code>
+🆔 User ID:
+<code>{query.from_user.id}</code>
 
-📛 Name: {query.from_user.first_name}
+📛 Name:
+{query.from_user.first_name}
 
-🚀 Username: @{query.from_user.username}
+🚀 Username:
+{username}
 
 ━━━━━━━━━━━━━━━━━━━
 """
 
         await query.message.edit_text(
-            PROFILE_TEXT,
+            text=PROFILE_TEXT,
             reply_markup=BACK_BUTTON,
             parse_mode=enums.ParseMode.HTML
         )
 
-    # ================= HISTORY =================
+    # ===================================================
+    # HISTORY
+    # ===================================================
 
     elif data == "history":
 
@@ -212,12 +230,14 @@ async def callback_handler(client, query):
 """
 
         await query.message.edit_text(
-            HISTORY_TEXT,
+            text=HISTORY_TEXT,
             reply_markup=BACK_BUTTON,
             parse_mode=enums.ParseMode.HTML
         )
 
-    # ================= HOW TO USE =================
+    # ===================================================
+    # HOW TO USE
+    # ===================================================
 
     elif data == "howto":
 
@@ -228,7 +248,7 @@ async def callback_handler(client, query):
 
 1️⃣ Open Shop Section
 
-2️⃣ Select Your Product
+2️⃣ Select Product
 
 3️⃣ Complete Payment
 
@@ -240,12 +260,14 @@ async def callback_handler(client, query):
 """
 
         await query.message.edit_text(
-            HOW_TEXT,
+            text=HOW_TEXT,
             reply_markup=BACK_BUTTON,
             parse_mode=enums.ParseMode.HTML
         )
 
-    # ================= HELP =================
+    # ===================================================
+    # HELP
+    # ===================================================
 
     elif data == "help":
 
@@ -257,7 +279,7 @@ async def callback_handler(client, query):
 👨‍💻 Owner Support:
 @{OWNER_USERNAME}
 
-⏰ Fast Reply Available
+⚡ Fast Reply Available
 
 ━━━━━━━━━━━━━━━━━━━
 """
@@ -280,12 +302,14 @@ async def callback_handler(client, query):
         )
 
         await query.message.edit_text(
-            HELP_TEXT,
+            text=HELP_TEXT,
             reply_markup=HELP_BUTTONS,
             parse_mode=enums.ParseMode.HTML
         )
 
-    # ================= BUY KEYS =================
+    # ===================================================
+    # BUY KEYS
+    # ===================================================
 
     elif data == "buy_keys":
 
@@ -322,12 +346,14 @@ async def callback_handler(client, query):
         )
 
         await query.message.edit_text(
-            BUY_TEXT,
+            text=BUY_TEXT,
             reply_markup=BUY_BUTTONS,
             parse_mode=enums.ParseMode.HTML
         )
 
-    # ================= PAYMENT =================
+    # ===================================================
+    # PAYMENT
+    # ===================================================
 
     elif data == "payment":
 
@@ -352,7 +378,7 @@ To Owner After Payment.
                 [
                     InlineKeyboardButton(
                         "📞 Send Screenshot",
-                        url="https://t.me/YourUsername"
+                        url=f"https://t.me/{OWNER_USERNAME}"
                     )
                 ],
                 [
@@ -365,17 +391,19 @@ To Owner After Payment.
         )
 
         await query.message.edit_text(
-            PAYMENT_TEXT,
+            text=PAYMENT_TEXT,
             reply_markup=PAYMENT_BUTTONS,
             parse_mode=enums.ParseMode.HTML
         )
 
-    # ================= BACK =================
+    # ===================================================
+    # BACK
+    # ===================================================
 
     elif data == "back":
 
         await query.message.edit_text(
-            START_TEXT,
+            text=START_TEXT,
             reply_markup=START_BUTTONS,
             parse_mode=enums.ParseMode.HTML
         )

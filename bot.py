@@ -1,13 +1,13 @@
 # ===================================================
 # CRAZY GAMING 100K BOT
-# COLOURED BUTTON VERSION
-# PYROGRAM BOT
+# FULL FIXED COLOURED BUTTON VERSION
+# PYROGRAM
 # ===================================================
 
 import os
 
 from pyrogram import Client, filters
-from pyrogram.types import ReplyKeyboardMarkup, KeyboardButton
+from pyrogram.types import ReplyKeyboardMarkup
 
 # ===================================================
 # VARIABLES
@@ -55,22 +55,16 @@ START_TEXT = """
 """
 
 # ===================================================
-# COLOURED BUTTON KEYBOARD
+# COLOURED BUTTONS
 # ===================================================
 
 main_keyboard = ReplyKeyboardMarkup(
     [
-        [KeyboardButton("🛒 Shop")],
+        ["🛒 Shop"],
 
-        [
-            KeyboardButton("👤 My Profile"),
-            KeyboardButton("📄 History")
-        ],
+        ["👤 My Profile", "📄 History"],
 
-        [
-            KeyboardButton("🎬 How To Use"),
-            KeyboardButton("📞 Helpline")
-        ]
+        ["🎬 How To Use", "📞 Helpline"]
     ],
     resize_keyboard=True
 )
@@ -91,7 +85,7 @@ async def start_command(client, message):
 # SHOP BUTTON
 # ===================================================
 
-@app.on_message(filters.text("🛒 Shop"))
+@app.on_message(filters.regex("^🛒 Shop$"))
 async def shop_handler(client, message):
 
     text = """
@@ -118,7 +112,7 @@ async def shop_handler(client, message):
 # PROFILE BUTTON
 # ===================================================
 
-@app.on_message(filters.text("👤 My Profile"))
+@app.on_message(filters.regex("^👤 My Profile$"))
 async def profile_handler(client, message):
 
     user = message.from_user
@@ -156,7 +150,7 @@ async def profile_handler(client, message):
 # HISTORY BUTTON
 # ===================================================
 
-@app.on_message(filters.text("📄 History"))
+@app.on_message(filters.regex("^📄 History$"))
 async def history_handler(client, message):
 
     text = """
@@ -178,7 +172,7 @@ async def history_handler(client, message):
 # HOW TO USE BUTTON
 # ===================================================
 
-@app.on_message(filters.text("🎬 How To Use"))
+@app.on_message(filters.regex("^🎬 How To Use$"))
 async def howto_handler(client, message):
 
     text = """
@@ -208,7 +202,7 @@ async def howto_handler(client, message):
 # HELPLINE BUTTON
 # ===================================================
 
-@app.on_message(filters.text("📞 Helpline"))
+@app.on_message(filters.regex("^📞 Helpline$"))
 async def help_handler(client, message):
 
     text = f"""

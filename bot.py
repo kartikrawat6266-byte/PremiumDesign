@@ -148,7 +148,6 @@ def check_and_grant_free_key(user_id):
     return False, None
 
 # ==================== KEYBOARD BUILDERS ====================
-# MAIN MENU - VERTICAL LIST (FIXED SIZE)
 def main_menu_keyboard():
     keyboard = [
         [InlineKeyboardButton("🛍️ Shop Now", callback_data="shop_now")],
@@ -160,7 +159,6 @@ def main_menu_keyboard():
     ]
     return InlineKeyboardMarkup(keyboard)
 
-# BACK BUTTON - SAME AS MAIN MENU (SIZE SAME RAHEGA)
 def back_to_menu_button():
     return main_menu_keyboard()
 
@@ -196,7 +194,141 @@ def refer_earn_keyboard(referral_link, total_refers, free_available):
     keyboard.append([InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")])
     return InlineKeyboardMarkup(keyboard)
 
-# ==================== HANDLERS ====================
+# ==================== SET BOT MENU BUTTONS ====================
+async def set_bot_commands(application: Application):
+    """Set bot menu buttons that appear at bottom (where typing happens)"""
+    commands = [
+        BotCommand("shop", "🛍️ Browse products & purchase"),
+        BotCommand("orders", "📦 View your order history"),
+        BotCommand("profile", "👤 Check your account info"),
+        BotCommand("howtouse", "📖 How to buy guide"),
+        BotCommand("support", "🆘 Contact support"),
+        BotCommand("refer", "💰 Refer & earn rewards"),
+        BotCommand("start", "🏠 Back to main menu"),
+    ]
+    await application.bot.set_my_commands(commands, scope=BotCommandScopeDefault())
+    logger.info("Bot menu buttons set successfully!")
+
+# ==================== COMMAND HANDLERS ====================
+async def cmd_shop(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = str(update.effective_user.id)
+    update_last_activity(user_id)
+    await update.message.reply_text(
+        "🛍️ *Our Products*\n\nSelect a product to purchase:",
+        reply_markup=product_list_keyboard(),
+        parse_mode="Markdown"
+    )
+
+async def cmd_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = str(update.effective_user.id)
+    update_last_activity(user_id)
+    user_data = get_user(user_id)
+    orders = user_data.get("orders", [])
+    
+    if not orders:
+        await update.message.reply_text(
+            "📭 *No orders yet!*\n\nStart shopping to see your orders here.",
+            reply_markup=main_menu_keyboard(),
+            parse_mode="Markdown"
+        )
+        return
+    
+    text = "*📦 Your Orders*\n\n"
+    for i, o in enumerate(reversed(orders[-10:]), 1):
+        amt = f"₹{o['amount']:.2f}" if o['amount'] > 0 else "🎁 FREE"
+        text += f"{i}. *{o['product']}*\n   Amount: {amt}\n   Date: {o['date']}\n   Key: `{o['key']}`\n\n"
+    await update.message.reply_text(text, reply_markup=main_menu_keyboard(), parse_mode="Markdown")
+
+async def cmd_profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = str(update.effective_user.id)
+    update_last_activity(user_id)
+    u = get_user(user_id)
+    
+    username = u.get('username', '')
+    if username:
+        username_display = f"@{username}"
+    else:
+        username_display = "Not set"
+    
+    text = (
+        f"❄️ *User Account Information*\n\n"
+        f"• Name : {u.get('name', 'N/A')}\n"
+        f"• Username : {username_display}\n"
+        f"• User Id : `{user_id}`\n\n"
+        f"• Total Orders : {u.get('total_orders', 0)}\n"
+        f"• Referral Earnings : ₹{u.get('referral_earnings', 0):.2f}\n\n"
+        f"• JoiNeD DaTe : {u.get('joined', get_joined_date())}\n"
+        f"• Last Activity : {u.get('last_activity', get_current_ist())}"
+    )
+    await update.message.reply_text(text, reply_markup=main_menu_keyboard(), parse_mode="Markdown")
+
+async def cmd_howtouse(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = str(update.effective_user.id)
+    update_last_activity(user_id)
+    text = (
+        "*📖 How to Buy — SATYAM X MOD STORE*\n\n"
+        "1. Tap Shop Now\n"
+        "2. Pick your product & plan\n"
+        "3. Scan the UPI QR or copy UPI ID\n"
+        "4. Pay the exact amount shown (with paisa!)\n"
+        "5. Tap ✅ I Have Paid\n"
+        "6. Enter your UPI registered name\n"
+        "7. Sit back – your key arrives in seconds!\n\n"
+        "⚠️ Always pay the exact amount including paisa!"
+    )
+    await update.message.reply_text(text, reply_markup=main_menu_keyboard(), parse_mode="Markdown")
+
+async def cmd_support(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = str(update.effective_user.id)
+    update_last_activity(user_id)
+    text = (
+        "*🆘 OFFICIAL SUPPORT CENTER*\n\n"
+        "If you face any issues or have questions regarding our services, feel free to contact our expert team.\n\n"
+        "📅 Active Time: 9 AM - 11 PM\n"
+        "⏱️ Response: Within 5-10 Minutes\n\n"
+        "Click the button below to start a chat:"
+    )
+    await update.message.reply_text(text, reply_markup=admin_contact_keyboard(), parse_mode="Markdown")
+
+async def cmd_refer(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = str(update.effective_user.id)
+    update_last_activity(user_id)
+    
+    bot_username = (await context.bot.get_me()).username
+    referral_link = f"https://t.me/{bot_username}?start=ref_{user_id}"
+    u = get_user(user_id)
+    total = u.get("total_refers", 0)
+    earnings = u.get("referral_earnings", 0.0)
+    claimed = u.get("free_key_claimed", False)
+    remaining = max(0, FREE_KEY_REFERRALS_NEEDED - total)
+    
+    text = f"""*💰 Referral Program*
+
+Invite your friends and earn real balance for every successful joining.
+
+• *Total Refers:* {total} User(s)
+• *Invite Reward:* ₹{earnings:.2f} (₹1 per refer)
+
+"""
+    if not claimed:
+        if remaining > 0:
+            text += f"🎯 *Refer {remaining} more to get a FREE {FREE_KEY_PRODUCT}!*\n\n"
+        else:
+            text += f"🎉 *You've earned a FREE {FREE_KEY_PRODUCT}!*\n\n"
+    else:
+        text += f"✅ *You have claimed your FREE key!*\n\n"
+    
+    text += f"""*Your Invite Link:*
+`{referral_link}`
+
+Share your link to grow your earnings!"""
+    
+    await update.message.reply_text(text, reply_markup=refer_earn_keyboard(referral_link, total, not claimed), parse_mode="Markdown")
+
+async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await start(update, context)
+
+# ==================== MAIN HANDLERS ====================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     user_id = str(user.id)
@@ -369,7 +501,6 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         username_display = "Not set"
     
-    # EXACT FORMAT - Bilkul aapne bataya tha
     text = (
         f"❄️ *User Account Information*\n\n"
         f"• Name : {u.get('name', 'N/A')}\n"
@@ -481,25 +612,20 @@ async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message:
         await update.message.reply_text("❌ Please use menu buttons.", reply_markup=main_menu_keyboard())
 
-# ==================== SET BOT MENU BUTTONS ====================
-async def set_bot_commands(app: Application):
-    commands = [
-        BotCommand("shop", "🛍️ Browse products & purchase"),
-        BotCommand("orders", "📦 View your order history"),
-        BotCommand("profile", "👤 Check your account info"),
-        BotCommand("howtouse", "📖 How to buy guide"),
-        BotCommand("support", "🆘 Contact support"),
-        BotCommand("refer", "💰 Refer & earn rewards"),
-        BotCommand("start", "🏠 Back to main menu"),
-    ]
-    await app.bot.set_my_commands(commands, scope=BotCommandScopeDefault())
-    logger.info("Bot menu buttons set successfully!")
-
 # ==================== MAIN ====================
 def main():
     application = Application.builder().token(BOT_TOKEN).build()
     
+    # Command handlers for bottom menu buttons
     application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("shop", cmd_shop))
+    application.add_handler(CommandHandler("orders", cmd_orders))
+    application.add_handler(CommandHandler("profile", cmd_profile))
+    application.add_handler(CommandHandler("howtouse", cmd_howtouse))
+    application.add_handler(CommandHandler("support", cmd_support))
+    application.add_handler(CommandHandler("refer", cmd_refer))
+    
+    # Callback query handlers
     application.add_handler(CallbackQueryHandler(main_menu_callback, pattern="^main_menu$"))
     application.add_handler(CallbackQueryHandler(shop_now, pattern="^shop_now$"))
     application.add_handler(CallbackQueryHandler(product_selected, pattern="^product_"))
@@ -514,8 +640,13 @@ def main():
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_upi_name))
     application.add_handler(MessageHandler(filters.ALL, unknown))
     
-    # Set bottom menu buttons
-    application.job_queue.run_once(lambda x: set_bot_commands(application), 0)
+    # Set bot menu buttons (without JobQueue - using async directly)
+    async def setup():
+        await set_bot_commands(application)
+    
+    # Run setup
+    import asyncio
+    asyncio.get_event_loop().run_until_complete(setup())
     
     logger.info("Bot is starting...")
     application.run_polling(allowed_updates=Update.ALL_TYPES)

@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Railway Bot Terminal – Key Shop</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at 10% 20%, #0a0f1c, #03060c);
+      font-family: 'Segoe UI', 'Fira Code', 'Inter', monospace, system-ui;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    /* MAIN RAILWAY-INSPIRED CARD */
+    .railway-container {
+      max-width: 560px;
+      width: 100%;
+      background: #0b1017;
+      border-radius: 2rem;
+      box-shadow: 0 30px 40px -20px rgba(0, 0, 0, 0.8), 0 0 0 2px rgba(46, 204, 113, 0.2), 0 0 0 5px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    /* Railway track header */
+    .track-header {
+      background: #0c111a;
+      padding: 1.2rem 1.8rem;
+      border-bottom: 3px solid #2ecc71;
+      position: relative;
+      backdrop-filter: blur(2px);
+    }
+
+    .track-header::before {
+      content: "🚆 ⚡ 🚆";
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      font-size: 1.2rem;
+      opacity: 0.4;
+      letter-spacing: 4px;
+    }
+
+    .railway-badge {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .railway-badge h1 {
+      font-size: 1.9rem;
+      font-weight: 800;
+      font-family: 'Fira Code', monospace;
+      background: linear-gradient(120deg, #b0ffc0, #2ecc71);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -1px;
+    }
+
+    .station-id {
+      background: #1e2a2a;
+      padding: 0.2rem 0.9rem;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #9bffb0;
+      border: 0.5px solid #2ecc71;
+      font-family: monospace;
+    }
+
+    .track-info {
+      display: flex;
+      gap: 18px;
+      margin-top: 14px;
+      font-size: 0.75rem;
+      color: #8e9eb5;
+      font-family: monospace;
+      flex-wrap: wrap;
+    }
+
+    .live-train {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #10161f;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+    }
+
+    .blink-green {
+      width: 8px;
+      height: 8px;
+      background: #2ecc71;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #2ecc71;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0% { opacity: 0.3; }
+      100% { opacity: 1; transform: scale(1.2);}
+    }
+
+    /* RAILWAY SETUP PANEL (special "setup" section as requested) */
+    .setup-panel {
+      background: #0a0f17;
+      margin: 1rem 1.5rem 0.5rem 1.5rem;
+      border-radius: 1.2rem;
+      padding: 0.8rem 1.2rem;
+      border-left: 4px solid #f1c40f;
+      border-right: 1px solid #252e3c;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-family: 'Fira Code', monospace;
+    }
+
+    .setup-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: #f0b27a;
+      font-size: 0.8rem;
+    }
+
+    .setup-label span:first-child {
+      font-size: 1.2rem;
+    }
+
+    .setup-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .rail-btn {
+      background: #1e2a32;
+      border: none;
+      padding: 0.3rem 0.9rem;
+      border-radius: 30px;
+      font-family: monospace;
+      font-weight: bold;
+      font-size: 0.7rem;
+      color: #c0d4ff;
+      cursor: pointer;
+      transition: 0.1s linear;
+    }
+
+    .rail-btn-green {
+      background: #0f8b46;
+      color: white;
+      box-shadow: 0 0 4px #2ecc71;
+    }
+
+    .rail-btn-red {
+      background: #b42b2b;
+      color: white;
+    }
+
+    .rail-btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.05);
+    }
+
+    /* BUTTONS GRID — all green or red (as main requirement) */
+    .button-grid-rail {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 1.6rem 1.8rem 2rem 1.8rem;
+    }
+
+    .action-btn-rail {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0.9rem 1.5rem;
+      border: none;
+      border-radius: 60px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: 'Segoe UI', system-ui;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      background: #232837;
+      color: white;
+      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-green-rail {
+      background: linear-gradient(95deg, #0aa84a, #0bc95e);
+      border-bottom: 2px solid #6effa3;
+    }
+
+    .btn-red-rail {
+      background: linear-gradient(95deg, #c53030, #e34d4d);
+      border-bottom: 2px solid #ff9f9f;
+    }
+
+    .btn-green-rail:hover {
+      background: linear-gradient(95deg, #0bc95e, #15e274);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px -12px #15e27480;
+    }
+
+    .btn-red-rail:hover {
+      background: linear-gradient(95deg, #e34d4d, #fc6363);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px -12px #fc6363b3;
+    }
+
+    .btn-icon-rail {
+      font-size: 1.4rem;
+      width: 32px;
+      text-align: center;
+    }
+
+    .btn-text-rail {
+      flex: 1;
+      text-align: left;
+      margin-left: 12px;
+      letter-spacing: -0.2px;
+    }
+
+    .arrow-rail {
+      font-size: 1.2rem;
+      opacity: 0.8;
+    }
+
+    /* bottom railway terminal */
+    .rail-footer {
+      background: #070b10;
+      padding: 0.9rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #212834;
+      font-family: monospace;
+      font-size: 0.7rem;
+      color: #7f8c9a;
+    }
+
+    .menu-items {
+      display: flex;
+      gap: 20px;
+    }
+
+    .menu-items span {
+      cursor: pointer;
+      transition: 0.1s;
+      padding: 4px 2px;
+    }
+
+    .menu-items span:hover {
+      color: #2ecc71;
+      text-shadow: 0 0 2px #2ecc71;
+    }
+
+    .message-icon {
+      background: #18222f;
+      border-radius: 30px;
+      padding: 0.2rem 0.8rem;
+      font-size: 0.7rem;
+    }
+
+    /* TOAST similar to railway announcement */
+    .rail-toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) scale(0.9);
+      background: #1e2a2f;
+      backdrop-filter: blur(16px);
+      padding: 0.7rem 1.5rem;
+      border-radius: 60px;
+      font-family: 'Fira Code', monospace;
+      font-weight: 500;
+      font-size: 0.8rem;
+      color: #eef2ff;
+      border-left: 6px solid #f39c12;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      z-index: 1100;
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+      white-space: nowrap;
+      max-width: 90vw;
+      white-space: normal;
+      text-align: center;
+    }
+
+    .rail-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
+
+    @media (max-width: 500px) {
+      .button-grid-rail {
+        padding: 1rem 1.2rem 1.5rem;
+      }
+      .action-btn-rail {
+        padding: 0.7rem 1rem;
+      }
+      .setup-panel {
+        margin: 0.8rem 1rem 0rem 1rem;
+      }
+      .rail-toast {
+        font-size: 0.7rem;
+        white-space: normal;
+        width: auto;
+      }
+    }
+
+    /* extra small touches */
+    .action-btn-rail:active {
+      transform: scale(0.97);
+    }
+
+    .status-badge {
+      background: #00000040;
+      border-radius: 20px;
+      padding: 0 8px;
+    }
+  </style>
+</head>
+<body>
+<div class="railway-container">
+  <div class="track-header">
+    <div class="railway-badge">
+      <h1>🚆 RAILKEY BOT</h1>
+      <div class="station-id">STATION: CENTRAL · INSTANT DELIVERY</div>
+    </div>
+    <div class="track-info">
+      <div class="live-train">
+        <div class="blink-green"></div>
+        <span>TRACK ACTIVE</span>
+      </div>
+      <span>🚂 PURCHASE → DELIVERY</span>
+      <span>🔑 24/7 SIGNAL</span>
+    </div>
+  </div>
+
+  <!-- RAILWAY SETUP ZONE (exactly: railway ka setup do) -->
+  <div class="setup-panel">
+    <div class="setup-label">
+      <span>⚙️</span>
+      <span>RAILWAY SETUP</span>
+      <span style="font-size:0.7rem;">(config | tokens | webhook)</span>
+    </div>
+    <div class="setup-actions">
+      <button class="rail-btn rail-btn-green" id="deployBtn">🚀 DEPLOY</button>
+      <button class="rail-btn rail-btn-red" id="resetBtn">🔄 RESET LINE</button>
+      <button class="rail-btn" id="logsBtn">📡 LOGS</button>
+    </div>
+  </div>
+
+  <!-- BUTTON SECTION: GREEN / RED (all core actions) -->
+  <div class="button-grid-rail">
+    <!-- Shop Now : GREEN -->
+    <button class="action-btn-rail btn-green-rail" data-action-rail="shop">
+      <span class="btn-icon-rail">🛒</span>
+      <span class="btn-text-rail">Shop Now</span>
+      <span class="arrow-rail">⏩</span>
+    </button>
+
+    <!-- My Orders : GREEN -->
+    <button class="action-btn-rail btn-green-rail" data-action-rail="orders">
+      <span class="btn-icon-rail">📦</span>
+      <span class="btn-text-rail">My Orders</span>
+      <span class="arrow-rail">🚆</span>
+    </button>
+
+    <!-- Profile : GREEN -->
+    <button class="action-btn-rail btn-green-rail" data-action-rail="profile">
+      <span class="btn-icon-rail">👤</span>
+      <span class="btn-text-rail">Profile</span>
+      <span class="arrow-rail">📇</span>
+    </button>
+
+    <!-- How to Use : GREEN -->
+    <button class="action-btn-rail btn-green-rail" data-action-rail="howto">
+      <span class="btn-icon-rail">📘</span>
+      <span class="btn-text-rail">How to Use</span>
+      <span class="arrow-rail">🚂</span>
+    </button>
+
+    <!-- Support : RED (vital) -->
+    <button class="action-btn-rail btn-red-rail" data-action-rail="support">
+      <span class="btn-icon-rail">🎧</span>
+      <span class="btn-text-rail">Support</span>
+      <span class="arrow-rail">🆘</span>
+    </button>
+
+    <!-- Refer & Earn : GREEN -->
+    <button class="action-btn-rail btn-green-rail" data-action-rail="refer">
+      <span class="btn-icon-rail">🎁</span>
+      <span class="btn-text-rail">Refer & Earn</span>
+      <span class="arrow-rail">💰</span>
+    </button>
+  </div>
+
+  <!-- Railway footer with menu & message -->
+  <div class="rail-footer">
+    <div class="menu-items">
+      <span>📋 Menu</span>
+      <span>💬 Message</span>
+      <span>🗺️ RailMap</span>
+    </div>
+    <div class="message-icon">
+      🔔 support@railbot
+    </div>
+  </div>
+</div>
+
+<div id="railToast" class="rail-toast">🚆 Railway signal active</div>
+
+<script>
+  // RAILWAY SETUP + COLOR BUTTONS (GREEN/RED) fully interactive
+  const toastRail = document.getElementById('railToast');
+  
+  function showRailMessage(text, isError = false) {
+    toastRail.textContent = text;
+    if(isError) {
+      toastRail.style.borderLeftColor = '#e34d4d';
+    } else {
+      toastRail.style.borderLeftColor = '#f1c40f';
+    }
+    toastRail.classList.add('show');
+    setTimeout(() => {
+      toastRail.classList.remove('show');
+    }, 2500);
+  }
+
+  // handle all main action buttons (green/red)
+  function handleRailAction(action) {
+    switch(action) {
+      case 'shop':
+        showRailMessage('🛒 SHOP NOW: All keys in stock! Instant delivery via railway express. (Demo: GTA V, Steam, etc)');
+        break;
+      case 'orders':
+        showRailMessage('📦 MY ORDERS: Track your key purchases — last order: #RK-2390 (delivered)');
+        break;
+      case 'profile':
+        showRailMessage('👤 PROFILE: Username: RailPassenger | Wallet: 0.00 | Member since 2025');
+        break;
+      case 'howto':
+        showRailMessage('📘 HOW TO USE: 1) Pick a key 2) Pay & confirm 3) Receive instantly. Visit tutorial for more!');
+        break;
+      case 'support':
+        showRailMessage('🎧 SUPPORT (RED ALERT): Admin will reply ASAP. Open a ticket or join our Railway Discord.', false);
+        break;
+      case 'refer':
+        showRailMessage('🎁 REFER & EARN: Each friend gets 10% off, you earn ₹100 credit! Share your referral code: RAILFRIEND25');
+        break;
+      default:
+        showRailMessage('🚆 Command executed on railway track.');
+    }
+  }
+
+  // ----- RAILWAY SETUP FUNCTIONS (special deploy / reset / logs) -----
+  function railwayDeploy() {
+    showRailMessage('🚀 DEPLOYMENT SUCCESS: Railway bot connected! Webhooks synced | Region: AS-South | Status: ONLINE', false);
+    // simulate additional effect
+    const deployBtn = document.getElementById('deployBtn');
+    if(deployBtn) {
+      deployBtn.style.transform = 'scale(0.95)';
+      setTimeout(() => { if(deployBtn) deployBtn.style.transform = ''; }, 150);
+    }
+  }
+  
+  function railwayReset() {
+    showRailMessage('🔄 RAILWAY RESET: Clearing cache / renewing tokens. All systems realigned. (Simulated reset)', true);
+    const resetBtn = document.getElementById('resetBtn');
+    if(resetBtn) {
+      resetBtn.style.transform = 'scale(0.95)';
+      setTimeout(() => { if(resetBtn) resetBtn.style.transform = ''; }, 150);
+    }
+  }
+
+  function railwayLogs() {
+    showRailMessage('📡 LATEST LOGS: [OK] 2025-02-18 14:32:12 | Purchase endpoint active | 200 OK | setup health green');
+  }
+
+  // Attach main buttons events
+  const allActionBtns = document.querySelectorAll('.action-btn-rail');
+  allActionBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const actionType = btn.getAttribute('data-action-rail');
+      if(actionType) {
+        handleRailAction(actionType);
+      } else {
+        showRailMessage('🚂 Button pressed on railway dashboard');
+      }
+      // mini feedback
+      btn.style.transform = 'scale(0.97)';
+      setTimeout(() => {
+        btn.style.transform = '';
+      }, 120);
+    });
+  });
+
+  // Setup panel buttons
+  const deployButton = document.getElementById('deployBtn');
+  const resetButton = document.getElementById('resetBtn');
+  const logsButton = document.getElementById('logsBtn');
+  
+  if(deployButton) deployButton.addEventListener('click', railwayDeploy);
+  if(resetButton) resetButton.addEventListener('click', railwayReset);
+  if(logsButton) logsButton.addEventListener('click', railwayLogs);
+  
+  // Menu & Message interactive (footer)
+  const menuElements = document.querySelectorAll('.menu-items span');
+  if(menuElements.length) {
+    menuElements[0].addEventListener('click', () => showRailMessage('📋 RAILWAY MENU: Shop, Orders, Profile, Support, Referral hub. Use green/red buttons above.'));
+    if(menuElements[1]) menuElements[1].addEventListener('click', () => showRailMessage('💬 MESSAGE CENTER: Send /msg to support. Instant admin response on priority.'));
+    if(menuElements[2]) menuElements[2].addEventListener('click', () => showRailMessage('🗺️ RAILMAP: Interactive route of key delivery: Warehouse ➔ Virtual terminal ➔ Your account.'));
+  }
+
+  // Additional: extra smooth entry message
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      showRailMessage('🚆 RAILWAY SETUP ACTIVE | Green = Purchase/Features | Red = Urgent Support', false);
+    }, 400);
+  });
+
+  // extra for railway style vibe: console msg
+  console.log('Railway bot interface | Green & Red buttons ready | Setup panel live');
+  
+  // Fancy optional: add double click prevention nothing serious
+  const allInteractive = document.querySelectorAll('button, .menu-items span');
+  allInteractive.forEach(el => {
+    el.addEventListener('touchstart', (e) => {
+      // just passive for mobile stability
+    }, { passive: true });
+  });
+
+  // manual static orders and history simulation: already done.
+  // also show that profile status shows railway integration.
+  // Enhance: support for "Copy config" but not needed, but looks neat.
+  const setupDiv = document.querySelector('.setup-panel');
+  if(setupDiv) {
+    // Just aesthetics no errors
+  }
+  
+  // small environment for admin
+  // custom message if needed to indicate that all buttons are green/red except support red (✅)
+  const checkButtons = document.querySelectorAll('.btn-green-rail, .btn-red-rail');
+  // all good, and ensure support is red class and others green.
+  // If any missing, it's fine.
+</script>
+</body>
+</html>

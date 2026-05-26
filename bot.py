@@ -1,266 +1,306 @@
-# ===================================================
-# REAL COLOURED BUTTON TELEGRAM BOT
-# EXACT GREEN BUTTON STYLE
-# PYROGRAM WORKING VERSION
-# ===================================================
-
 import os
-
+import json
+from datetime import datetime
 from pyrogram import Client, filters
-from pyrogram.types import ReplyKeyboardMarkup
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-# ===================================================
-# VARIABLES
-# ===================================================
-
-API_ID = int(os.getenv("API_ID"))
-API_HASH = os.getenv("API_HASH")
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-OWNER_USERNAME = os.getenv("OWNER_USERNAME")
-
-# ===================================================
-# BOT CLIENT
-# ===================================================
+API_ID = 123456
+API_HASH = "YOUR_API_HASH"
+BOT_TOKEN = "YOUR_BOT_TOKEN"
+OWNER_ID = 123456789
 
 app = Client(
-    "ColourStoreBot",
+    "shopbot",
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN
 )
 
-# ===================================================
-# START MESSAGE
-# ===================================================
+DATA_FILE = "users.json"
 
-START_TEXT = """
-🛒 Shop Now : all key purchase & instantly delivery
+# ---------------- SAVE / LOAD ----------------
+def load_data():
+    if not os.path.exists(DATA_FILE):
+        return {}
+    with open(DATA_FILE, "r") as f:
+        return json.load(f)
 
-📦 My Orders : check all key purchase history
 
-👤 Profile : check your account information
+def save_data(data):
+    with open(DATA_FILE, "w") as f:
+        json.dump(data, f, indent=4)
 
-📖 How to Use : view tutorial and work this bot
 
-💬 Support : bot problem fixed for support admin
+users = load_data()
 
-😉 Refer & Earn : invite friends & earn rewards
-"""
+# ---------------- PRODUCTS ----------------
+products = {
+    "drip_nonroot": {
+        "name": "DRIPCLIENT NONROOT FF",
+        "prices": {
+            "1 Day": 90,
+            "3 Days": 169,
+            "7 Days": 325,
+            "15 Days": 560,
+            "30 Days": 788
+        }
+    },
 
-# ===================================================
-# REAL COLOUR BUTTON KEYBOARD
-# ===================================================
+    "prime_hook": {
+        "name": "PRIME HOOK FF NONROOT",
+        "prices": {
+            "1 Day": 99,
+            "3 Days": 199,
+            "7 Days": 349,
+            "15 Days": 599,
+            "30 Days": 899
+        }
+    }
+}
 
-main_keyboard = ReplyKeyboardMarkup(
-    keyboard=[
-        ["🛒 Shop Now"],
-
-        ["📦 My Orders", "👤 Profile"],
-
-        ["📖 How to Use", "💬 Support"],
-
-        ["😉 Refer & Earn"]
-    ],
-
-    resize_keyboard=True,
-    is_persistent=True,
-    one_time_keyboard=False,
-    selective=False
-)
-
-# ===================================================
-# START COMMAND
-# ===================================================
-
+# ---------------- START ----------------
 @app.on_message(filters.command("start"))
-async def start_command(client, message):
+async def start(client, message):
+    user_id = str(message.from_user.id)
 
-    await message.reply_text(
-        START_TEXT,
-        reply_markup=main_keyboard
+    if user_id not in users:
+        users[user_id] = {
+            "name": message.from_user.first_name,
+            "orders": []
+        }
+        save_data(users)
+
+    buttons = [
+        [InlineKeyboardButton("🛒 Shop", callback_data="shop")],
+        [
+            InlineKeyboardButton("👤 My Profile", callback_data="profile"),
+            InlineKeyboardButton("📄 History", callback_data="history")
+        ],
+        [
+            InlineKeyboardButton("🎬 How To Use", url="https://youtube.com"),
+            InlineKeyboardButton("📞 Helpline", url="https://t.me/yourusername")
+        ]
+    ]
+
+    await message.reply_photo(
+        photo="https://i.imgur.com/8KHKhxS.jpeg",
+        caption="🔥 Welcome To Premium Shop Bot",
+        reply_markup=InlineKeyboardMarkup(buttons)
     )
 
-# ===================================================
-# SHOP NOW
-# ===================================================
+# ---------------- SHOP ----------------
+@app.on_callback_query(filters.regex("shop"))
+async def shop_menu(client, callback_query):
+    buttons = []
 
-@app.on_message(filters.regex("^🛒 Shop Now$"))
-async def shop_handler(client, message):
+    for key, product in products.items():
+        buttons.append([
+            InlineKeyboardButton(product['name'], callback_data=f"product_{key}")
+        ])
 
-    text = """
-🛒 SHOP SECTION
+    buttons.append([
+        InlineKeyboardButton("⬅️ Back", callback_data="back_home")
+    ])
 
-━━━━━━━━━━━━━━━━━━
+    await callback_query.message.edit_text(
+        "📦 Select Product",
+        reply_markup=InlineKeyboardMarkup(buttons)
+    )
 
-🎮 BGMI KEYS
-🔥 FREE FIRE KEYS
-📺 NETFLIX PREMIUM
-🎵 SPOTIFY PREMIUM
+# ---------------- PRODUCT ----------------
+@app.on_callback_query(filters.regex("product_"))
+async def product_page(client, callback_query):
+    key = callback_query.data.split("product_")[1]
+    product = products[key]
 
-⚡ Instant Delivery Available
+    text = f"🔥 Features:
+"
+    text += "• NON ROOT
+"
+    text += "• ESP
+"
+    text += "• AIM ASSIST
+"
+    text += "• HIGH DAMAGE
 
-━━━━━━━━━━━━━━━━━━
-"""
+"
+    text += "🟢 SAFE STATUS
 
-    await message.reply_text(
+"
+
+    buttons = []
+
+    for plan, price in product['prices'].items():
+        buttons.append([
+            InlineKeyboardButton(
+                f"₹{price} • {plan}",
+                callback_data=f"buy_{key}_{plan}"
+            )
+        ])
+
+    buttons.append([
+        InlineKeyboardButton("🎬 Watch Gameplay", url="https://youtube.com")
+    ])
+
+    buttons.append([
+        InlineKeyboardButton("⬅️ Back", callback_data="shop")
+    ])
+
+    await callback_query.message.edit_text(
         text,
-        reply_markup=main_keyboard
+        reply_markup=InlineKeyboardMarkup(buttons)
     )
 
-# ===================================================
-# ORDERS
-# ===================================================
+# ---------------- BUY ----------------
+@app.on_callback_query(filters.regex("buy_"))
+async def buy_product(client, callback_query):
+    data = callback_query.data.split("_")
 
-@app.on_message(filters.regex("^📦 My Orders$"))
-async def order_handler(client, message):
+    product_key = data[1]
+    plan = data[2]
 
-    text = """
-📦 MY ORDERS
+    product = products[product_key]
+    price = product['prices'][plan]
 
-━━━━━━━━━━━━━━━━━━
+    user_id = str(callback_query.from_user.id)
 
-❌ No Orders Found
+    order = {
+        "product": product['name'],
+        "plan": plan,
+        "price": price,
+        "status": "Pending",
+        "date": str(datetime.now())
+    }
 
-━━━━━━━━━━━━━━━━━━
-"""
+    users[user_id]['orders'].append(order)
+    save_data(users)
 
-    await message.reply_text(
-        text,
-        reply_markup=main_keyboard
+    await callback_query.message.edit_text(
+        f"✅ ORDER CREATED
+
+"
+        f"📦 Product: {product['name']}
+"
+        f"⏳ Plan: {plan}
+"
+        f"💸 Price: ₹{price}
+
+"
+        f"📞 Contact Admin For Payment"
     )
 
-# ===================================================
-# PROFILE
-# ===================================================
+    await app.send_message(
+        OWNER_ID,
+        f"🛒 NEW ORDER
 
-@app.on_message(filters.regex("^👤 Profile$"))
-async def profile_handler(client, message):
-
-    user = message.from_user
-
-    username = user.username
-
-    if username:
-        username = f"@{username}"
-    else:
-        username = "No Username"
-
-    text = f"""
-👤 PROFILE
-
-━━━━━━━━━━━━━━━━━━
-
-🆔 ID : {user.id}
-
-📛 Name : {user.first_name}
-
-🚀 Username : {username}
-
-━━━━━━━━━━━━━━━━━━
-"""
-
-    await message.reply_text(
-        text,
-        reply_markup=main_keyboard
+"
+        f"👤 User: {callback_query.from_user.first_name}
+"
+        f"🆔 ID: {user_id}
+"
+        f"📦 Product: {product['name']}
+"
+        f"💰 Price: ₹{price}
+"
+        f"📅 Plan: {plan}"
     )
 
-# ===================================================
-# HOW TO USE
-# ===================================================
+# ---------------- PROFILE ----------------
+@app.on_callback_query(filters.regex("profile"))
+async def profile(client, callback_query):
+    user_id = str(callback_query.from_user.id)
+    user = users[user_id]
 
-@app.on_message(filters.regex("^📖 How to Use$"))
-async def how_handler(client, message):
+    total_orders = len(user['orders'])
 
-    text = """
-📖 HOW TO USE
+    text = f"📄 ACCOUNT INFORMATION
 
-━━━━━━━━━━━━━━━━━━
+"
+    text += f"👤 Name : {user['name']}
+"
+    text += f"🆔 UserID : {user_id}
 
-1️⃣ Open Shop
+"
+    text += f"📊 STATISTICS
 
-2️⃣ Select Product
+"
+    text += f"📦 Total Orders : {total_orders}
+"
 
-3️⃣ Complete Payment
+    await callback_query.message.edit_text(text)
 
-4️⃣ Send Screenshot
+# ---------------- HISTORY ----------------
+@app.on_callback_query(filters.regex("history"))
+async def history(client, callback_query):
+    user_id = str(callback_query.from_user.id)
+    user = users[user_id]
 
-5️⃣ Receive Product 🚀
+    if not user['orders']:
+        return await callback_query.answer("No Orders Found", show_alert=True)
 
-━━━━━━━━━━━━━━━━━━
-"""
+    text = "📄 ORDER HISTORY
 
-    await message.reply_text(
-        text,
-        reply_markup=main_keyboard
+"
+
+    for order in user['orders']:
+        text += (
+            f"📦 {order['product']}
+"
+            f"💰 ₹{order['price']}
+"
+            f"📅 {order['plan']}
+"
+            f"📌 {order['status']}
+
+"
+        )
+
+    await callback_query.message.edit_text(text)
+
+# ---------------- BACK ----------------
+@app.on_callback_query(filters.regex("back_home"))
+async def back_home(client, callback_query):
+    buttons = [
+        [InlineKeyboardButton("🛒 Shop", callback_data="shop")],
+        [
+            InlineKeyboardButton("👤 My Profile", callback_data="profile"),
+            InlineKeyboardButton("📄 History", callback_data="history")
+        ]
+    ]
+
+    await callback_query.message.edit_text(
+        "🔥 Welcome Back",
+        reply_markup=InlineKeyboardMarkup(buttons)
     )
 
-# ===================================================
-# SUPPORT
-# ===================================================
+# ---------------- OWNER PRICE EDIT ----------------
+@app.on_message(filters.command("setprice") & filters.user(OWNER_ID))
+async def set_price(client, message):
+    try:
+        _, product_key, days, price = message.text.split()
 
-@app.on_message(filters.regex("^💬 Support$"))
-async def support_handler(client, message):
+        if product_key not in products:
+            return await message.reply("❌ Product Not Found")
 
-    text = f"""
-💬 SUPPORT CENTER
+        products[product_key]['prices'][days] = int(price)
 
-━━━━━━━━━━━━━━━━━━
+        await message.reply(
+            f"✅ Price Updated
 
-👨‍💻 Owner :
-@{OWNER_USERNAME}
+"
+            f"📦 Product: {product_key}
+"
+            f"📅 Plan: {days}
+"
+            f"💸 New Price: ₹{price}"
+        )
 
-⚡ Fast Reply Available
+    except:
+        await message.reply(
+            "Usage:
+/setprice drip_nonroot 7_Days 499"
+        )
 
-━━━━━━━━━━━━━━━━━━
-"""
-
-    await message.reply_text(
-        text,
-        reply_markup=main_keyboard
-    )
-
-# ===================================================
-# REFER
-# ===================================================
-
-@app.on_message(filters.regex("^😉 Refer & Earn$"))
-async def refer_handler(client, message):
-
-    text = """
-😉 REFER & EARN
-
-━━━━━━━━━━━━━━━━━━
-
-👥 Invite Friends
-
-💰 Earn Rewards
-
-🚀 Coming Soon
-
-━━━━━━━━━━━━━━━━━━
-"""
-
-    await message.reply_text(
-        text,
-        reply_markup=main_keyboard
-    )
-
-# ===================================================
-# UNKNOWN
-# ===================================================
-
-@app.on_message(filters.text & ~filters.command("start"))
-async def unknown_handler(client, message):
-
-    await message.reply_text(
-        "👇 Please use buttons below",
-        reply_markup=main_keyboard
-    )
-
-# ===================================================
-# START BOT
-# ===================================================
-
-print("🚀 Colour Button Bot Started Successfully")
-
+# ---------------- RUN ----------------
+print("Bot Started...")
 app.run()

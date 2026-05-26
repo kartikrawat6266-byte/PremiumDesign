@@ -151,16 +151,10 @@ def check_and_grant_free_key(user_id):
         return True, license_key
     return False, None
 
-# --- KEYBOARD BUILDERS - EXACT SCREENSHOT STYLE ---
+# --- KEYBOARD BUILDERS - CONSISTENT SIZE ---
 
 def main_menu_keyboard():
-    """
-    Exact screenshot style layout:
-         Shop Now
-    My Orders   Profile
-    How to Use   Support
-        Refer & Earn
-    """
+    """Main menu - exact screenshot layout"""
     keyboard = [
         [InlineKeyboardButton("🛍️ Shop Now", callback_data="shop_now")],
         [InlineKeyboardButton("📦 My Orders", callback_data="my_orders"), 
@@ -173,13 +167,10 @@ def main_menu_keyboard():
 
 def back_to_menu_button():
     """
-    Back button - same size as other buttons (Telegram auto-stretches)
-    For consistent look, keeping it as single button row
+    FIXED: Back button now returns EXACT SAME menu
+    No more size issues - same layout as main menu
     """
-    keyboard = [
-        [InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")],
-    ]
-    return InlineKeyboardMarkup(keyboard)
+    return main_menu_keyboard()
 
 def product_list_keyboard():
     keyboard = []

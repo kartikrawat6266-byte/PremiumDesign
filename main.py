@@ -1,42 +1,33 @@
 import os
 import json
-from datetime import datetime
-from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
-API_ID = 123456
-API_HASH = "YOUR_API_HASH"
-BOT_TOKEN = "YOUR_BOT_TOKEN"
-OWNER_ID = 123456789
-
-app = Client(
-    "shopbot",
-    api_id=API_ID,
-    api_hash=API_HASH,
-    bot_token=BOT_TOKEN
+from telegram import (
+    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    ReplyKeyboardMarkup
 )
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    MessageHandler,
+    CallbackQueryHandler,
+    ContextTypes,
+    filters
+)
+
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 DATA_FILE = "users.json"
 
-# ---------------- SAVE / LOAD ----------------
-def load_data():
-    if not os.path.exists(DATA_FILE):
-        return {}
-    with open(DATA_FILE, "r") as f:
-        return json.load(f)
-
-
-def save_data(data):
-    with open(DATA_FILE, "w") as f:
-        json.dump(data, f, indent=4)
-
-
-users = load_data()
-
-# ---------------- PRODUCTS ----------------
-products = {
-    "drip_nonroot": {
-        "name": "DRIPCLIENT NONROOT FF",
+PRODUCTS = {
+    "DRIPCLIENT NONROOT FF": {
+        "features": [
+            "NON ROOT",
+            "ESP",
+            "AIM ASSIST",
+            "HIGH DAMAGE"
+        ],
+        "status": "SAFE",
         "prices": {
             "1 Day": 90,
             "3 Days": 169,
@@ -46,256 +37,249 @@ products = {
         }
     },
 
-    "prime_hook": {
-        "name": "PRIME HOOK FF NONROOT",
+    "HG CHEATS FF NONROOT+ROOT": {
+        "features": [
+            "ROOT",
+            "NON ROOT",
+            "AIMBOT",
+            "ESP"
+        ],
+        "status": "SAFE",
         "prices": {
-            "1 Day": 99,
-            "3 Days": 199,
-            "7 Days": 349,
-            "15 Days": 599,
-            "30 Days": 899
+            "1 Day": 120,
+            "7 Days": 450,
+            "30 Days": 999
         }
     }
 }
 
-# ---------------- START ----------------
-@app.on_message(filters.command("start"))
-async def start(client, message):
-    user_id = str(message.from_user.id)
 
-    if user_id not in users:
-        users[user_id] = {
-            "name": message.from_user.first_name,
-            "orders": []
+def load_users():
+    if not os.path.exists(DATA_FILE):
+        return {}
+
+    with open(DATA_FILE, "r") as f:
+        return json.load(f)
+
+
+def save_users(data):
+    with open(DATA_FILE, "w") as f:
+        json.dump(data, f, indent=4)
+
+
+users = load_users()
+
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+
+    if str(user.id) not in users:
+        users[str(user.id)] = {
+            "name": user.first_name,
+            "orders": 0,
+            "spent": 0
         }
-        save_data(users)
+        save_users(users)
 
-    buttons = [
-        [InlineKeyboardButton("🛒 Shop", callback_data="shop")],
-        [
-            InlineKeyboardButton("👤 My Profile", callback_data="profile"),
-            InlineKeyboardButton("📄 History", callback_data="history")
-        ],
-        [
-            InlineKeyboardButton("🎬 How To Use", url="https://youtube.com"),
-            InlineKeyboardButton("📞 Helpline", url="https://t.me/yourusername")
-        ]
+    keyboard = [
+        ["🛒 Shop"],
+        ["👤 My Profile", "📄 History"],
+        ["🎬 How To Use", "📞 Helpline"]
     ]
 
-    await message.reply_photo(
-        photo="https://i.imgur.com/8KHKhxS.jpeg",
-        caption="🔥 Welcome To Premium Shop Bot",
-        reply_markup=InlineKeyboardMarkup(buttons)
+    reply_markup = ReplyKeyboardMarkup(
+        keyboard,
+        resize_keyboard=True
     )
 
-# ---------------- SHOP ----------------
-@app.on_callback_query(filters.regex("shop"))
-async def shop_menu(client, callback_query):
-    buttons = []
+    text = f"""
+🔥 Welcome {user.first_name}
 
-    for key, product in products.items():
-        buttons.append([
-            InlineKeyboardButton(product['name'], callback_data=f"product_{key}")
-        ])
-
-    buttons.append([
-        InlineKeyboardButton("⬅️ Back", callback_data="back_home")
-    ])
-
-    await callback_query.message.edit_text(
-        "📦 Select Product",
-        reply_markup=InlineKeyboardMarkup(buttons)
-    )
-
-# ---------------- PRODUCT ----------------
-@app.on_callback_query(filters.regex("product_"))
-async def product_page(client, callback_query):
-    key = callback_query.data.split("product_")[1]
-    product = products[key]
-
-text = """🔥 Features:
-
-• NON ROOT
-• ESP
-• AIM ASSIST
-• HIGH DAMAGE
-
-⚠️ Status:
-🟢 SAFE
+✅ Premium Shop Bot Online
 """
 
-buttons = []
-    for plan, price in product['prices'].items():
+    await update.message.reply_text(
+        text,
+        reply_markup=reply_markup
+    )
+
+
+async def shop(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    buttons = []
+
+    for product_name in PRODUCTS.keys():
         buttons.append([
             InlineKeyboardButton(
-                f"₹{price} • {plan}",
-                callback_data=f"buy_{key}_{plan}"
+                product_name,
+                callback_data=f"product|{product_name}"
             )
         ])
 
     buttons.append([
-        InlineKeyboardButton("🎬 Watch Gameplay", url="https://youtube.com")
+        InlineKeyboardButton(
+            "⬅ Back",
+            callback_data="back"
+        )
     ])
 
-    buttons.append([
-        InlineKeyboardButton("⬅️ Back", callback_data="shop")
-    ])
-
-    await callback_query.message.edit_text(
-        text,
+    await update.message.reply_text(
+        "📦 Select Product",
         reply_markup=InlineKeyboardMarkup(buttons)
     )
 
-# ---------------- BUY ----------------
-@app.on_callback_query(filters.regex("buy_"))
-async def buy_product(client, callback_query):
-    data = callback_query.data.split("_")
 
-    product_key = data[1]
-    plan = data[2]
+async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    data = users.get(str(user.id), {})
 
-    product = products[product_key]
-    price = product['prices'][plan]
+    text = f"""
+📄 ACCOUNT INFORMATION
 
-    user_id = str(callback_query.from_user.id)
+👤 Name : {user.first_name}
+🆔 UserID : {user.id}
 
-    order = {
-        "product": product['name'],
-        "plan": plan,
-        "price": price,
-        "status": "Pending",
-        "date": str(datetime.now())
-    }
+📊 STATISTICS
 
-    users[user_id]['orders'].append(order)
-    save_data(users)
+📦 Total Orders : {data.get("orders", 0)}
+💰 Total Spent : ₹{data.get("spent", 0)}
+"""
 
-    await callback_query.message.edit_text(
-        f"✅ ORDER CREATED
+    await update.message.reply_text(text)
 
-"
-        f"📦 Product: {product['name']}
-"
-        f"⏳ Plan: {plan}
-"
-        f"💸 Price: ₹{price}
 
-"
-        f"📞 Contact Admin For Payment"
+async def history(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "📄 No Order History Found"
     )
 
-    await app.send_message(
-        OWNER_ID,
-        f"🛒 NEW ORDER
 
-"
-        f"👤 User: {callback_query.from_user.first_name}
-"
-        f"🆔 ID: {user_id}
-"
-        f"📦 Product: {product['name']}
-"
-        f"💰 Price: ₹{price}
-"
-        f"📅 Plan: {plan}"
+async def help_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "🎬 Buy Product → Payment → Receive Access"
     )
 
-# ---------------- PROFILE ----------------
-@app.on_callback_query(filters.regex("profile"))
-async def profile(client, callback_query):
-    user_id = str(callback_query.from_user.id)
-    user = users[user_id]
 
-    total_orders = len(user['orders'])
-
-    text = f"📄 ACCOUNT INFORMATION
-
-"
-    text += f"👤 Name : {user['name']}
-"
-    text += f"🆔 UserID : {user_id}
-
-"
-    text += f"📊 STATISTICS
-
-"
-    text += f"📦 Total Orders : {total_orders}
-"
-
-    await callback_query.message.edit_text(text)
-
-# ---------------- HISTORY ----------------
-@app.on_callback_query(filters.regex("history"))
-async def history(client, callback_query):
-    user_id = str(callback_query.from_user.id)
-    user = users[user_id]
-
-    if not user['orders']:
-        return await callback_query.answer("No Orders Found", show_alert=True)
-
-    text = "📄 ORDER HISTORY
-
-"
-
-    for order in user['orders']:
-        text += (
-            f"📦 {order['product']}
-"
-            f"💰 ₹{order['price']}
-"
-            f"📅 {order['plan']}
-"
-            f"📌 {order['status']}
-
-"
-        )
-
-    await callback_query.message.edit_text(text)
-
-# ---------------- BACK ----------------
-@app.on_callback_query(filters.regex("back_home"))
-async def back_home(client, callback_query):
-    buttons = [
-        [InlineKeyboardButton("🛒 Shop", callback_data="shop")],
-        [
-            InlineKeyboardButton("👤 My Profile", callback_data="profile"),
-            InlineKeyboardButton("📄 History", callback_data="history")
-        ]
-    ]
-
-    await callback_query.message.edit_text(
-        "🔥 Welcome Back",
-        reply_markup=InlineKeyboardMarkup(buttons)
+async def helpline(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "📞 Contact Admin"
     )
 
-# ---------------- OWNER PRICE EDIT ----------------
-@app.on_message(filters.command("setprice") & filters.user(OWNER_ID))
-async def set_price(client, message):
-    try:
-        _, product_key, days, price = message.text.split()
 
-        if product_key not in products:
-            return await message.reply("❌ Product Not Found")
+async def button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
 
-        products[product_key]['prices'][days] = int(price)
+    data = query.data
 
-        await message.reply(
-            f"✅ Price Updated
+    if data == "back":
+        return
 
-"
-            f"📦 Product: {product_key}
-"
-            f"📅 Plan: {days}
-"
-            f"💸 New Price: ₹{price}"
+    if data.startswith("product|"):
+        product_name = data.split("|")[1]
+
+        product = PRODUCTS[product_name]
+
+        features = "\n".join(
+            [f"• {x}" for x in product["features"]]
         )
 
-    except:
-        await message.reply(
-            "Usage:
-/setprice drip_nonroot 7_Days 499"
+        text = f"""🔥 Features:
+
+{features}
+
+⚠ Status:
+🟢 {product["status"]}
+"""
+
+        buttons = []
+
+        for plan, price in product["prices"].items():
+            buttons.append([
+                InlineKeyboardButton(
+                    f"₹{price} • {plan}",
+                    callback_data=f"buy|{product_name}|{plan}"
+                )
+            ])
+
+        buttons.append([
+            InlineKeyboardButton(
+                "🎬 Watch Gameplay",
+                url="https://youtube.com"
+            )
+        ])
+
+        buttons.append([
+            InlineKeyboardButton(
+                "⬅ Back",
+                callback_data="back"
+            )
+        ])
+
+        await query.message.reply_text(
+            text,
+            reply_markup=InlineKeyboardMarkup(buttons)
         )
 
-# ---------------- RUN ----------------
-print("Bot Started...")
-app.run()
+    elif data.startswith("buy|"):
+        split_data = data.split("|")
+
+        product_name = split_data[1]
+        plan = split_data[2]
+
+        price = PRODUCTS[product_name]["prices"][plan]
+
+        text = f"""
+✅ ORDER CREATED
+
+📦 Product : {product_name}
+⏳ Plan : {plan}
+💰 Price : ₹{price}
+
+📞 Contact Admin For Payment
+"""
+
+        await query.message.reply_text(text)
+
+
+async def messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text
+
+    if text == "🛒 Shop":
+        await shop(update, context)
+
+    elif text == "👤 My Profile":
+        await profile(update, context)
+
+    elif text == "📄 History":
+        await history(update, context)
+
+    elif text == "🎬 How To Use":
+        await help_menu(update, context)
+
+    elif text == "📞 Helpline":
+        await helpline(update, context)
+
+
+def main():
+    app = Application.builder().token(BOT_TOKEN).build()
+
+    app.add_handler(CommandHandler("start", start))
+
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT & ~filters.COMMAND,
+            messages
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(button_click)
+    )
+
+    print("Bot Started")
+
+    app.run_polling()
+
+
+if __name__ == "__main__":
+    main()

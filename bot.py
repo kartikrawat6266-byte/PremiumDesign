@@ -1,7 +1,8 @@
 # ===================================================
 # CRAZY GAMING 100K BOT
-# FULL FIXED COLOURED BUTTON VERSION
-# PYROGRAM
+# FULL COLOURED BUTTON VERSION
+# GREEN + RED BUTTON STYLE
+# PYROGRAM BOT
 # ===================================================
 
 import os
@@ -55,17 +56,21 @@ START_TEXT = """
 """
 
 # ===================================================
-# COLOURED BUTTONS
+# COLOURED BUTTON KEYBOARD
 # ===================================================
 
 main_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         ["🛒 Shop"],
+
         ["👤 My Profile", "📄 History"],
+
         ["🎬 How To Use", "📞 Helpline"]
     ],
+
     resize_keyboard=True,
-    is_persistent=True
+    is_persistent=True,
+    selective=False
 )
 
 # ===================================================

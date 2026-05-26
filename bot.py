@@ -158,21 +158,28 @@ def main_menu_keyboard():
     Exact screenshot style layout:
          Shop Now
     My Orders   Profile
-    How to use   Support
+    How to Use   Support
         Refer & Earn
     """
     keyboard = [
-        [InlineKeyboardButton("🛍️ Shop Now", callback_data="shop_now")],  # Row 1: Single center
+        [InlineKeyboardButton("🛍️ Shop Now", callback_data="shop_now")],
         [InlineKeyboardButton("📦 My Orders", callback_data="my_orders"), 
-         InlineKeyboardButton("👤 Profile", callback_data="profile")],  # Row 2: Two buttons
+         InlineKeyboardButton("👤 Profile", callback_data="profile")],
         [InlineKeyboardButton("📖 How to Use", callback_data="how_to_use"), 
-         InlineKeyboardButton("🆘 Support", callback_data="support")],  # Row 3: Two buttons
-        [InlineKeyboardButton("💰 Refer & Earn", callback_data="refer_earn")],  # Row 4: Single center
+         InlineKeyboardButton("🆘 Support", callback_data="support")],
+        [InlineKeyboardButton("💰 Refer & Earn", callback_data="refer_earn")],
     ]
     return InlineKeyboardMarkup(keyboard)
 
 def back_to_menu_button():
-    return InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")]])
+    """
+    Back button - same size as other buttons (Telegram auto-stretches)
+    For consistent look, keeping it as single button row
+    """
+    keyboard = [
+        [InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")],
+    ]
+    return InlineKeyboardMarkup(keyboard)
 
 def product_list_keyboard():
     keyboard = []
@@ -187,7 +194,7 @@ def payment_keyboard(product_name, amount):
         [InlineKeyboardButton("✅ I Have Paid", callback_data=f"paid_{product_name}")],
         [InlineKeyboardButton("💳 Copy UPI ID", callback_data="copy_upi")],
         [InlineKeyboardButton("📱 Open UPI App", url=upi_link)],
-        [InlineKeyboardButton("🔙 Cancel", callback_data="shop_now")],
+        [InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")],
     ]
     return InlineKeyboardMarkup(keyboard)
 

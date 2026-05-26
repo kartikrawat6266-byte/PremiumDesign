@@ -61,6 +61,7 @@ def get_user(user_id: str) -> Dict[str, Any]:
             "referral_earnings": 0.0,
             "referred_by": None,
             "joined": datetime.now().strftime("%d/%m/%Y"),
+            "last_activity": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
             "orders": [],
             "pending_payment": None,  # store product name for pending payment
         }
@@ -74,10 +75,23 @@ def update_user(user_id: str, update_data: Dict[str, Any]) -> None:
         data[user_id] = {
             "name": "", "username": "", "total_orders": 0, "referral_earnings": 0.0,
             "referred_by": None, "joined": datetime.now().strftime("%d/%m/%Y"),
+            "last_activity": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
             "orders": [], "pending_payment": None,
         }
     data[user_id].update(update_data)
+    # Always update last_activity on any user update
+    data[user_id]["last_activity"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     save_user_data(data)
+
+def update_last_activity(user_id: str) -> None:
+    """Update only the last_activity timestamp for a user."""
+    data = load_user_data()
+    if user_id in data:
+        data[user_id]["last_activity"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        save_user_data(data)
+    else:
+        # If user not exists, create with defaults
+        get_user(user_id)
 
 # --- Inline Keyboard Builders ---
 def main_menu_keyboard() -> InlineKeyboardMarkup:
@@ -145,6 +159,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not user_data["name"]:
         update_user(user_id, {"name": user.full_name or "User", "username": user.username or ""})
     
+    # Update last activity
+    update_last_activity(user_id)
+    
     welcome_text = (
         f"👋 Welcome to *Satyam X Ofc Store*!\n\n"
         f"Trusted selling bot – anyone can purchase from this bot.\n"
@@ -161,6 +178,8 @@ async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
     """Return to main menu."""
     query = update.callback_query
     await query.answer()
+    user_id = str(query.from_user.id)
+    update_last_activity(user_id)
     await query.edit_message_text(
         "🏠 *Main Menu*\n\nChoose an option:",
         reply_markup=main_menu_keyboard(),
@@ -171,6 +190,8 @@ async def shop_now(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Show product list for shopping."""
     query = update.callback_query
     await query.answer()
+    user_id = str(query.from_user.id)
+    update_last_activity(user_id)
     await query.edit_message_text(
         "🛍️ *Our Products*\n\nSelect a product to purchase:",
         reply_markup=product_list_keyboard(),
@@ -181,13 +202,14 @@ async def product_selected(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     """Handle product selection, show payment details."""
     query = update.callback_query
     await query.answer()
+    user_id = str(query.from_user.id)
+    update_last_activity(user_id)
     product_name = query.data.replace("product_", "")
     price = PRODUCTS.get(product_name)
     if not price:
         await query.edit_message_text("❌ Product not found.", reply_markup=back_to_menu_button())
         return
     
-    user_id = str(query.from_user.id)
     update_user(user_id, {"pending_payment": product_name})
     
     payment_text = (
@@ -212,6 +234,8 @@ async def paid_confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     """Ask for UPI name to simulate payment verification."""
     query = update.callback_query
     await query.answer()
+    user_id = str(query.from_user.id)
+    update_last_activity(user_id)
     product_name = query.data.replace("paid_", "")
     context.user_data["pending_product"] = product_name
     await query.edit_message_text(
@@ -227,6 +251,7 @@ async def handle_upi_name(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     """Simulate payment confirmation and deliver key."""
     user_name = update.message.text.strip()
     user_id = str(update.effective_user.id)
+    update_last_activity(user_id)
     product_name = context.user_data.get("pending_product")
     
     if not product_name:
@@ -278,6 +303,7 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()
     user_id = str(query.from_user.id)
+    update_last_activity(user_id)
     user_data = get_user(user_id)
     orders = user_data.get("orders", [])
     
@@ -302,10 +328,11 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await query.edit_message_text(orders_text, reply_markup=back_to_menu_button(), parse_mode="Markdown")
 
 async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Show user account information."""
+    """Show user account information with last activity."""
     query = update.callback_query
     await query.answer()
     user_id = str(query.from_user.id)
+    update_last_activity(user_id)
     user_data = get_user(user_id)
     
     profile_text = (
@@ -315,7 +342,8 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         f"• *User ID:* `{user_id}`\n\n"
         f"• *Total Orders:* {user_data.get('total_orders', 0)}\n"
         f"• *Referral Earnings:* ₹{user_data.get('referral_earnings', 0):.2f}\n\n"
-        f"• *Joined:* {user_data.get('joined', datetime.now().strftime('%d/%m/%Y'))}"
+        f"• *Joined:* {user_data.get('joined', datetime.now().strftime('%d/%m/%Y'))}\n"
+        f"⭐ *Last Activity:* {user_data.get('last_activity', 'N/A')}"
     )
     await query.edit_message_text(profile_text, reply_markup=back_to_menu_button(), parse_mode="Markdown")
 
@@ -323,6 +351,8 @@ async def how_to_use(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     """Show how to buy instructions."""
     query = update.callback_query
     await query.answer()
+    user_id = str(query.from_user.id)
+    update_last_activity(user_id)
     usage_text = (
         "*📖 How to Buy — SATYAM X MOD STORE*\n\n"
         "1. Tap Shop Now\n"
@@ -341,6 +371,8 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Show support center with contact button."""
     query = update.callback_query
     await query.answer()
+    user_id = str(query.from_user.id)
+    update_last_activity(user_id)
     support_text = (
         "*🆘 OFFICIAL SUPPORT CENTER*\n\n"
         "If you face any issues or have questions regarding our services, feel free to contact our expert team.\n\n"
@@ -355,6 +387,7 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     query = update.callback_query
     await query.answer()
     user_id = str(query.from_user.id)
+    update_last_activity(user_id)
     bot_username = (await context.bot.get_me()).username
     referral_link = f"https://t.me/{bot_username}?start=ref_{user_id}"
     
@@ -365,18 +398,21 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         f"*Your Referral Link:*\n`{referral_link}`\n\n"
         "Share this link with your friends and start earning!"
     )
-    # Add an inline button to copy link (simple instruction)
     await query.edit_message_text(refer_text, reply_markup=back_to_menu_button(), parse_mode="Markdown")
 
 async def copy_upi(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle copy UPI ID request."""
     query = update.callback_query
+    user_id = str(query.from_user.id)
+    update_last_activity(user_id)
     await query.answer("UPI ID copied to clipboard!", show_alert=True)
-    # No actual clipboard action; just notification.
 
 async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle unknown commands/messages."""
-    await update.message.reply_text("❌ I don't understand that. Please use the menu buttons.", reply_markup=main_menu_keyboard())
+    if update.message:
+        user_id = str(update.effective_user.id)
+        update_last_activity(user_id)
+        await update.message.reply_text("❌ I don't understand that. Please use the menu buttons.", reply_markup=main_menu_keyboard())
 
 # --- Main Application ---
 def main() -> None:

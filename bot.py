@@ -2,6 +2,8 @@ import os
 import re
 import json
 import logging
+import random
+import string
 from datetime import datetime
 from typing import Dict, Any, Tuple, Optional
 
@@ -9,49 +11,41 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
 
 # --- Configuration ---
-# Enable logging
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Bot token from Railway environment variables
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 if not BOT_TOKEN:
-    raise ValueError("No BOT_TOKEN found in environment variables. Please set BOT_TOKEN in Railway.")
+    raise ValueError("No BOT_TOKEN found in environment variables")
 
-# UPI Configuration (You should change this to your own UPI ID)
 UPI_ID = os.environ.get("UPI_ID", "example@okhdfcbank")
-# Map of product names to their prices (INR)
+
 PRODUCTS = {
     "1 Month Premium Key": 99.00,
     "1 Year Premium Key": 499.00,
     "Lifetime Premium Key": 999.00,
 }
 
-# Database file path (will be stored in Railway's ephemeral disk; consider using MongoDB or PostgreSQL for production)
 DB_FILE = "user_data.json"
 
-# --- Helper functions for data persistence ---
+# --- Database Functions ---
 def load_user_data() -> Dict[str, Any]:
-    """Load user data from JSON file."""
     if not os.path.exists(DB_FILE):
         return {}
     try:
         with open(DB_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
-    except (json.JSONDecodeError, IOError):
-        logger.exception("Error loading user data")
+    except:
         return {}
 
 def save_user_data(data: Dict[str, Any]) -> None:
-    """Save user data to JSON file."""
     try:
         with open(DB_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
-    except IOError:
-        logger.exception("Error saving user data")
+    except:
+        pass
 
 def get_user(user_id: str) -> Dict[str, Any]:
-    """Get user data, create if not exists."""
     data = load_user_data()
     if user_id not in data:
         data[user_id] = {
@@ -59,43 +53,34 @@ def get_user(user_id: str) -> Dict[str, Any]:
             "username": "",
             "total_orders": 0,
             "referral_earnings": 0.0,
+            "total_refers": 0,
             "referred_by": None,
             "joined": datetime.now().strftime("%d/%m/%Y"),
             "last_activity": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
             "orders": [],
-            "pending_payment": None,  # store product name for pending payment
+            "pending_payment": None,
         }
         save_user_data(data)
     return data[user_id]
 
 def update_user(user_id: str, update_data: Dict[str, Any]) -> None:
-    """Update user data fields."""
     data = load_user_data()
     if user_id not in data:
-        data[user_id] = {
-            "name": "", "username": "", "total_orders": 0, "referral_earnings": 0.0,
-            "referred_by": None, "joined": datetime.now().strftime("%d/%m/%Y"),
-            "last_activity": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-            "orders": [], "pending_payment": None,
-        }
+        data[user_id] = get_user(user_id)
     data[user_id].update(update_data)
-    # Always update last_activity on any user update
     data[user_id]["last_activity"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     save_user_data(data)
 
 def update_last_activity(user_id: str) -> None:
-    """Update only the last_activity timestamp for a user."""
     data = load_user_data()
     if user_id in data:
         data[user_id]["last_activity"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         save_user_data(data)
     else:
-        # If user not exists, create with defaults
         get_user(user_id)
 
-# --- Inline Keyboard Builders ---
+# --- Keyboard Builders ---
 def main_menu_keyboard() -> InlineKeyboardMarkup:
-    """Create the main menu keyboard with all action buttons."""
     keyboard = [
         [InlineKeyboardButton("🛍️ Shop Now", callback_data="shop_now")],
         [InlineKeyboardButton("📦 My Orders", callback_data="my_orders")],
@@ -107,11 +92,9 @@ def main_menu_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(keyboard)
 
 def back_to_menu_button() -> InlineKeyboardMarkup:
-    """Simple back button to main menu."""
     return InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")]])
 
 def product_list_keyboard() -> InlineKeyboardMarkup:
-    """Keyboard for product selection."""
     keyboard = []
     for name, price in PRODUCTS.items():
         keyboard.append([InlineKeyboardButton(f"{name} - ₹{price:.2f}", callback_data=f"product_{name}")])
@@ -119,7 +102,6 @@ def product_list_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(keyboard)
 
 def payment_keyboard(product_name: str, amount: float) -> InlineKeyboardMarkup:
-    """Keyboard for payment actions."""
     upi_link = f"upi://pay?pa={UPI_ID}&pn=Satyam%20X%20Store&am={amount}&cu=INR"
     keyboard = [
         [InlineKeyboardButton("✅ I Have Paid", callback_data=f"paid_{product_name}")],
@@ -130,36 +112,50 @@ def payment_keyboard(product_name: str, amount: float) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(keyboard)
 
 def admin_contact_keyboard() -> InlineKeyboardMarkup:
-    """Keyboard for support contact."""
     keyboard = [
         [InlineKeyboardButton("📞 Contact Admin", url="https://t.me/SATYAM_X_OFC")],
         [InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")],
     ]
     return InlineKeyboardMarkup(keyboard)
 
-# --- Command and Callback Handlers ---
+def refer_earn_keyboard(referral_link: str) -> InlineKeyboardMarkup:
+    """Share button ke saath keyboard - exactly screenshot jaisa"""
+    keyboard = [
+        [InlineKeyboardButton("📤 Share with Friend", url=f"https://t.me/share/url?url={referral_link}&text=🔥 Join Satyam X Ofc Store and get premium keys! Use my referral link:")],
+        [InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")],
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+# --- Handlers ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle /start command. Show welcome message and main menu."""
     user = update.effective_user
     user_id = str(user.id)
     
-    # Check if referred by someone (if start param provided)
+    # Referral logic
     if context.args and context.args[0].startswith("ref_"):
         referrer_id = context.args[0][4:]
         if referrer_id != user_id:
-            # Add referral logic: give ₹10 reward to referrer when new user joins
             referrer_data = get_user(referrer_id)
-            if referrer_data and not get_user(user_id).get("referred_by"):
-                update_user(referrer_id, {"referral_earnings": referrer_data.get("referral_earnings", 0) + 10.0})
+            user_data = get_user(user_id)
+            if referrer_data and not user_data.get("referred_by"):
+                # Update referrer's total_refers and earnings
+                new_refers = referrer_data.get("total_refers", 0) + 1
+                new_earnings = referrer_data.get("referral_earnings", 0) + 10.0
+                update_user(referrer_id, {
+                    "total_refers": new_refers,
+                    "referral_earnings": new_earnings
+                })
                 update_user(user_id, {"referred_by": referrer_id})
-                await update.message.reply_text("🎉 Welcome! You were referred by a friend.")
+                await update.message.reply_text("🎉 Welcome! You were referred by a friend. You both get rewards on first purchase!")
     
-    # Get or create user data
     user_data = get_user(user_id)
     if not user_data["name"]:
-        update_user(user_id, {"name": user.full_name or "User", "username": user.username or ""})
+        username = user.username or ""
+        update_user(user_id, {
+            "name": user.full_name or "User",
+            "username": username
+        })
     
-    # Update last activity
     update_last_activity(user_id)
     
     welcome_text = (
@@ -175,7 +171,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     )
 
 async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Return to main menu."""
     query = update.callback_query
     await query.answer()
     user_id = str(query.from_user.id)
@@ -187,7 +182,6 @@ async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
     )
 
 async def shop_now(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Show product list for shopping."""
     query = update.callback_query
     await query.answer()
     user_id = str(query.from_user.id)
@@ -199,7 +193,6 @@ async def shop_now(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     )
 
 async def product_selected(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle product selection, show payment details."""
     query = update.callback_query
     await query.answer()
     user_id = str(query.from_user.id)
@@ -231,7 +224,6 @@ async def product_selected(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     )
 
 async def paid_confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Ask for UPI name to simulate payment verification."""
     query = update.callback_query
     await query.answer()
     user_id = str(query.from_user.id)
@@ -248,7 +240,6 @@ async def paid_confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     )
 
 async def handle_upi_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Simulate payment confirmation and deliver key."""
     user_name = update.message.text.strip()
     user_id = str(update.effective_user.id)
     update_last_activity(user_id)
@@ -258,16 +249,12 @@ async def handle_upi_name(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         await update.message.reply_text("❌ No pending payment. Please start over.", reply_markup=back_to_menu_button())
         return
     
-    # Simulate payment verification (in reality, check UPI transaction)
-    # Here we just generate a fake key.
-    import random, string
     def generate_key():
         return ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
     
     license_key = generate_key()
     price = PRODUCTS.get(product_name, 0)
     
-    # Update user data
     user_data = get_user(user_id)
     new_order = {
         "product": product_name,
@@ -284,7 +271,6 @@ async def handle_upi_name(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         "pending_payment": None
     })
     
-    # Clear context
     context.user_data["pending_product"] = None
     
     delivery_text = (
@@ -293,13 +279,12 @@ async def handle_upi_name(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         f"📦 *Product:* {product_name}\n"
         f"🔑 *Your License Key:* `{license_key}`\n\n"
         f"⭐ *SUPER FAST DELIVERY*\n"
-        f"Join our files channel for more: [All Files](https://t.me/satyamxofcfiles)\n\n"
+        f"Join our files channel: [All Files](https://t.me/satyamxofcfiles)\n\n"
         f"Need help? Contact @SATYAM_X_OFC"
     )
     await update.message.reply_text(delivery_text, parse_mode="Markdown", reply_markup=main_menu_keyboard())
 
 async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Show user's order history."""
     query = update.callback_query
     await query.answer()
     user_id = str(query.from_user.id)
@@ -316,7 +301,7 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
     
     orders_text = "*📦 Your Orders*\n\n"
-    for idx, order in enumerate(reversed(orders[-5:]), 1):  # show last 5
+    for idx, order in enumerate(reversed(orders[-5:]), 1):
         orders_text += (
             f"{idx}. *{order['product']}*\n"
             f"   Amount: ₹{order['amount']:.2f}\n"
@@ -328,17 +313,23 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await query.edit_message_text(orders_text, reply_markup=back_to_menu_button(), parse_mode="Markdown")
 
 async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Show user account information with last activity."""
     query = update.callback_query
     await query.answer()
     user_id = str(query.from_user.id)
     update_last_activity(user_id)
     user_data = get_user(user_id)
     
+    # Fix: @ nahi aayega agar username nahi hai
+    username_display = user_data.get('username', '')
+    if not username_display:
+        username_display = "No username set"
+    else:
+        username_display = f"@{username_display}"
+    
     profile_text = (
         f"👤 *User Account Information*\n\n"
         f"• *Name:* {user_data.get('name', 'N/A')}\n"
-        f"• *Username:* @{user_data.get('username', 'N/A')}\n"
+        f"• *Username:* {username_display}\n"
         f"• *User ID:* `{user_id}`\n\n"
         f"• *Total Orders:* {user_data.get('total_orders', 0)}\n"
         f"• *Referral Earnings:* ₹{user_data.get('referral_earnings', 0):.2f}\n\n"
@@ -348,7 +339,6 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await query.edit_message_text(profile_text, reply_markup=back_to_menu_button(), parse_mode="Markdown")
 
 async def how_to_use(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Show how to buy instructions."""
     query = update.callback_query
     await query.answer()
     user_id = str(query.from_user.id)
@@ -368,7 +358,6 @@ async def how_to_use(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     await query.edit_message_text(usage_text, reply_markup=back_to_menu_button(), parse_mode="Markdown")
 
 async def support(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Show support center with contact button."""
     query = update.callback_query
     await query.answer()
     user_id = str(query.from_user.id)
@@ -383,46 +372,54 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await query.edit_message_text(support_text, reply_markup=admin_contact_keyboard(), parse_mode="Markdown")
 
 async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Show referral information and link."""
+    """Refer & Earn screen - exactly like screenshot"""
     query = update.callback_query
     await query.answer()
     user_id = str(query.from_user.id)
     update_last_activity(user_id)
+    
     bot_username = (await context.bot.get_me()).username
     referral_link = f"https://t.me/{bot_username}?start=ref_{user_id}"
     
+    user_data = get_user(user_id)
+    total_refers = user_data.get("total_refers", 0)
+    invite_reward = user_data.get("referral_earnings", 0.0)
+    
+    # Exactly like screenshot format
     refer_text = (
-        "*💰 Refer & Earn*\n\n"
-        "Invite your friends and earn rewards!\n\n"
-        "For each friend who joins using your link and makes their first purchase, you get **₹10** credited to your account.\n\n"
-        f"*Your Referral Link:*\n`{referral_link}`\n\n"
-        "Share this link with your friends and start earning!"
+        f"*💰 Referral Program*\n\n"
+        f"Invite your friends and earn real balance for\n"
+        f"every successful joining.\n\n"
+        f"• *Total Refers:* {total_refers} User(s)\n"
+        f"• *Invite Reward:* INR {invite_reward:.2f} INR\n\n"
+        f"*Your Invite Link:*\n"
+        f"`{referral_link}`\n\n"
+        f"Share your link to grow your earnings!"
     )
-    await query.edit_message_text(refer_text, reply_markup=back_to_menu_button(), parse_mode="Markdown")
+    
+    await query.edit_message_text(
+        refer_text,
+        reply_markup=refer_earn_keyboard(referral_link),
+        parse_mode="Markdown"
+    )
 
 async def copy_upi(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle copy UPI ID request."""
     query = update.callback_query
     user_id = str(query.from_user.id)
     update_last_activity(user_id)
     await query.answer("UPI ID copied to clipboard!", show_alert=True)
 
 async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle unknown commands/messages."""
     if update.message:
         user_id = str(update.effective_user.id)
         update_last_activity(user_id)
         await update.message.reply_text("❌ I don't understand that. Please use the menu buttons.", reply_markup=main_menu_keyboard())
 
-# --- Main Application ---
+# --- Main ---
 def main() -> None:
-    """Start the bot."""
     application = Application.builder().token(BOT_TOKEN).build()
     
-    # Command handlers
     application.add_handler(CommandHandler("start", start))
-    
-    # Callback query handlers
     application.add_handler(CallbackQueryHandler(main_menu_callback, pattern="^main_menu$"))
     application.add_handler(CallbackQueryHandler(shop_now, pattern="^shop_now$"))
     application.add_handler(CallbackQueryHandler(product_selected, pattern="^product_"))
@@ -433,14 +430,9 @@ def main() -> None:
     application.add_handler(CallbackQueryHandler(support, pattern="^support$"))
     application.add_handler(CallbackQueryHandler(refer_earn, pattern="^refer_earn$"))
     application.add_handler(CallbackQueryHandler(copy_upi, pattern="^copy_upi$"))
-    
-    # Message handler for UPI name input
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_upi_name))
-    
-    # Fallback for unknown messages
     application.add_handler(MessageHandler(filters.ALL, unknown))
     
-    # Start polling
     logger.info("Bot is starting...")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 

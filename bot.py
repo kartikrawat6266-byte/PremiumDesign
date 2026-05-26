@@ -1,8 +1,7 @@
 # ===================================================
-# CRAZY GAMING 100K BOT
-# FULL COLOURED BUTTON VERSION
-# GREEN + RED BUTTON STYLE
-# PYROGRAM BOT
+# REAL COLOURED BUTTON TELEGRAM BOT
+# EXACT GREEN BUTTON STYLE
+# PYROGRAM WORKING VERSION
 # ===================================================
 
 import os
@@ -24,52 +23,48 @@ OWNER_USERNAME = os.getenv("OWNER_USERNAME")
 # ===================================================
 
 app = Client(
-    "CrazyGaming100KBot",
+    "ColourStoreBot",
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN
 )
 
 # ===================================================
-# START TEXT
+# START MESSAGE
 # ===================================================
 
 START_TEXT = """
-✨ WELCOME TO Crazy Gaming 100K Store ✨
+🛒 Shop Now : all key purchase & instantly delivery
 
-👋 Hello, ◈ I’m ➤ HeaVen!
+📦 My Orders : check all key purchase history
 
-━━━━━━━━━━━━━━━━━━━━
+👤 Profile : check your account information
 
-🛍 Store: Buy premium services.
-⚡ Instant Delivery !!
+📖 How to Use : view tutorial and work this bot
 
-👤 Profile: Your Account Details.
+💬 Support : bot problem fixed for support admin
 
-📄 History: Track your Orders.
-
-🎬 How to Use: How to buy Key
-
-🛑 Help: Get Support from Owner.
-
-━━━━━━━━━━━━━━━━━━━━
+😉 Refer & Earn : invite friends & earn rewards
 """
 
 # ===================================================
-# COLOURED BUTTON KEYBOARD
+# REAL COLOUR BUTTON KEYBOARD
 # ===================================================
 
 main_keyboard = ReplyKeyboardMarkup(
     keyboard=[
-        ["🛒 Shop"],
+        ["🛒 Shop Now"],
 
-        ["👤 My Profile", "📄 History"],
+        ["📦 My Orders", "👤 Profile"],
 
-        ["🎬 How To Use", "📞 Helpline"]
+        ["📖 How to Use", "💬 Support"],
+
+        ["😉 Refer & Earn"]
     ],
 
     resize_keyboard=True,
     is_persistent=True,
+    one_time_keyboard=False,
     selective=False
 )
 
@@ -86,16 +81,16 @@ async def start_command(client, message):
     )
 
 # ===================================================
-# SHOP BUTTON
+# SHOP NOW
 # ===================================================
 
-@app.on_message(filters.regex("^🛒 Shop$"))
+@app.on_message(filters.regex("^🛒 Shop Now$"))
 async def shop_handler(client, message):
 
     text = """
-🛒 WELCOME TO SHOP
+🛒 SHOP SECTION
 
-━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━
 
 🎮 BGMI KEYS
 🔥 FREE FIRE KEYS
@@ -104,7 +99,7 @@ async def shop_handler(client, message):
 
 ⚡ Instant Delivery Available
 
-━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━
 """
 
     await message.reply_text(
@@ -113,10 +108,32 @@ async def shop_handler(client, message):
     )
 
 # ===================================================
-# PROFILE BUTTON
+# ORDERS
 # ===================================================
 
-@app.on_message(filters.regex("^👤 My Profile$"))
+@app.on_message(filters.regex("^📦 My Orders$"))
+async def order_handler(client, message):
+
+    text = """
+📦 MY ORDERS
+
+━━━━━━━━━━━━━━━━━━
+
+❌ No Orders Found
+
+━━━━━━━━━━━━━━━━━━
+"""
+
+    await message.reply_text(
+        text,
+        reply_markup=main_keyboard
+    )
+
+# ===================================================
+# PROFILE
+# ===================================================
+
+@app.on_message(filters.regex("^👤 Profile$"))
 async def profile_handler(client, message):
 
     user = message.from_user
@@ -129,20 +146,17 @@ async def profile_handler(client, message):
         username = "No Username"
 
     text = f"""
-👤 YOUR PROFILE
+👤 PROFILE
 
-━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━
 
-🆔 User ID:
-{user.id}
+🆔 ID : {user.id}
 
-📛 Name:
-{user.first_name}
+📛 Name : {user.first_name}
 
-🚀 Username:
-{username}
+🚀 Username : {username}
 
-━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━
 """
 
     await message.reply_text(
@@ -151,40 +165,18 @@ async def profile_handler(client, message):
     )
 
 # ===================================================
-# HISTORY BUTTON
+# HOW TO USE
 # ===================================================
 
-@app.on_message(filters.regex("^📄 History$"))
-async def history_handler(client, message):
+@app.on_message(filters.regex("^📖 How to Use$"))
+async def how_handler(client, message):
 
     text = """
-📄 ORDER HISTORY
+📖 HOW TO USE
 
-━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━
 
-❌ No Order History Found.
-
-━━━━━━━━━━━━━━━━━━━━
-"""
-
-    await message.reply_text(
-        text,
-        reply_markup=main_keyboard
-    )
-
-# ===================================================
-# HOW TO USE BUTTON
-# ===================================================
-
-@app.on_message(filters.regex("^🎬 How To Use$"))
-async def howto_handler(client, message):
-
-    text = """
-🎬 HOW TO USE
-
-━━━━━━━━━━━━━━━━━━━━
-
-1️⃣ Open Shop Section
+1️⃣ Open Shop
 
 2️⃣ Select Product
 
@@ -192,9 +184,9 @@ async def howto_handler(client, message):
 
 4️⃣ Send Screenshot
 
-5️⃣ Receive Product Instantly 🚀
+5️⃣ Receive Product 🚀
 
-━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━
 """
 
     await message.reply_text(
@@ -203,23 +195,23 @@ async def howto_handler(client, message):
     )
 
 # ===================================================
-# HELPLINE BUTTON
+# SUPPORT
 # ===================================================
 
-@app.on_message(filters.regex("^📞 Helpline$"))
-async def help_handler(client, message):
+@app.on_message(filters.regex("^💬 Support$"))
+async def support_handler(client, message):
 
     text = f"""
-📞 SUPPORT CENTER
+💬 SUPPORT CENTER
 
-━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━
 
-👨‍💻 Owner:
+👨‍💻 Owner :
 @{OWNER_USERNAME}
 
 ⚡ Fast Reply Available
 
-━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━
 """
 
     await message.reply_text(
@@ -228,7 +220,33 @@ async def help_handler(client, message):
     )
 
 # ===================================================
-# UNKNOWN MESSAGE
+# REFER
+# ===================================================
+
+@app.on_message(filters.regex("^😉 Refer & Earn$"))
+async def refer_handler(client, message):
+
+    text = """
+😉 REFER & EARN
+
+━━━━━━━━━━━━━━━━━━
+
+👥 Invite Friends
+
+💰 Earn Rewards
+
+🚀 Coming Soon
+
+━━━━━━━━━━━━━━━━━━
+"""
+
+    await message.reply_text(
+        text,
+        reply_markup=main_keyboard
+    )
+
+# ===================================================
+# UNKNOWN
 # ===================================================
 
 @app.on_message(filters.text & ~filters.command("start"))
@@ -240,9 +258,9 @@ async def unknown_handler(client, message):
     )
 
 # ===================================================
-# BOT START
+# START BOT
 # ===================================================
 
-print("🚀 Crazy Gaming 100K Bot Started Successfully")
+print("🚀 Colour Button Bot Started Successfully")
 
 app.run()

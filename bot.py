@@ -1,26 +1,25 @@
 import os
-import re
 import json
 import logging
 import random
 import string
 from datetime import datetime, timezone, timedelta
-from typing import Dict, Any, Tuple, Optional
+from typing import Dict, Any, Optional
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
 
-# --- Configuration ---
+# ==================== CONFIGURATION ====================
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 if not BOT_TOKEN:
-    raise ValueError("No BOT_TOKEN found in environment variables")
+    raise ValueError("No BOT_TOKEN found")
 
 UPI_ID = os.environ.get("UPI_ID", "example@okhdfcbank")
 
-# Indian Timezone (IST = UTC +5:30)
+# Indian Timezone
 IST = timezone(timedelta(hours=5, minutes=30))
 
 def get_current_ist():
@@ -42,7 +41,7 @@ FREE_KEY_PRODUCT = "1 Day Premium Key"
 
 DB_FILE = "user_data.json"
 
-# --- Database Functions ---
+# ==================== DATABASE FUNCTIONS ====================
 def load_user_data():
     if not os.path.exists(DB_FILE):
         return {}
@@ -127,10 +126,7 @@ def check_and_grant_free_key(user_id):
     free_key_claimed = user_data.get("free_key_claimed", False)
     
     if total_refers >= FREE_KEY_REFERRALS_NEEDED and not free_key_claimed:
-        def generate_key():
-            return ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
-        
-        license_key = generate_key()
+        license_key = ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
         
         new_order = {
             "product": f"🎁 FREE {FREE_KEY_PRODUCT} (Referral Reward)",
@@ -151,10 +147,15 @@ def check_and_grant_free_key(user_id):
         return True, license_key
     return False, None
 
-# --- KEYBOARD BUILDERS - CONSISTENT SIZE ---
-
+# ==================== KEYBOARD BUILDERS ====================
+# EXACT SCREENSHOT LAYOUT
 def main_menu_keyboard():
-    """Main menu - exact screenshot layout"""
+    """Buttons exactly like screenshot:
+         Shop Now
+    My Orders   Profile
+    How to Use   Support
+         Refer & Earn
+    """
     keyboard = [
         [InlineKeyboardButton("🛍️ Shop Now", callback_data="shop_now")],
         [InlineKeyboardButton("📦 My Orders", callback_data="my_orders"), 
@@ -165,11 +166,8 @@ def main_menu_keyboard():
     ]
     return InlineKeyboardMarkup(keyboard)
 
-def back_to_menu_button():
-    """
-    FIXED: Back button now returns EXACT SAME menu
-    No more size issues - same layout as main menu
-    """
+# Same menu for back button - consistent size
+def get_back_menu():
     return main_menu_keyboard()
 
 def product_list_keyboard():
@@ -204,8 +202,7 @@ def refer_earn_keyboard(referral_link, total_refers, free_available):
     keyboard.append([InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")])
     return InlineKeyboardMarkup(keyboard)
 
-# --- Handlers ---
-
+# ==================== HANDLERS ====================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     user_id = str(user.id)
@@ -224,18 +221,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     updated_referrer = get_user(referrer_id)
                     await context.bot.send_message(
                         chat_id=int(referrer_id),
-                        text=f"🎉 *New Referral!* 🎉\n\n{username} joined using your link!\n\n📊 *Total Refers:* {updated_referrer.get('total_refers', 0)}\n💰 *Earnings:* ₹{updated_referrer.get('referral_earnings', 0):.2f}",
+                        text=f"🎉 *New Referral!* 🎉\n\n{username} joined!\n\n📊 *Total Refers:* {updated_referrer.get('total_refers', 0)}\n💰 *Earnings:* ₹{updated_referrer.get('referral_earnings', 0):.2f}",
                         parse_mode="Markdown"
                     )
                     qualified, key = check_and_grant_free_key(referrer_id)
                     if qualified:
                         await context.bot.send_message(
                             chat_id=int(referrer_id),
-                            text=f"🎉 *CONGRATULATIONS!* 🎉\n\nYou've earned a FREE {FREE_KEY_PRODUCT}!\n🔑 *Key:* `{key}`",
+                            text=f"🎉 *CONGRATULATIONS!* 🎉\n\nFREE {FREE_KEY_PRODUCT}!\n🔑 `{key}`",
                             parse_mode="Markdown"
                         )
                     await update.message.reply_text(
-                        "🎉 Welcome! You were referred by a friend!\n\nUse the buttons below.",
+                        "🎉 Welcome! You were referred!\n\nUse the buttons below.",
                         reply_markup=main_menu_keyboard()
                     )
                     return
@@ -287,7 +284,7 @@ async def product_selected(update: Update, context: ContextTypes.DEFAULT_TYPE):
     product_name = query.data.replace("product_", "")
     price = PRODUCTS.get(product_name)
     if not price:
-        await query.edit_message_text("❌ Product not found.", reply_markup=back_to_menu_button())
+        await query.edit_message_text("❌ Product not found.", reply_markup=get_back_menu())
         return
     
     update_user(user_id, {"pending_payment": product_name})
@@ -323,7 +320,7 @@ async def handle_upi_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     product_name = context.user_data.get("pending_product")
     
     if not product_name:
-        await update.message.reply_text("❌ No pending payment.", reply_markup=back_to_menu_button())
+        await update.message.reply_text("❌ No pending payment.", reply_markup=get_back_menu())
         return
     
     license_key = ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
@@ -354,7 +351,7 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not orders:
         await query.edit_message_text(
             "📭 *No orders yet!*\n\nStart shopping to see your orders here.",
-            reply_markup=back_to_menu_button(),
+            reply_markup=get_back_menu(),
             parse_mode="Markdown"
         )
         return
@@ -363,7 +360,7 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for i, o in enumerate(reversed(orders[-10:]), 1):
         amt = f"₹{o['amount']:.2f}" if o['amount'] > 0 else "🎁 FREE"
         text += f"{i}. *{o['product']}*\n   Amount: {amt}\n   Date: {o['date']}\n   Key: `{o['key']}`\n\n"
-    await query.edit_message_text(text, reply_markup=back_to_menu_button(), parse_mode="Markdown")
+    await query.edit_message_text(text, reply_markup=get_back_menu(), parse_mode="Markdown")
 
 async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -390,10 +387,10 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"• Total Orders : {u.get('total_orders', 0)}\n"
         f"• Referral Earnings : ₹{u.get('referral_earnings', 0):.2f}{referral_text}\n\n"
         f"• JoiNeD DaTe : {u.get('joined', get_joined_date())}\n"
-        f"• Last Activity : {u.get('last_activity', get_current_ist())}"
+        f"⭐ Last Activity : {u.get('last_activity', get_current_ist())}"
     )
     
-    await query.edit_message_text(text, reply_markup=back_to_menu_button(), parse_mode="Markdown")
+    await query.edit_message_text(text, reply_markup=get_back_menu(), parse_mode="Markdown")
 
 async def how_to_use(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -411,7 +408,7 @@ async def how_to_use(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "7. Sit back – your key arrives in seconds!\n\n"
         "⚠️ Always pay the exact amount including paisa!"
     )
-    await query.edit_message_text(text, reply_markup=back_to_menu_button(), parse_mode="Markdown")
+    await query.edit_message_text(text, reply_markup=get_back_menu(), parse_mode="Markdown")
 
 async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -482,7 +479,7 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         remaining = FREE_KEY_REFERRALS_NEEDED - total
         await query.edit_message_text(
             f"❌ Need {remaining} more referrals for FREE key!",
-            reply_markup=back_to_menu_button()
+            reply_markup=get_back_menu()
         )
 
 async def copy_upi(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -493,7 +490,7 @@ async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message:
         await update.message.reply_text("❌ Please use menu buttons.", reply_markup=main_menu_keyboard())
 
-# --- Main ---
+# ==================== MAIN ====================
 def main():
     application = Application.builder().token(BOT_TOKEN).build()
     

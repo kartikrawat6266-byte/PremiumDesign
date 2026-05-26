@@ -113,7 +113,7 @@ async def product_page(client, callback_query):
     key = callback_query.data.split("product_")[1]
     product = products[key]
 
-text = f"""🔥 Features:
+text = """🔥 Features:
 
 • NON ROOT
 • ESP
@@ -124,8 +124,7 @@ text = f"""🔥 Features:
 🟢 SAFE
 """
 
-    buttons = []
-
+buttons = []
     for plan, price in product['prices'].items():
         buttons.append([
             InlineKeyboardButton(

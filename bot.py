@@ -148,58 +148,53 @@ def check_and_grant_free_key(user_id):
     return False, None
 
 # ==================== KEYBOARD BUILDERS ====================
-# EXACT SCREENSHOT LAYOUT
+# BIGGER BUTTONS - EXACT LAYOUT
 def main_menu_keyboard():
-    """Buttons exactly like screenshot:
-         Shop Now
-    My Orders   Profile
-    How to Use   Support
-         Refer & Earn
-    """
+    """Buttons with bigger size - exact screenshot layout"""
     keyboard = [
-        [InlineKeyboardButton("🛍️ Shop Now", callback_data="shop_now")],
-        [InlineKeyboardButton("📦 My Orders", callback_data="my_orders"), 
-         InlineKeyboardButton("👤 Profile", callback_data="profile")],
-        [InlineKeyboardButton("📖 How to Use", callback_data="how_to_use"), 
-         InlineKeyboardButton("🆘 Support", callback_data="support")],
-        [InlineKeyboardButton("💰 Refer & Earn", callback_data="refer_earn")],
+        [InlineKeyboardButton("  🛍️  SHOP NOW  🛍️  ", callback_data="shop_now")],
+        [InlineKeyboardButton("  📦  MY ORDERS  📦  ", callback_data="my_orders"), 
+         InlineKeyboardButton("  👤  PROFILE  👤  ", callback_data="profile")],
+        [InlineKeyboardButton("  📖  HOW TO USE  📖  ", callback_data="how_to_use"), 
+         InlineKeyboardButton("  🆘  SUPPORT  🆘  ", callback_data="support")],
+        [InlineKeyboardButton("  💰  REFER & EARN  💰  ", callback_data="refer_earn")],
     ]
     return InlineKeyboardMarkup(keyboard)
 
-# Same menu for back button - consistent size
+# Back button - same size
 def get_back_menu():
     return main_menu_keyboard()
 
 def product_list_keyboard():
     keyboard = []
     for name, price in PRODUCTS.items():
-        keyboard.append([InlineKeyboardButton(f"{name} - ₹{price:.2f}", callback_data=f"product_{name}")])
-    keyboard.append([InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")])
+        keyboard.append([InlineKeyboardButton(f"✨ {name} - ₹{price:.2f} ✨", callback_data=f"product_{name}")])
+    keyboard.append([InlineKeyboardButton("🔙  BACK TO MENU  🔙", callback_data="main_menu")])
     return InlineKeyboardMarkup(keyboard)
 
 def payment_keyboard(product_name, amount):
     upi_link = f"upi://pay?pa={UPI_ID}&pn=Satyam%20X%20Store&am={amount}&cu=INR"
     keyboard = [
-        [InlineKeyboardButton("✅ I Have Paid", callback_data=f"paid_{product_name}")],
-        [InlineKeyboardButton("💳 Copy UPI ID", callback_data="copy_upi")],
-        [InlineKeyboardButton("📱 Open UPI App", url=upi_link)],
-        [InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")],
+        [InlineKeyboardButton("✅  I HAVE PAID  ✅", callback_data=f"paid_{product_name}")],
+        [InlineKeyboardButton("💳  COPY UPI ID  💳", callback_data="copy_upi")],
+        [InlineKeyboardButton("📱  OPEN UPI APP  📱", url=upi_link)],
+        [InlineKeyboardButton("🔙  BACK TO MENU  🔙", callback_data="main_menu")],
     ]
     return InlineKeyboardMarkup(keyboard)
 
 def admin_contact_keyboard():
     keyboard = [
-        [InlineKeyboardButton("📞 Contact Admin", url="https://t.me/SATYAM_X_OFC")],
-        [InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")],
+        [InlineKeyboardButton("📞  CONTACT ADMIN  📞", url="https://t.me/SATYAM_X_OFC")],
+        [InlineKeyboardButton("🔙  BACK TO MENU  🔙", callback_data="main_menu")],
     ]
     return InlineKeyboardMarkup(keyboard)
 
 def refer_earn_keyboard(referral_link, total_refers, free_available):
     keyboard = []
     if total_refers >= FREE_KEY_REFERRALS_NEEDED and free_available:
-        keyboard.append([InlineKeyboardButton("🎁 CLAIM YOUR FREE KEY 🎁", callback_data="claim_free_key")])
-    keyboard.append([InlineKeyboardButton("📤 Share with Friend", url=f"https://t.me/share/url?url={referral_link}&text=🔥 Join Satyam X Ofc Store and get premium keys! Use my referral link:")])
-    keyboard.append([InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")])
+        keyboard.append([InlineKeyboardButton("🎁  CLAIM FREE KEY  🎁", callback_data="claim_free_key")])
+    keyboard.append([InlineKeyboardButton("📤  SHARE WITH FRIEND  📤", url=f"https://t.me/share/url?url={referral_link}&text=🔥 Join Satyam X Ofc Store and get premium keys! Use my referral link:")])
+    keyboard.append([InlineKeyboardButton("🔙  BACK TO MENU  🔙", callback_data="main_menu")])
     return InlineKeyboardMarkup(keyboard)
 
 # ==================== HANDLERS ====================
@@ -221,7 +216,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     updated_referrer = get_user(referrer_id)
                     await context.bot.send_message(
                         chat_id=int(referrer_id),
-                        text=f"🎉 *New Referral!* 🎉\n\n{username} joined!\n\n📊 *Total Refers:* {updated_referrer.get('total_refers', 0)}\n💰 *Earnings:* ₹{updated_referrer.get('referral_earnings', 0):.2f}",
+                        text=f"🎉 *NEW REFERRAL!* 🎉\n\n{username} joined!\n\n📊 *TOTAL REFERS:* {updated_referrer.get('total_refers', 0)}\n💰 *EARNINGS:* ₹{updated_referrer.get('referral_earnings', 0):.2f}",
                         parse_mode="Markdown"
                     )
                     qualified, key = check_and_grant_free_key(referrer_id)
@@ -232,7 +227,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
                             parse_mode="Markdown"
                         )
                     await update.message.reply_text(
-                        "🎉 Welcome! You were referred!\n\nUse the buttons below.",
+                        "🎉 WELCOME! You were referred by a friend!\n\nUse the buttons below.",
                         reply_markup=main_menu_keyboard()
                     )
                     return
@@ -247,10 +242,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     update_last_activity(user_id)
     
     welcome_text = (
-        f"👋 Welcome to *Satyam X Ofc Store*!\n\n"
-        f"Trusted selling bot – anyone can purchase from this bot.\n"
+        f"👋 WELCOME TO *SATYAM X OFC STORE*!\n\n"
+        f"✅ TRUSTED SELLING BOT\n"
         f"⭐ *SUPER FAST DELIVERY*\n\n"
-        f"📌 Use the buttons below to start shopping."
+        f"📌 USE THE BUTTONS BELOW TO START SHOPPING."
     )
     await update.message.reply_text(welcome_text, reply_markup=main_menu_keyboard(), parse_mode="Markdown")
 
@@ -260,7 +255,7 @@ async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
     user_id = str(query.from_user.id)
     update_last_activity(user_id)
     await query.edit_message_text(
-        "🏠 *Main Menu*\n\nChoose an option:",
+        "🏠 *MAIN MENU*\n\nCHOOSE AN OPTION:",
         reply_markup=main_menu_keyboard(),
         parse_mode="Markdown"
     )
@@ -271,7 +266,7 @@ async def shop_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(query.from_user.id)
     update_last_activity(user_id)
     await query.edit_message_text(
-        "🛍️ *Our Products*\n\nSelect a product to purchase:",
+        "🛍️ *OUR PRODUCTS*\n\nSELECT A PRODUCT TO PURCHASE:",
         reply_markup=product_list_keyboard(),
         parse_mode="Markdown"
     )
@@ -284,20 +279,20 @@ async def product_selected(update: Update, context: ContextTypes.DEFAULT_TYPE):
     product_name = query.data.replace("product_", "")
     price = PRODUCTS.get(product_name)
     if not price:
-        await query.edit_message_text("❌ Product not found.", reply_markup=get_back_menu())
+        await query.edit_message_text("❌ PRODUCT NOT FOUND.", reply_markup=get_back_menu())
         return
     
     update_user(user_id, {"pending_payment": product_name})
     
     payment_text = (
-        f"💸 *Payment Required*\n\n"
-        f"Product: {product_name}\n"
-        f"Amount: ₹{price:.2f}\n\n"
-        f"*How to Pay:*\n"
-        f"1️⃣ Tap '✅ I Have Paid'\n"
-        f"2️⃣ Enter UPI registered name\n\n"
+        f"💸 *PAYMENT REQUIRED*\n\n"
+        f"📦 PRODUCT: {product_name}\n"
+        f"💰 AMOUNT: ₹{price:.2f}\n\n"
+        f"📌 *HOW TO PAY:*\n"
+        f"1️⃣ TAP '✅ I HAVE PAID'\n"
+        f"2️⃣ ENTER UPI REGISTERED NAME\n\n"
         f"💳 *UPI ID:* `{UPI_ID}`\n"
-        f"⚠️ Pay exact amount!"
+        f"⚠️ PAY EXACT AMOUNT!"
     )
     await query.edit_message_text(payment_text, reply_markup=payment_keyboard(product_name, price), parse_mode="Markdown")
 
@@ -309,8 +304,8 @@ async def paid_confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE):
     product_name = query.data.replace("paid_", "")
     context.user_data["pending_product"] = product_name
     await query.edit_message_text(
-        "✅ Enter your UPI registered name:",
-        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Cancel", callback_data="shop_now")]])
+        "✅ ENTER YOUR UPI REGISTERED NAME:",
+        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙  CANCEL  🔙", callback_data="shop_now")]])
     )
 
 async def handle_upi_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -320,7 +315,7 @@ async def handle_upi_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     product_name = context.user_data.get("pending_product")
     
     if not product_name:
-        await update.message.reply_text("❌ No pending payment.", reply_markup=get_back_menu())
+        await update.message.reply_text("❌ NO PENDING PAYMENT.", reply_markup=get_back_menu())
         return
     
     license_key = ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
@@ -336,7 +331,7 @@ async def handle_upi_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["pending_product"] = None
     
     await update.message.reply_text(
-        f"🎉 *Payment Confirmed!*\n\n📦 {product_name}\n🔑 `{license_key}`\n\n⭐ SUPER FAST DELIVERY",
+        f"🎉 *PAYMENT CONFIRMED!* 🎉\n\n📦 {product_name}\n🔑 `{license_key}`\n\n⭐ *SUPER FAST DELIVERY*",
         parse_mode="Markdown", reply_markup=main_menu_keyboard()
     )
 
@@ -350,16 +345,16 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if not orders:
         await query.edit_message_text(
-            "📭 *No orders yet!*\n\nStart shopping to see your orders here.",
+            "📭 *NO ORDERS YET!*\n\nSTART SHOPPING TO SEE YOUR ORDERS HERE.",
             reply_markup=get_back_menu(),
             parse_mode="Markdown"
         )
         return
     
-    text = "*📦 Your Orders*\n\n"
+    text = "*📦 YOUR ORDERS*\n\n"
     for i, o in enumerate(reversed(orders[-10:]), 1):
         amt = f"₹{o['amount']:.2f}" if o['amount'] > 0 else "🎁 FREE"
-        text += f"{i}. *{o['product']}*\n   Amount: {amt}\n   Date: {o['date']}\n   Key: `{o['key']}`\n\n"
+        text += f"{i}. *{o['product']}*\n   💰 AMOUNT: {amt}\n   📅 DATE: {o['date']}\n   🔑 KEY: `{o['key']}`\n\n"
     await query.edit_message_text(text, reply_markup=get_back_menu(), parse_mode="Markdown")
 
 async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -370,24 +365,24 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
     u = get_user(user_id)
     
     username = u.get('username', '')
-    username_display = f"@{username}" if username else "Not set"
+    username_display = f"@{username}" if username else "NOT SET"
     
     referral_history = u.get("referral_history", [])
     referral_text = ""
     if referral_history:
-        referral_text = "\n\n📜 *Referral History:*"
+        referral_text = "\n\n📜 *REFERRAL HISTORY:*"
         for ref in referral_history[-5:]:
-            referral_text += f"\n   • {ref.get('username', 'Unknown')} - ₹{ref.get('earned', 0):.2f} ({ref.get('date', '')})"
+            referral_text += f"\n   • {ref.get('username', 'UNKNOWN')} - ₹{ref.get('earned', 0):.2f} ({ref.get('date', '')})"
     
     text = (
-        f"❄️ *User Account Information*\n\n"
-        f"• Name : {u.get('name', 'N/A')}\n"
-        f"• Username : {username_display}\n"
-        f"• User Id : `{user_id}`\n\n"
-        f"• Total Orders : {u.get('total_orders', 0)}\n"
-        f"• Referral Earnings : ₹{u.get('referral_earnings', 0):.2f}{referral_text}\n\n"
-        f"• JoiNeD DaTe : {u.get('joined', get_joined_date())}\n"
-        f"⭐ Last Activity : {u.get('last_activity', get_current_ist())}"
+        f"❄️ *USER ACCOUNT INFORMATION*\n\n"
+        f"• NAME : {u.get('name', 'N/A')}\n"
+        f"• USERNAME : {username_display}\n"
+        f"• USER ID : `{user_id}`\n\n"
+        f"• TOTAL ORDERS : {u.get('total_orders', 0)}\n"
+        f"• REFERRAL EARNINGS : ₹{u.get('referral_earnings', 0):.2f}{referral_text}\n\n"
+        f"• JOINED DATE : {u.get('joined', get_joined_date())}\n"
+        f"⭐ LAST ACTIVITY : {u.get('last_activity', get_current_ist())}"
     )
     
     await query.edit_message_text(text, reply_markup=get_back_menu(), parse_mode="Markdown")
@@ -398,15 +393,15 @@ async def how_to_use(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(query.from_user.id)
     update_last_activity(user_id)
     text = (
-        "*📖 How to Buy — SATYAM X MOD STORE*\n\n"
-        "1. Tap Shop Now\n"
-        "2. Pick your product & plan\n"
-        "3. Scan the UPI QR or copy UPI ID\n"
-        "4. Pay the exact amount shown (with paisa!)\n"
-        "5. Tap ✅ I Have Paid\n"
-        "6. Enter your UPI registered name\n"
-        "7. Sit back – your key arrives in seconds!\n\n"
-        "⚠️ Always pay the exact amount including paisa!"
+        "*📖 HOW TO BUY — SATYAM X MOD STORE*\n\n"
+        "1️⃣ TAP SHOP NOW\n"
+        "2️⃣ PICK YOUR PRODUCT & PLAN\n"
+        "3️⃣ SCAN UPI QR OR COPY UPI ID\n"
+        "4️⃣ PAY EXACT AMOUNT (WITH PAISA!)\n"
+        "5️⃣ TAP ✅ I HAVE PAID\n"
+        "6️⃣ ENTER YOUR UPI REGISTERED NAME\n"
+        "7️⃣ YOUR KEY ARRIVES IN SECONDS!\n\n"
+        "⚠️ *ALWAYS PAY EXACT AMOUNT INCLUDING PAISA!*"
     )
     await query.edit_message_text(text, reply_markup=get_back_menu(), parse_mode="Markdown")
 
@@ -417,10 +412,10 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
     update_last_activity(user_id)
     text = (
         "*🆘 OFFICIAL SUPPORT CENTER*\n\n"
-        "If you face any issues or have questions regarding our services, feel free to contact our expert team.\n\n"
-        "📅 Active Time: 9 AM - 11 PM\n"
-        "⏱️ Response: Within 5-10 Minutes\n\n"
-        "Click the button below to start a chat:"
+        "IF YOU FACE ANY ISSUES OR HAVE QUESTIONS REGARDING OUR SERVICES, FEEL FREE TO CONTACT OUR EXPERT TEAM.\n\n"
+        "📅 ACTIVE TIME: 9 AM - 11 PM\n"
+        "⏱️ RESPONSE: WITHIN 5-10 MINUTES\n\n"
+        "CLICK THE BUTTON BELOW TO START A CHAT:"
     )
     await query.edit_message_text(text, reply_markup=admin_contact_keyboard(), parse_mode="Markdown")
 
@@ -438,26 +433,26 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
     claimed = u.get("free_key_claimed", False)
     remaining = max(0, FREE_KEY_REFERRALS_NEEDED - total)
     
-    text = f"""*💰 Referral Program*
+    text = f"""*💰 REFERRAL PROGRAM*
 
-Invite your friends and earn real balance for every successful joining.
+INVITE YOUR FRIENDS AND EARN REAL BALANCE FOR EVERY SUCCESSFUL JOINING.
 
-• *Total Refers:* {total} User(s)
-• *Invite Reward:* ₹{earnings:.2f} (₹1 per refer)
+• *TOTAL REFERS:* {total} USER(S)
+• *INVITE REWARD:* ₹{earnings:.2f} (₹1 PER REFER)
 
 """
     if not claimed:
         if remaining > 0:
-            text += f"🎯 *Refer {remaining} more to get a FREE {FREE_KEY_PRODUCT}!*\n\n"
+            text += f"🎯 *REFER {remaining} MORE TO GET A FREE {FREE_KEY_PRODUCT}!*\n\n"
         else:
-            text += f"🎉 *You've earned a FREE {FREE_KEY_PRODUCT}!*\n\n"
+            text += f"🎉 *YOU'VE EARNED A FREE {FREE_KEY_PRODUCT}!*\n\n"
     else:
-        text += f"✅ *You have claimed your FREE key!*\n\n"
+        text += f"✅ *YOU HAVE CLAIMED YOUR FREE KEY!*\n\n"
     
-    text += f"""*Your Invite Link:*
+    text += f"""*YOUR INVITE LINK:*
 `{referral_link}`
 
-Share your link to grow your earnings!"""
+SHARE YOUR LINK TO GROW YOUR EARNINGS!"""
     
     await query.edit_message_text(text, reply_markup=refer_earn_keyboard(referral_link, total, not claimed), parse_mode="Markdown")
 
@@ -478,17 +473,17 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         total = u.get("total_refers", 0)
         remaining = FREE_KEY_REFERRALS_NEEDED - total
         await query.edit_message_text(
-            f"❌ Need {remaining} more referrals for FREE key!",
+            f"❌ NEED {remaining} MORE REFERRALS FOR FREE KEY!",
             reply_markup=get_back_menu()
         )
 
 async def copy_upi(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    await query.answer("UPI ID copied!", show_alert=True)
+    await query.answer("UPI ID COPIED!", show_alert=True)
 
 async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message:
-        await update.message.reply_text("❌ Please use menu buttons.", reply_markup=main_menu_keyboard())
+        await update.message.reply_text("❌ PLEASE USE MENU BUTTONS.", reply_markup=main_menu_keyboard())
 
 # ==================== MAIN ====================
 def main():

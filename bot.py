@@ -59,14 +59,13 @@ START_TEXT = """
 # ===================================================
 
 main_keyboard = ReplyKeyboardMarkup(
-    [
+    keyboard=[
         ["🛒 Shop"],
-
         ["👤 My Profile", "📄 History"],
-
         ["🎬 How To Use", "📞 Helpline"]
     ],
-    resize_keyboard=True
+    resize_keyboard=True,
+    is_persistent=True
 )
 
 # ===================================================

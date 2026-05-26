@@ -1,16 +1,16 @@
 # ===================================================
-# PREMIUM TELEGRAM STORE BOT
-# FULL FIXED VERSION
-# RAILWAY READY
+# CRAZY GAMING 100K BOT
+# COLOURED BUTTON VERSION
+# PYROGRAM BOT
 # ===================================================
 
 import os
 
-from pyrogram import Client, filters, enums
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram import Client, filters
+from pyrogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 # ===================================================
-# VARIABLES FROM RAILWAY
+# VARIABLES
 # ===================================================
 
 API_ID = int(os.getenv("API_ID"))
@@ -23,7 +23,7 @@ OWNER_USERNAME = os.getenv("OWNER_USERNAME")
 # ===================================================
 
 app = Client(
-    "PremiumStoreBot",
+    "CrazyGaming100KBot",
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN
@@ -34,74 +34,45 @@ app = Client(
 # ===================================================
 
 START_TEXT = """
-✨ <b>WELCOME TO Crazy Gaming 100K Store</b> ✨
+✨ WELCOME TO Crazy Gaming 100K Store ✨
 
-👋 Hello, ◈ I’m ➤ <b>HeaVen!</b>
+👋 Hello, ◈ I’m ➤ HeaVen!
 
-━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━
 
-🛍 <b>Store:</b> Buy premium services.
+🛍 Store: Buy premium services.
 ⚡ Instant Delivery !!
 
-👤 <b>Profile:</b> Your Account Details.
+👤 Profile: Your Account Details.
 
-📄 <b>History:</b> Track your Orders.
+📄 History: Track your Orders.
 
-🎬 <b>How to Use:</b> Learn how to buy keys.
+🎬 How to Use: How to buy Key
 
-🛑 <b>Help:</b> Get Support from Owner.
+🛑 Help: Get Support from Owner.
 
-━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━
 """
 
 # ===================================================
-# MAIN BUTTONS
+# COLOURED BUTTON KEYBOARD
 # ===================================================
 
-START_BUTTONS = InlineKeyboardMarkup(
+main_keyboard = ReplyKeyboardMarkup(
     [
-        [
-            InlineKeyboardButton(
-                "🛒 Shop",
-                callback_data="shop"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "👤 My Profile",
-                callback_data="profile"
-            ),
-            InlineKeyboardButton(
-                "📄 History",
-                callback_data="history"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "🎬 How To Use",
-                callback_data="howto"
-            ),
-            InlineKeyboardButton(
-                "📞 Helpline",
-                callback_data="help"
-            )
-        ]
-    ]
-)
+        [KeyboardButton("🛒 Shop")],
 
-# ===================================================
-# BACK BUTTON
-# ===================================================
-
-BACK_BUTTON = InlineKeyboardMarkup(
-    [
         [
-            InlineKeyboardButton(
-                "🔙 Back To Main Menu",
-                callback_data="back"
-            )
+            KeyboardButton("👤 My Profile"),
+            KeyboardButton("📄 History")
+        ],
+
+        [
+            KeyboardButton("🎬 How To Use"),
+            KeyboardButton("📞 Helpline")
         ]
-    ]
+    ],
+    resize_keyboard=True
 )
 
 # ===================================================
@@ -112,139 +83,108 @@ BACK_BUTTON = InlineKeyboardMarkup(
 async def start_command(client, message):
 
     await message.reply_text(
-        text=START_TEXT,
-        reply_markup=START_BUTTONS,
-        parse_mode=enums.ParseMode.HTML
+        START_TEXT,
+        reply_markup=main_keyboard
     )
 
 # ===================================================
-# CALLBACK SYSTEM
+# SHOP BUTTON
 # ===================================================
 
-@app.on_callback_query()
-async def callback_handler(client, query):
+@app.on_message(filters.text("🛒 Shop"))
+async def shop_handler(client, message):
 
-    data = query.data
+    text = """
+🛒 WELCOME TO SHOP
 
-    await query.answer()
+━━━━━━━━━━━━━━━━━━━━
 
-    # ===================================================
-    # SHOP
-    # ===================================================
+🎮 BGMI KEYS
+🔥 FREE FIRE KEYS
+📺 NETFLIX PREMIUM
+🎵 SPOTIFY PREMIUM
 
-    if data == "shop":
+⚡ Instant Delivery Available
 
-        SHOP_TEXT = """
-🛒 <b>WELCOME TO SHOP</b>
-
-━━━━━━━━━━━━━━━━━━━
-
-🎮 Premium Gaming Keys
-📺 OTT Accounts
-🎵 Music Premium
-🎬 Streaming Services
-💎 Instant Delivery
-
-━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━
 """
 
-        SHOP_BUTTONS = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "🎮 Buy Keys",
-                        callback_data="buy_keys"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "💳 Payment",
-                        callback_data="payment"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "🔙 Back",
-                        callback_data="back"
-                    )
-                ]
-            ]
-        )
+    await message.reply_text(
+        text,
+        reply_markup=main_keyboard
+    )
 
-        await query.message.edit_text(
-            text=SHOP_TEXT,
-            reply_markup=SHOP_BUTTONS,
-            parse_mode=enums.ParseMode.HTML
-        )
+# ===================================================
+# PROFILE BUTTON
+# ===================================================
 
-    # ===================================================
-    # PROFILE
-    # ===================================================
+@app.on_message(filters.text("👤 My Profile"))
+async def profile_handler(client, message):
 
-    elif data == "profile":
+    user = message.from_user
 
-        username = query.from_user.username
+    username = user.username
 
-        if username:
-            username = f"@{username}"
-        else:
-            username = "No Username"
+    if username:
+        username = f"@{username}"
+    else:
+        username = "No Username"
 
-        PROFILE_TEXT = f"""
-👤 <b>YOUR PROFILE</b>
+    text = f"""
+👤 YOUR PROFILE
 
-━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━
 
 🆔 User ID:
-<code>{query.from_user.id}</code>
+{user.id}
 
 📛 Name:
-{query.from_user.first_name}
+{user.first_name}
 
 🚀 Username:
 {username}
 
-━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━
 """
 
-        await query.message.edit_text(
-            text=PROFILE_TEXT,
-            reply_markup=BACK_BUTTON,
-            parse_mode=enums.ParseMode.HTML
-        )
+    await message.reply_text(
+        text,
+        reply_markup=main_keyboard
+    )
 
-    # ===================================================
-    # HISTORY
-    # ===================================================
+# ===================================================
+# HISTORY BUTTON
+# ===================================================
 
-    elif data == "history":
+@app.on_message(filters.text("📄 History"))
+async def history_handler(client, message):
 
-        HISTORY_TEXT = """
-📄 <b>ORDER HISTORY</b>
+    text = """
+📄 ORDER HISTORY
 
-━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━
 
-❌ No Orders Found Yet.
+❌ No Order History Found.
 
-━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━
 """
 
-        await query.message.edit_text(
-            text=HISTORY_TEXT,
-            reply_markup=BACK_BUTTON,
-            parse_mode=enums.ParseMode.HTML
-        )
+    await message.reply_text(
+        text,
+        reply_markup=main_keyboard
+    )
 
-    # ===================================================
-    # HOW TO USE
-    # ===================================================
+# ===================================================
+# HOW TO USE BUTTON
+# ===================================================
 
-    elif data == "howto":
+@app.on_message(filters.text("🎬 How To Use"))
+async def howto_handler(client, message):
 
-        HOW_TEXT = """
-🎬 <b>HOW TO USE</b>
+    text = """
+🎬 HOW TO USE
 
-━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━
 
 1️⃣ Open Shop Section
 
@@ -256,162 +196,55 @@ async def callback_handler(client, query):
 
 5️⃣ Receive Product Instantly 🚀
 
-━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━
 """
 
-        await query.message.edit_text(
-            text=HOW_TEXT,
-            reply_markup=BACK_BUTTON,
-            parse_mode=enums.ParseMode.HTML
-        )
+    await message.reply_text(
+        text,
+        reply_markup=main_keyboard
+    )
 
-    # ===================================================
-    # HELP
-    # ===================================================
+# ===================================================
+# HELPLINE BUTTON
+# ===================================================
 
-    elif data == "help":
+@app.on_message(filters.text("📞 Helpline"))
+async def help_handler(client, message):
 
-        HELP_TEXT = f"""
-📞 <b>SUPPORT CENTER</b>
+    text = f"""
+📞 SUPPORT CENTER
 
-━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━
 
-👨‍💻 Owner Support:
+👨‍💻 Owner:
 @{OWNER_USERNAME}
 
 ⚡ Fast Reply Available
 
-━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━
 """
 
-        HELP_BUTTONS = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "📞 Contact Owner",
-                        url=f"https://t.me/{OWNER_USERNAME}"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "🔙 Back",
-                        callback_data="back"
-                    )
-                ]
-            ]
-        )
+    await message.reply_text(
+        text,
+        reply_markup=main_keyboard
+    )
 
-        await query.message.edit_text(
-            text=HELP_TEXT,
-            reply_markup=HELP_BUTTONS,
-            parse_mode=enums.ParseMode.HTML
-        )
+# ===================================================
+# UNKNOWN MESSAGE
+# ===================================================
 
-    # ===================================================
-    # BUY KEYS
-    # ===================================================
+@app.on_message(filters.text & ~filters.command("start"))
+async def unknown_handler(client, message):
 
-    elif data == "buy_keys":
-
-        BUY_TEXT = """
-🎮 <b>BUY GAMING KEYS</b>
-
-━━━━━━━━━━━━━━━━━━━
-
-🔥 BGMI Key
-🔥 Free Fire Key
-🔥 Netflix Premium
-🔥 Spotify Premium
-
-⚡ Instant Delivery Available
-
-━━━━━━━━━━━━━━━━━━━
-"""
-
-        BUY_BUTTONS = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "💳 Buy Now",
-                        callback_data="payment"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "🔙 Back",
-                        callback_data="shop"
-                    )
-                ]
-            ]
-        )
-
-        await query.message.edit_text(
-            text=BUY_TEXT,
-            reply_markup=BUY_BUTTONS,
-            parse_mode=enums.ParseMode.HTML
-        )
-
-    # ===================================================
-    # PAYMENT
-    # ===================================================
-
-    elif data == "payment":
-
-        PAYMENT_TEXT = """
-💳 <b>PAYMENT SECTION</b>
-
-━━━━━━━━━━━━━━━━━━━
-
-🏦 UPI ID:
-<code>yourupi@upi</code>
-
-📸 Send Payment Screenshot
-To Owner After Payment.
-
-⚡ Instant Verification
-
-━━━━━━━━━━━━━━━━━━━
-"""
-
-        PAYMENT_BUTTONS = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "📞 Send Screenshot",
-                        url=f"https://t.me/{OWNER_USERNAME}"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "🔙 Back",
-                        callback_data="shop"
-                    )
-                ]
-            ]
-        )
-
-        await query.message.edit_text(
-            text=PAYMENT_TEXT,
-            reply_markup=PAYMENT_BUTTONS,
-            parse_mode=enums.ParseMode.HTML
-        )
-
-    # ===================================================
-    # BACK
-    # ===================================================
-
-    elif data == "back":
-
-        await query.message.edit_text(
-            text=START_TEXT,
-            reply_markup=START_BUTTONS,
-            parse_mode=enums.ParseMode.HTML
-        )
+    await message.reply_text(
+        "👇 Please use buttons below",
+        reply_markup=main_keyboard
+    )
 
 # ===================================================
 # BOT START
 # ===================================================
 
-print("🚀 Premium Store Bot Started Successfully")
+print("🚀 Crazy Gaming 100K Bot Started Successfully")
 
 app.run()

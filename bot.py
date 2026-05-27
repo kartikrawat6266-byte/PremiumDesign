@@ -584,6 +584,22 @@ async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # =========================================
+# AUTO DELETE FUNCTION
+# =========================================
+
+async def auto_delete_message(bot, chat_id, message_id):
+
+    await asyncio.sleep(15)
+
+    try:
+        await bot.delete_message(
+            chat_id=chat_id,
+            message_id=message_id
+        )
+    except:
+        pass
+
+
 # =========================================
 # CANCEL PAYMENT
 # =========================================
@@ -591,6 +607,7 @@ async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
+
     await query.answer()
 
     data = query.data.split("|")
@@ -621,18 +638,16 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     )
 
-    # AUTO DELETE AFTER 15 SEC
-    await asyncio.sleep(15)
-
-    try:
-        await context.bot.delete_message(
-            chat_id=user_id,
-            message_id=failed_msg.message_id
+    # AUTO DELETE IN BACKGROUND
+    asyncio.create_task(
+        auto_delete_message(
+            context.bot,
+            user_id,
+            failed_msg.message_id
         )
-    except:
-        pass
+    )
 
-    # SEND MAIN MENU
+    # INSTANT MAIN MENU
     text = (
         "╔══════════════════╗\n"
         " 🆆🅴🅻🅲🅾🅼🅴 🅱🆄🅳🅳🆈\n"
@@ -654,10 +669,15 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=main_menu_keyboard()
     )
 
-    await query.message.edit_text(
-        "❌ PAYMENT CANCELLED SUCCESSFULLY"
-    )
+    # OWNER SIDE UPDATE
+    try:
 
+        await query.message.edit_text(
+            "❌ PAYMENT CANCELLED SUCCESSFULLY"
+        )
+
+    except:
+        pass
 # =========================================
 # APPROVE PAYMENT
 # =========================================

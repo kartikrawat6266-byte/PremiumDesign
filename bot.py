@@ -1112,17 +1112,11 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 user_id
             )
 
-        try:
-
-            user_info = await context.bot.get_chat(
-                user_id
-            )
-
-            if user_info.username and user_info.username.lower() != "none":
+        if user_info.username and user_info.username.lower() != "none":
 
                 username = user_info.username
 
-        else:
+            else:
 
                 username = "No Username"
 

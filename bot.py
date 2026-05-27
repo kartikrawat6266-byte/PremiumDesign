@@ -1721,7 +1721,7 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
 
         "╔════════════════════╗\n"
-        "#.   🎁 𝗥𝗘𝗙𝗘𝗥 & 𝗘𝗔𝗥𝗡 💸\n"
+        "    🎁 𝗥𝗘𝗙𝗘𝗥 & 𝗘𝗔𝗥𝗡 💸\n"
         "╚════════════════════╝\n\n"
 
         "✨ *Invite Your Friends & Earn Money*\n\n"
@@ -1737,7 +1737,7 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         "━━━━━━━━━━━━━━━━━━\n\n"
 
-        f"👥 *Total Refers :* `{total_refers}`\n"
+        f"🙆🏻‍♂️ *Total Refers :* `{total_refers}`\n"
         f"💸 *Referral Balance :* `₹{earnings}`\n\n"
 
         "🎯 *Keep Sharing & Unlock Free Premium Keys!*"
@@ -1767,26 +1767,12 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
     ]
 
-    # =====================================
-    # AUTO DELETE OLD MESSAGE
-    # =====================================
-
-    try:
-        await query.message.delete()
-    except:
-        pass
-
-    # =====================================
-    # SEND NEW REFER MESSAGE
-    # =====================================
-
-    await context.bot.send_message(
-        chat_id=query.message.chat.id,
+    await query.message.edit_text(
         text=text,
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
-
+    
 # =========================================
 # CLAIM FREE KEY
 # =========================================

@@ -1030,14 +1030,7 @@ def main():
             pattern=r"^verify\|"
         )
     )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            cancel_order,
-            pattern="^cancel_order$"
-        )
-    )
-
+    
     app.add_handler(
         CallbackQueryHandler(
             my_orders,

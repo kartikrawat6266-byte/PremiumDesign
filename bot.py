@@ -193,6 +193,17 @@ def main_menu_keyboard():
 # START
 # =========================================
 
+# =========================================
+# FIX THIS ERROR
+# =========================================
+
+# REMOVE THIS LINE FROM START FUNCTION:
+# reply_markup_remove=True if False else None
+
+# =========================================
+# REPLACE YOUR START FUNCTION WITH THIS
+# =========================================
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user = update.effective_user
@@ -228,8 +239,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         text=text,
         parse_mode="Markdown",
-        reply_markup=main_menu_keyboard(),
-        reply_markup_remove=True if False else None
+        reply_markup=main_menu_keyboard()
     )
 
 # =========================================

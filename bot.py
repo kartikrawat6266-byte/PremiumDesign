@@ -501,26 +501,30 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     try:
 
+        # verify|ORDERID
         data = query.data.split("|")
 
         order_id = data[1]
 
-        # GET ORDER DATA
-        order_data = context.bot_data["orders"].get(order_id)
-
-        if not order_data:
-
-            await query.message.reply_text(
-                "❌ Order Data Not Found"
-            )
+        if "orders" not in context.bot_data:
             return
+
+        if order_id not in context.bot_data["orders"]:
+            return
+
+        order_data = context.bot_data["orders"][order_id]
 
         game = order_data["game"]
         plan = order_data["plan"]
         amount = order_data["amount"]
-        user_id = int(order_data["user_id"])
 
-        username = query.from_user.username or "NoUsername"
+        user_id = query.from_user.id
+        username = query.from_user.username
+
+        if username:
+            username_text = f"@{username}"
+        else:
+            username_text = "No Username"
 
         # SAVE QR MESSAGE ID
         if "qr_messages" not in context.bot_data:
@@ -534,25 +538,24 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text="🔍 Checking Your Payment Please Wait..."
         )
 
-        verify_time = current_time()
+        order_time = current_time()
 
-        # OWNER PAYMENT REQUEST
+        # OWNER REQUEST
         await context.bot.send_message(
             chat_id=OWNER_ID,
             text=(
-                "🚨 *NEW PAYMENT REQUEST*\n\n"
+                f"🍓 New Payment Request 🧚🏻\n\n"
 
                 f"🎮 Game : {game}\n"
                 f"📦 Plan : {plan}\n"
                 f"💵 Price : ₹{amount}\n"
-                f"🆔 Order ID : `{order_id}`\n\n"
+                f"🆔 Order ID : {order_id}\n\n"
 
-                f"👤 User ID : `{user_id}`\n"
-                f"🌐 Username : @{username}\n\n"
+                f"👤 User ID : {user_id}\n"
+                f"🌐 Username : {username_text}\n\n"
 
-                f"🕒 Verify Time : `{verify_time}`"
+                f"🕒 Verify Time : {order_time}"
             ),
-            parse_mode="Markdown",
             reply_markup=InlineKeyboardMarkup([
 
                 [
@@ -574,7 +577,7 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ])
         )
 
-        # AUTO DELETE USER MESSAGE AFTER 15 SEC
+        # AUTO DELETE AFTER 15 SEC
         await asyncio.sleep(15)
 
         try:
@@ -582,13 +585,8 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except:
             pass
 
-    except Exception as e:
-
-        print("VERIFY PAYMENT ERROR :", e)
-
-        await query.message.reply_text(
-            f"🎨 Verify Error\n\n{e}"
-        )
+    except:
+        pass
 
 # =========================================
 # CANCEL ORDER

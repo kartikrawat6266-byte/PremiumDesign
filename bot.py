@@ -1891,12 +1891,6 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         ])
     )
-
-    await query.message.edit_text(
-        text=text,
-        parse_mode="Markdown",
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
     
 # =========================================
 # MAIN

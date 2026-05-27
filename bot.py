@@ -595,25 +595,6 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         pass
 
-
-# =========================================
-# AUTO DELETE FUNCTION
-# =========================================
-
-async def auto_delete_message(bot, chat_id, message_id):
-
-    await asyncio.sleep(15)
-
-    try:
-        await bot.delete_message(
-            chat_id=chat_id,
-            message_id=message_id
-        )
-    except:
-        pass
-
-
-# =========================================
 # =========================================
 # CANCEL PAYMENT
 # =========================================
@@ -622,12 +603,12 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
 
-    # INSTANT BUTTON RESPONSE
+    # FAST BUTTON RESPONSE
     await query.answer()
 
     user_id = int(query.data.split("|")[1])
 
-    # OWNER PANEL FAST UPDATE
+    # OWNER MESSAGE INSTANT UPDATE
     try:
         await query.message.edit_text(
             "🍫 User Payment Cancelled Successfully"
@@ -635,8 +616,8 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         pass
 
-    # USER MESSAGE
-    await context.bot.send_message(
+    # USER SIDE MESSAGE
+    sent_msg = await context.bot.send_message(
         chat_id=user_id,
         text=(
             "⚠️ Payment not received yet.\n"
@@ -653,15 +634,16 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ])
     )
 
-    # OWNER MESSAGE INSTANT UPDATE
+    # AUTO DELETE AFTER 15 SEC
+    await asyncio.sleep(15)
+
     try:
-        await query.message.edit_reply_markup(reply_markup=None)
+        await context.bot.delete_message(
+            chat_id=user_id,
+            message_id=sent_msg.message_id
+        )
     except:
         pass
-
-    await query.message.edit_text(
-        "🍫 User Payment Cancelled Successfully"
-    )
     
 # =========================================
 # APPROVE PAYMENT

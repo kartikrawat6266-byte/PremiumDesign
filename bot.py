@@ -501,21 +501,13 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     data = query.data.split("|")
 
-    order_id = data[1]
+    game = data[1]
+    plan = data[2]
+    amount = data[3]
+    order_id = data[4]
 
-    # GET ORDER DATA
-    order_data = context.bot_data["orders"].get(order_id)
-
-    if not order_data:
-
-        return await query.message.reply_text(
-            "❌ Order Expired"
-        )
-
-    game = order_data["game"]
-    plan = order_data["plan"]
-    amount = order_data["amount"]
-    user_id = order_data["user_id"]
+    user_id = query.from_user.id
+    username = query.from_user.username or "NoUsername"
 
     # SAVE QR MESSAGE ID
     if "qr_messages" not in context.bot_data:
@@ -523,60 +515,56 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     context.bot_data["qr_messages"][str(user_id)] = query.message.message_id
 
-    # REMOVE BUTTONS
-    try:
-        await query.message.edit_reply_markup(reply_markup=None)
-    except:
-        pass
-
-    # SUCCESS ALERT
-    await query.answer(
-        "🔍 Payment Request Sent Successfully",
-        show_alert=True
+    # USER KO MESSAGE JAYE
+    checking_msg = await context.bot.send_message(
+        chat_id=user_id,
+        text="🔍 Checking Your Payment Please Wait..."
     )
 
     order_time = current_time()
 
-    username = query.from_user.username
-
-    if username:
-        username = f"@{username}"
-    else:
-        username = "Not Set"
-
-    # SEND REQUEST TO OWNER
+    # OWNER KO PAYMENT REQUEST JAYE
     await context.bot.send_message(
         chat_id=OWNER_ID,
         text=(
             "🚨 *NEW PAYMENT REQUEST*\n\n"
 
-            f"👤 Username : {username}\n"
-            f"🆔 User ID : `{user_id}`\n\n"
-
-            f"🎮 Product : {game}\n"
+            f"🎮 Game : {game}\n"
             f"📦 Plan : {plan}\n"
-            f"💰 Amount : ₹{amount}\n"
-            f"🆔 Order ID : `{order_id}`\n"
-            f"⏰ Order Time : `{order_time}`"
+            f"💵 Price : ₹{amount}\n"
+            f"🆔 Order ID : `{order_id}`\n\n"
+
+            f"👤 User ID : `{user_id}`\n"
+            f"🌐 Username : @{username}\n\n"
+
+            f"🕒 Verify Time : `{order_time}`"
         ),
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup([
 
             [
                 InlineKeyboardButton(
-                    "✅ APPROVE PAYMENT",
-                    callback_data=f"approve|{order_id}"
+                    "🧚🏻 APPROVE PAYMENT",
+                    callback_data=f"approve|{user_id}|{game}|{plan}|{amount}|{order_id}"
                 )
             ],
 
             [
                 InlineKeyboardButton(
-                    "❌ CANCEL PAYMENT",
+                    "🪩 CANCEL PAYMENT",
                     callback_data=f"cancelpayment|{user_id}"
                 )
             ]
         ])
     )
+
+    # AUTO DELETE AFTER 15 SEC
+    await asyncio.sleep(15)
+
+    try:
+        await checking_msg.delete()
+    except:
+        pass
 
 # =========================================
 # CANCEL ORDER
@@ -666,7 +654,7 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     await query.message.edit_text(
-        "❌ User Payment Cancelled Successfully"
+        "🍫 User Payment Cancelled Successfully"
     )
     
 # =========================================
@@ -729,7 +717,7 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(
         chat_id=user_id,
         text=(
-            "✅ Payment Verified Successfully\n\n"
+            "🧚🏻 Payment Verified Successfully\n\n"
             "Your key will be delivered shortly."
         )
     )
@@ -749,7 +737,7 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         [
             InlineKeyboardButton(
-                "❌ CANCEL",
+                "🧚🏻 CANCEL",
                 callback_data=f"cancelpayment|{user_id}"
             )
         ]
@@ -757,7 +745,7 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.message.edit_text(
         text=(
-            "✅ PAYMENT APPROVED\n\n"
+            "🎁 PAYMENT APPROVED\n\n"
             "Now Send Delivery Key."
         ),
         reply_markup=InlineKeyboardMarkup(keyboard)
@@ -830,7 +818,7 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     await query.message.edit_text(
-        "✅ KeY Delevery Successfully"
+        "🍓 KeY Delevery Successfully"
     )
     
 # =========================================

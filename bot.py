@@ -739,11 +739,11 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     game = data[2]
     plan = data[3]
 
-    # CURRENT TIME
-    payment_time_obj = datetime.now(IST)
+# PAYMENT TIME
+    payment_time = datetime.now(IST)
 
-    payment_time = payment_time_obj.strftime(
-        "%d-%m-%Y %I:%M:%S %p"
+    payment_time_str = payment_time.strftime(
+      "%d-%m-%Y %I:%M:%S %p"
     )
 
     # EXPIRY SYSTEM
@@ -789,7 +789,7 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         f"🎮 *Game :* {game}\n"
         f"⏳ *Duration :* {plan}\n"
-        f"💰 *Amount Paid :* Successfully Paid\n\n"
+        f"💰 Amount Paid : {price}\n"
 
         "📋 *Order Details :*\n\n"
 

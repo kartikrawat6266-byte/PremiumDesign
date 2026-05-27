@@ -46,7 +46,7 @@ UPI_ID = "kartikrawat6266@okhdfcbank"
 
 OWNER_USERNAME = "SATYAM_X_OFC"
 
-OWNER_ID = 123456789  # APNA ID DAAL
+OWNER_ID = 123456789  # APNA OWNER ID
 
 IST = timezone(timedelta(hours=5, minutes=30))
 
@@ -168,7 +168,7 @@ def update_user(user_id, updates=None):
     save_data(data)
 
 # =========================================
-# MAIN KEYBOARD
+# MAIN MENU KEYBOARD
 # =========================================
 
 def main_menu_keyboard():
@@ -259,7 +259,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # =========================================
-# MAIN MENU
+# MAIN MENU CALLBACK
 # =========================================
 
 async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -269,16 +269,16 @@ async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     text = (
         "╔══════════════════╗\n"
-        " 🅵🆁🅴🅴 🅵🅸🆁🅴 🆂🅷🅾🅿\n"
+        " 🆆🅴🅻🅲🅾🅼🅴 🅱🆄🅳🅳🆈\n"
         "╚══════════════════╝\n\n"
 
-        "🌈 *Welcome To BeSt ChEat SHOP* 🎨\n\n"
+        "🪩 *Welcome To BeSt ChEat SHOP* 🔮\n\n"
 
-        "❄️ _Here you can purchase all tg premium_\n"
-        "_hacks for Android & IOS...💥_\n\n"
+        "❄️ *Here you can purchase all tg premium*\n"
+        "*hacks for Android & IOS..* 💥\n\n"
 
-        "🔻 *Continue Shopping Premium*\n"
-        "*Option Below...* 🛍️"
+        "🔻 ***Continue Shopping Premium***\n"
+        "***Option Below..*** 🛍️"
     )
 
     await query.message.edit_text(
@@ -402,7 +402,7 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     qr = qrcode.make(upi_link)
 
     bio = BytesIO()
-    bio.name = "qr.png"
+    bio.name = "payment_qr.png"
 
     qr.save(bio, "PNG")
     bio.seek(0)
@@ -452,6 +452,13 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "❌ CANCEL ORDER",
                 callback_data="cancel_order"
             )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "⬅️ BACK TO MAIN MENU",
+                callback_data="main_menu_qr"
+            )
         ]
     ]
 
@@ -492,12 +499,12 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         pass
 
-    owner_keyboard = InlineKeyboardMarkup([
+    keyboard = InlineKeyboardMarkup([
 
         [
             InlineKeyboardButton(
                 "✅ APPROVE PAYMENT",
-                callback_data=f"approve|{query.from_user.id}|{game}|{plan}|{amount}"
+                callback_data=f"approve|{query.from_user.id}"
             )
         ],
 
@@ -529,7 +536,7 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"👤 User ID : `{query.from_user.id}`"
         ),
         parse_mode="Markdown",
-        reply_markup=owner_keyboard
+        reply_markup=keyboard
     )
 
 # =========================================
@@ -541,9 +548,7 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    data = query.data.split("|")
-
-    user_id = int(data[1])
+    user_id = int(query.data.split("|")[1])
 
     emoji = await context.bot.send_message(
         chat_id=user_id,
@@ -634,8 +639,65 @@ async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    await query.message.reply_text(
-        "⚠️ Payment not received yet.\nPlease try again in a few seconds."
+    try:
+        await query.message.delete()
+    except:
+        pass
+
+    text = (
+        "╔══════════════════╗\n"
+        " 🆆🅴🅻🅲🅾🅼🅴 🅱🆄🅳🅳🆈\n"
+        "╚══════════════════╝\n\n"
+
+        "🪩 *Welcome To BeSt ChEat SHOP* 🔮\n\n"
+
+        "❄️ *Here you can purchase all tg premium*\n"
+        "*hacks for Android & IOS..* 💥\n\n"
+
+        "🔻 ***Continue Shopping Premium***\n"
+        "***Option Below..*** 🛍️"
+    )
+
+    await context.bot.send_message(
+        chat_id=query.message.chat.id,
+        text=text,
+        parse_mode="Markdown",
+        reply_markup=main_menu_keyboard()
+    )
+
+# =========================================
+# BACK TO MENU FROM QR
+# =========================================
+
+async def back_to_main_menu_qr(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    try:
+        await query.message.delete()
+    except:
+        pass
+
+    text = (
+        "╔══════════════════╗\n"
+        " 🆆🅴🅻🅲🅾🅼🅴 🅱🆄🅳🅳🆈\n"
+        "╚══════════════════╝\n\n"
+
+        "🪩 *Welcome To BeSt ChEat SHOP* 🔮\n\n"
+
+        "❄️ *Here you can purchase all tg premium*\n"
+        "*hacks for Android & IOS..* 💥\n\n"
+
+        "🔻 ***Continue Shopping Premium***\n"
+        "***Option Below..*** 🛍️"
+    )
+
+    await context.bot.send_message(
+        chat_id=query.message.chat.id,
+        text=text,
+        parse_mode="Markdown",
+        reply_markup=main_menu_keyboard()
     )
 
 # =========================================
@@ -719,7 +781,7 @@ async def how_to_use(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "📖 *HOW TO BUY PREMIUM*\n\n"
 
             "1️⃣ Click Premium Shop\n"
-            "2️⃣ Select Your Product\n"
+            "2️⃣ Select Product\n"
             "3️⃣ Select Plan\n"
             "4️⃣ Scan QR & Pay\n"
             "5️⃣ Click Verify Payment\n"
@@ -768,16 +830,14 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "💬 *PREMIUM SUPPORT CENTER*\n\n"
 
             "⚡ Fast Support Available\n"
-            "⏰ Active : 9AM To 11PM\n\n"
-
-            "Click Below Button To Contact Owner."
+            "⏰ Active : 9AM To 11PM"
         ),
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
 # =========================================
-# REFER & EARN
+# REFER EARN
 # =========================================
 
 async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -884,6 +944,13 @@ def main():
         CallbackQueryHandler(
             cancel_order,
             pattern="^cancel_order$"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            back_to_main_menu_qr,
+            pattern="^main_menu_qr$"
         )
     )
 

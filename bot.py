@@ -1217,6 +1217,7 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     final_key = f"{days}x-{game_key}"
 
     text = (
+
         "🎉 *Payment Successful!*\n\n"
 
         f"🎮 Game : {game}\n"
@@ -1225,9 +1226,12 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         "📋 *Order Details :*\n\n"
 
+        f"👤 Username : @{query.from_user.username}\n"
+        f"🆔 User ID : `{user_id}`\n\n"
+
         f"🆔 Order ID : `{order_id}`\n"
-        f"🕒 Payment Time : {payment_time}\n"
-        f"⚠️ Expiry Time : {expiry_time}\n\n"
+        f"🕒 Purchase Time : {payment_time}\n"
+        f"⚠️ Expire Time : {expiry_time}\n\n"
 
         "━━━━━━━━━━━━━━━━━━\n\n"
 
@@ -1236,56 +1240,57 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "━━━━━━━━━━━━━━━━━━\n\n"
 
         "❄️ Thanks For Purchasing 💥"
+
     )
 
-await context.bot.send_message(
+    await context.bot.send_message(
         chat_id=user_id,
         text=text,
         parse_mode="Markdown"
     )
 
-        # =====================================
-        # SAVE USER ORDER HISTORY
-        # =====================================
+    # =====================================
+    # SAVE USER ORDER HISTORY
+    # =====================================
 
-        data = load_data()
+    data = load_data()
 
-        user_id_str = str(user_id)
+    user_id_str = str(user_id)
 
-        if user_id_str not in data:
+    if user_id_str not in data:
 
-            get_user(user_id_str)
+        get_user(user_id_str)
 
-        try:
+    try:
 
-            user_info = await context.bot.get_chat(
-                user_id
-            )
+        user_info = await context.bot.get_chat(
+            user_id
+        )
 
-            username = (
-                user_info.username
-                or "NoUsername"
-            )
+        username = (
+            user_info.username
+            or "NoUsername"
+        )
 
-        except:
+    except:
 
-            username = "NoUsername"
+        username = "NoUsername"
 
-        data[user_id_str]["total_orders"] += 1
+    data[user_id_str]["total_orders"] += 1
 
-        data[user_id_str]["orders"].append({
+    data[user_id_str]["orders"].append({
 
-            "game": game,
-            "plan": clean_plan,
-            "amount": amount,
-            "username": username,
-            "user_id": user_id,
-            "purchase_time": payment_time_text,
-            "expiry_time": expiry_time_text
+        "game": game,
+        "plan": plan,
+        "amount": amount,
+        "username": username,
+        "user_id": user_id,
+        "purchase_time": payment_time,
+        "expiry_time": expiry_time
 
-        })
+    })
 
-        save_data(data)
+    save_data(data)
 
     await query.message.edit_text(
         "🍓 KeY Delevery Successfully"

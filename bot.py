@@ -813,13 +813,14 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         )
 
-        # AUTO DELETE AFTER 15 SEC
-        await asyncio.sleep(15)
-
-        try:
-            await verify_msg.delete()
-        except:
-            pass
+        # AUTO DELETE MESSAGE WITHOUT DELAY
+        asyncio.create_task(
+            auto_delete_message(
+                context.bot,
+                user_id,
+                verify_msg.message_id
+            )
+        )
 
         # OWNER DELIVERY PANEL
         keyboard = [

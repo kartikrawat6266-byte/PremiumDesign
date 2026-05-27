@@ -230,7 +230,7 @@ async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         "🌈 *Welcome To BeSt ChEat SHOP* 🎨\n\n"
 
         "❄️ _Here you can purchase all tg premium_\n"
-        "_hacks for Android & IOS.._ 💥\n\n"
+        "_hacks for Android & IOS...💥\n\n"
 
         "🔻*Continue Shopping Premium*\n"
         "*Option Below...*🛍️"

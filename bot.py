@@ -1721,7 +1721,7 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
 
         "╔════════════════════╗\n"
-        "    🎁 𝗥𝗘𝗙𝗘𝗥 & 𝗘𝗔𝗥𝗡 💸\n"
+        "#.   🎁 𝗥𝗘𝗙𝗘𝗥 & 𝗘𝗔𝗥𝗡 💸\n"
         "╚════════════════════╝\n\n"
 
         "✨ *Invite Your Friends & Earn Money*\n\n"
@@ -1767,7 +1767,21 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
     ]
 
-    await query.message.edit_text(
+    # =====================================
+    # AUTO DELETE OLD MESSAGE
+    # =====================================
+
+    try:
+        await query.message.delete()
+    except:
+        pass
+
+    # =====================================
+    # SEND NEW REFER MESSAGE
+    # =====================================
+
+    await context.bot.send_message(
+        chat_id=query.message.chat.id,
         text=text,
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup(keyboard)

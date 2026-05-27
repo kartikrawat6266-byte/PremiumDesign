@@ -667,14 +667,17 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         pass
 
+    # USER KO CANCEL MESSAGE + MAIN MENU
     await context.bot.send_message(
         chat_id=user_id,
         text=(
-            "⚠️ Payment not received yet.\n"
-            "Please try again in a few seconds."
-        )
+            "⚠️ Payment Cancelled By Owner.\n\n"
+            "Please Create New Payment."
+        ),
+        reply_markup=main_menu_keyboard()
     )
 
+    # OWNER PANEL UPDATE
     await query.message.edit_text(
         "🍫 User Payment Cancelled Successfully"
     )

@@ -1,6 +1,6 @@
 # =========================================
 # PREMIUM TELEGRAM STORE BOT
-# FULL FIXED VERSION
+# ULTRA PREMIUM FULL FIXED VERSION
 # =========================================
 
 import os
@@ -14,6 +14,7 @@ from telegram import (
     Update,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
+    ReplyKeyboardRemove
 )
 
 from telegram.ext import (
@@ -64,6 +65,7 @@ def current_time():
 # =========================================
 
 def load_data():
+
     if not os.path.exists(DB_FILE):
         return {}
 
@@ -74,6 +76,7 @@ def load_data():
         return {}
 
 def save_data(data):
+
     with open(DB_FILE, "w") as f:
         json.dump(data, f, indent=4)
 
@@ -82,6 +85,7 @@ def get_user(user_id):
     data = load_data()
 
     if user_id not in data:
+
         data[user_id] = {
             "name": "",
             "username": "",
@@ -114,7 +118,7 @@ def update_user(user_id, updates):
     save_data(data)
 
 # =========================================
-# KEYBOARDS
+# MAIN MENU BUTTONS
 # =========================================
 
 def main_menu_keyboard():
@@ -123,38 +127,38 @@ def main_menu_keyboard():
 
         [
             InlineKeyboardButton(
-                "🛒 Premium Shop",
+                "🛒 PREMIUM SHOP",
                 callback_data="shop_now"
             )
         ],
 
         [
             InlineKeyboardButton(
-                "📦 Premium Orders",
+                "📦 MY ORDERS",
                 callback_data="my_orders"
             ),
 
             InlineKeyboardButton(
-                "👤 Premium Profile",
+                "👤 PROFILE",
                 callback_data="profile"
             )
         ],
 
         [
             InlineKeyboardButton(
-                "📖 Premium Guide",
+                "📖 HOW TO USE",
                 callback_data="how_to_use"
             ),
 
             InlineKeyboardButton(
-                "💬 Premium Support",
+                "💬 SUPPORT",
                 callback_data="support"
             )
         ],
 
         [
             InlineKeyboardButton(
-                "💰 Premium Refer & Earn",
+                "💰 REFER & EARN",
                 callback_data="refer_earn"
             )
         ]
@@ -181,14 +185,25 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         })
 
     text = (
-        "🏠 *Main Menu*\n\n"
-        "Choose an option:"
+        "👋 *WELCOME TO BEST CHEAT SHOP* 👋\n\n"
+
+        "❄️ *Here you can purchase all TG premium hacks "
+        "for Android & IOS..* 💥\n\n"
+
+        "━━━━━━━━━━━━━━━━━━\n\n"
+
+        "🔥 *ULTRA FAST DELIVERY*\n"
+        "💎 *PREMIUM QUALITY PRODUCTS*\n"
+        "⚡ *INSTANT KEY DELIVERY*\n\n"
+
+        "👇 *Choose an option below:*"
     )
 
     await update.message.reply_text(
         text=text,
         reply_markup=main_menu_keyboard(),
-        parse_mode="Markdown"
+        parse_mode="Markdown",
+        reply_markup_remove=True if False else None
     )
 
 # =========================================
@@ -206,8 +221,18 @@ async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         pass
 
     text = (
-        "🏠 *Main Menu*\n\n"
-        "Choose an option:"
+        "👋 *WELCOME TO BEST CHEAT SHOP* 👋\n\n"
+
+        "❄️ *Here you can purchase all TG premium hacks "
+        "for Android & IOS..* 💥\n\n"
+
+        "━━━━━━━━━━━━━━━━━━\n\n"
+
+        "🔥 *ULTRA FAST DELIVERY*\n"
+        "💎 *PREMIUM QUALITY PRODUCTS*\n"
+        "⚡ *INSTANT KEY DELIVERY*\n\n"
+
+        "👇 *Choose an option below:*"
     )
 
     await context.bot.send_message(
@@ -244,14 +269,17 @@ async def shop_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard.append([
         InlineKeyboardButton(
-            "⬅️ Back to Menu",
+            "⬅️ BACK TO MENU",
             callback_data="main_menu"
         )
     ])
 
     await context.bot.send_message(
         chat_id=query.message.chat_id,
-        text="🛒 *Premium Products*\n\nSelect your plan:",
+        text=(
+            "🛒 *PREMIUM PRODUCTS*\n\n"
+            "💎 Choose your premium plan below:"
+        ),
         reply_markup=InlineKeyboardMarkup(keyboard),
         parse_mode="Markdown"
     )
@@ -278,25 +306,28 @@ async def buy_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         [
             InlineKeyboardButton(
-                "✅ I Have Paid",
+                "✅ I HAVE PAID",
                 callback_data=f"paid_{product_name}"
             )
         ],
 
         [
             InlineKeyboardButton(
-                "⬅️ Back",
+                "⬅️ BACK",
                 callback_data="shop_now"
             )
         ]
     ]
 
     text = (
-        f"💸 *Payment Required*\n\n"
-        f"📦 Product: {product_name}\n"
-        f"💰 Amount: ₹{price}\n\n"
-        f"💳 UPI ID:\n`{UPI_ID}`\n\n"
-        f"⚠️ Pay exact amount."
+        "💸 *PAYMENT REQUIRED*\n\n"
+
+        f"📦 *Product:* {product_name}\n"
+        f"💰 *Amount:* ₹{price}\n\n"
+
+        f"💳 *UPI ID:*\n`{UPI_ID}`\n\n"
+
+        "⚠️ *Pay exact amount only.*"
     )
 
     await context.bot.send_message(
@@ -330,7 +361,7 @@ async def paid(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # =========================================
-# HANDLE PAYMENT NAME
+# HANDLE MESSAGE
 # =========================================
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -368,9 +399,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.pop("pending_product")
 
     await update.message.reply_text(
-        f"🎉 *Payment Confirmed!*\n\n"
-        f"📦 Product: {product}\n"
-        f"🔑 Key: `{key}`",
+        f"🎉 *PAYMENT CONFIRMED!*\n\n"
+        f"📦 *Product:* {product}\n"
+        f"🔑 *Your Key:* `{key}`",
         parse_mode="Markdown",
         reply_markup=main_menu_keyboard()
     )
@@ -399,6 +430,7 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         text = (
             "📭 *No orders yet!*\n\n"
+
             "Start shopping to see your orders here."
         )
 
@@ -406,14 +438,14 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             [
                 InlineKeyboardButton(
-                    "🛒 Shop Now",
+                    "🛒 SHOP NOW",
                     callback_data="shop_now"
                 )
             ],
 
             [
                 InlineKeyboardButton(
-                    "⬅️ Back to Menu",
+                    "⬅️ BACK TO MENU",
                     callback_data="main_menu"
                 )
             ]
@@ -428,7 +460,7 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         return
 
-    text = "📦 *Your Orders*\n\n"
+    text = "📦 *YOUR ORDERS*\n\n"
 
     for order in orders:
 
@@ -442,7 +474,7 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = InlineKeyboardMarkup([
         [
             InlineKeyboardButton(
-                "⬅️ Back to Menu",
+                "⬅️ BACK TO MENU",
                 callback_data="main_menu"
             )
         ]
@@ -481,7 +513,7 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
         pass
 
     text = (
-        "👤 *User Account Information*\n"
+        "👤 *USER ACCOUNT INFORMATION*\n"
         "━━━━━━━━━━━━━━━━━━\n\n"
 
         f"👤 *Name:* {user_data['name']}\n"
@@ -495,14 +527,14 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         "━━━━━━━━━━━━━━━━━━\n\n"
 
-        f"⏰ *Joined Date:* {user_data['joined']}\n"
+        f"📅 *Joined Date:* {user_data['joined']}\n"
         f"⚡ *Activity Time:* {user_data['last_activity']}"
     )
 
     keyboard = InlineKeyboardMarkup([
         [
             InlineKeyboardButton(
-                "⬅️ Back to Menu",
+                "⬅️ BACK TO MENU",
                 callback_data="main_menu"
             )
         ]
@@ -530,23 +562,23 @@ async def how_to_use(update: Update, context: ContextTypes.DEFAULT_TYPE):
         pass
 
     text = (
-        "📖 *How to Buy — SATYAM X MOD STORE*\n\n"
+        "📖 *HOW TO BUY — BEST CHEAT SHOP*\n\n"
 
-        "1️⃣ Tap 🛒 Shop Now\n"
+        "1️⃣ Tap 🛒 SHOP NOW\n"
         "2️⃣ Pick your product & plan\n"
         "3️⃣ Scan the UPI QR or copy UPI ID\n"
         "4️⃣ Pay the exact amount shown\n"
-        "5️⃣ Tap ✅ I Have Paid\n"
+        "5️⃣ Tap ✅ I HAVE PAID\n"
         "6️⃣ Enter your UPI registered name\n"
-        "7️⃣ Sit back — your key arrives in seconds! 🚀\n\n"
+        "7️⃣ Sit back — your key arrives instantly! 🚀\n\n"
 
-        "⚠️ Always pay exact amount."
+        "⚠️ *Always pay exact amount including paisa.*"
     )
 
     keyboard = InlineKeyboardMarkup([
         [
             InlineKeyboardButton(
-                "⬅️ Back",
+                "⬅️ BACK",
                 callback_data="main_menu"
             )
         ]
@@ -581,24 +613,24 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "regarding our services, feel free to contact\n"
         "our expert team.\n\n"
 
-        "⏰ Active Time: 9 AM - 11 PM\n"
-        "✅ Response: Waiting 5-10 Minutes\n\n"
+        "⏰ *Active Time:* 9 AM - 11 PM\n"
+        "✅ *Response:* 5-10 Minutes\n\n"
 
-        "Click the button below to start a chat:"
+        "👇 Click below to contact owner:"
     )
 
     keyboard = InlineKeyboardMarkup([
 
         [
             InlineKeyboardButton(
-                "✨ Contact Owner",
+                "✨ CONTACT OWNER",
                 url=f"https://t.me/{OWNER_USERNAME}"
             )
         ],
 
         [
             InlineKeyboardButton(
-                "⬅️ Back to Menu",
+                "⬅️ BACK TO MENU",
                 callback_data="main_menu"
             )
         ]
@@ -637,14 +669,14 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
         pass
 
     text = (
-        "😉 *Referral Program*\n"
+        "😉 *REFERRAL PROGRAM*\n"
         "━━━━━━━━━━━━━━━━━━\n\n"
 
         "Invite your friends and earn real balance\n"
         "for every successful joining.\n\n"
 
         f"😉 *Total Refers:* {user_data['total_refers']} User(s)\n"
-        f"💰 *Invite Reward:* INR {user_data['referral_earnings']:.2f} INR\n\n"
+        f"💰 *Invite Reward:* INR {user_data['referral_earnings']:.2f}\n\n"
 
         "━━━━━━━━━━━━━━━━━━\n\n"
 
@@ -658,7 +690,7 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         [
             InlineKeyboardButton(
-                "🗣 Share with Friend",
+                "🗣 SHARE WITH FRIEND",
                 url=(
                     "https://t.me/share/url?"
                     f"url={referral_link}"
@@ -668,7 +700,7 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         [
             InlineKeyboardButton(
-                "⬅️ Back to Menu",
+                "⬅️ BACK TO MENU",
                 callback_data="main_menu"
             )
         ]
@@ -761,7 +793,7 @@ def main():
         )
     )
 
-    print("BOT STARTED")
+    print("BOT STARTED SUCCESSFULLY")
 
     app.run_polling()
 

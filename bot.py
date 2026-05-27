@@ -236,71 +236,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user = update.effective_user
 
-    # =====================================
-    # REFERRAL SYSTEM
-    # =====================================
-
-    if context.args:
-
-        ref_data = context.args[0]
-
-        if ref_data.startswith("ref_"):
-
-            referrer_id = ref_data.replace(
-                "ref_",
-                ""
-            )
-
-            if str(user.id) != referrer_id:
-
-                data = load_data()
-
-                user_id = str(user.id)
-
-                # NEW USER ONLY
-                if user_id not in data:
-
-                    get_user(user_id)
-
-                    data = load_data()
-
-                    if referrer_id in data:
-
-                        data[referrer_id][
-                            "referral_earnings"
-                        ] += 5
-
-                        data[referrer_id][
-                            "total_refers"
-                        ] += 1
-
-                        save_data(data)
-
-                        try:
-
-                            await context.bot.send_message(
-
-                                chat_id=int(referrer_id),
-
-                                text=(
-
-                                    "🎉 *New Referral Joined*\n\n"
-
-                                    f"💸 *You Earned ₹5 Reward*\n\n"
-
-                                    f"👥 *Total Refers :* "
-                                    f"`{data[referrer_id]['total_refers']}`\n"
-
-                                    f"💰 *Balance :* "
-                                    f"`₹{data[referrer_id]['referral_earnings']}`"
-                                ),
-
-                                parse_mode="Markdown"
-                            )
-
-                        except:
-                            pass
-
     user_id = str(user.id)
 
     data = load_data()
@@ -339,7 +274,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         if ref_arg.startswith("ref_"):
 
-            referrer_id = ref_arg.replace("ref_", "")
+            referrer_id = ref_arg.replace(
+                "ref_",
+                ""
+            )
 
             # SELF REFERRAL BLOCK
             if referrer_id != user_id:
@@ -347,15 +285,27 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 if referrer_id in data:
 
                     # DUPLICATE JOIN BLOCK
-                    if user_id not in data[referrer_id]["referred_users"]:
+                    if user_id not in data[
+                        referrer_id
+                    ][
+                        "referred_users"
+                    ]:
 
-                        data[referrer_id]["referred_users"].append(user_id)
+                        data[referrer_id][
+                            "referred_users"
+                        ].append(user_id)
 
-                        data[referrer_id]["total_refers"] += 1
+                        data[referrer_id][
+                            "total_refers"
+                        ] += 1
 
-                        data[referrer_id]["referral_balance"] += 5
+                        data[referrer_id][
+                            "referral_balance"
+                        ] += 5
 
-                        data[referrer_id]["referral_earnings"] += 5
+                        data[referrer_id][
+                            "referral_earnings"
+                        ] += 5
 
                         try:
 
@@ -367,18 +317,27 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
                                     "🎉 *New Referral Joined Successfully*\n\n"
 
-                                    f"💸 ₹5 Added To Your Balance\n\n"
+                                    "💸 *₹5 Added To Your Balance*\n\n"
 
-                                    f"👥 Total Refers : "
-                                    f"{data[referrer_id]['total_refers']}\n"
+                                    f"🧚🏻 *Total Refers :* "
+                                    f"`{data[referrer_id]['total_refers']}`\n"
 
-                                    f"💰 Balance : "
-                                    f"₹{data[referrer_id]['referral_balance']}"
+                                    f"💰 *Balance :* "
+                                    f"`₹{data[referrer_id]['referral_balance']}`"
 
                                 ),
 
-                                parse_mode="Markdown"
+                                parse_mode="Markdown",
 
+                                reply_markup=InlineKeyboardMarkup([
+
+                                    [
+                                        InlineKeyboardButton(
+                                            "🈲 Back To Main Menu",
+                                            callback_data="main_menu"
+                                        )
+                                    ]
+                                ])
                             )
 
                         except:
@@ -1827,70 +1786,78 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     data = load_data()
 
-    user_data = data.get(user_id)
+    balance = data[user_id].get(
+        "referral_earnings",
+        0
+    )
 
-    if not user_data:
-        return
-
-    earnings = user_data.get("referral_earnings", 0)
-
-    # =====================================
+    # ==============================
     # NOT ENOUGH BALANCE
-    # =====================================
+    # ==============================
 
-    if earnings < 75:
+    if balance < 75:
+
+        need = 75 - balance
 
         await query.answer(
-            "❌ You Need ₹75 To Claim Free Key",
+            text=f"🈲 Need ₹{need} More Balance To Claim Key 🗝️",
             show_alert=True
         )
 
         return
 
-    # =====================================
+    # ==============================
     # ALREADY CLAIMED
-    # =====================================
+    # ==============================
 
-    if "FREE-KEY" in user_data.get(
+    if "FREE-KEY" in data[user_id].get(
         "claimed_keys",
         []
     ):
 
         await query.answer(
-            "❌ You Already Claimed Free Key",
+            text="🈲 You Already Claimed Free Key 🧚🏻",
             show_alert=True
         )
 
         return
 
-    # =====================================
-    # FREE KEY
-    # =====================================
+    # ==============================
+    # REMOVE BALANCE
+    # ==============================
 
-    free_key = (
-        "FREE-7DAY-DRIP-CLIENT"
-    )
+    data[user_id]["referral_earnings"] -= 75
 
-    # =====================================
     # SAVE CLAIM
-    # =====================================
-
-    user_data["referral_earnings"] -= 75
-
-    user_data["claimed_keys"].append(
+    data[user_id]["claimed_keys"].append(
         "FREE-KEY"
     )
 
     save_data(data)
 
-    # =====================================
+    # ==============================
+    # RANDOM PREMIUM KEY
+    # ==============================
+
+    free_key = (
+        "FREE-KEY-" +
+        ''.join(
+            random.choices(
+                string.ascii_uppercase +
+                string.digits,
+                k=10
+            )
+        )
+    )
+
+    # ==============================
     # PREMIUM MESSAGE
-    # =====================================
+    # ==============================
 
     text = (
 
         "╔════════════════════╗\n"
-        " 🎁 𝗙𝗥𝗘𝗘 𝗞𝗘𝗬 𝗖𝗟𝗔𝗜𝗠𝗘𝗗 🔥\n"
+        "  🎁 𝗙𝗥𝗘𝗘 𝗞𝗘𝗬 𝗖𝗟𝗔𝗜𝗠𝗘𝗗 🔥\n"
         "╚════════════════════╝\n\n"
 
         "✨ *Congratulations Buddy*\n\n"
@@ -1911,15 +1878,19 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "💖 *Keep Sharing & Keep Earning*"
     )
 
-    keyboard = [
+    await query.message.edit_text(
+        text=text,
+        parse_mode="Markdown",
+        reply_markup=InlineKeyboardMarkup([
 
-        [
-            InlineKeyboardButton(
-                "🍓 Back To Main Menu",
-                callback_data="main_menu"
-            )
-        ]
-    ]
+            [
+                InlineKeyboardButton(
+                    "🍓 Back To Main Menu",
+                    callback_data="main_menu"
+                )
+            ]
+        ])
+    )
 
     await query.message.edit_text(
         text=text,

@@ -45,7 +45,7 @@ UPI_ID = "kartikrawat6266@okhdfcbank"
 
 OWNER_USERNAME = "SATYAM_X_OFC"
 
-OWNER_ID = 123456789  # APNA TELEGRAM ID
+OWNER_ID = 123456789
 
 IST = timezone(timedelta(hours=5, minutes=30))
 
@@ -224,22 +224,23 @@ def main_menu_keyboard():
     return InlineKeyboardMarkup(keyboard)
 
 # =========================================
+# START
 # =========================================
-# CANCEL ORDER
-# =========================================
 
-async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    query = update.callback_query
-    await query.answer()
+    user = update.effective_user
+    user_id = str(user.id)
 
-    # QR MESSAGE DELETE
-    try:
-        await query.message.delete()
-    except:
-        pass
+    user_data = get_user(user_id)
 
-    # MAIN MENU OPEN
+    if not user_data["name"]:
+
+        update_user(user_id, {
+            "name": user.full_name,
+            "username": user.username or ""
+        })
+
     text = (
         "╔══════════════════╗\n"
         " 🆆🅴🅻🅲🅾🅼🅴 🅱🆄🅳🅳🆈\n"
@@ -248,14 +249,13 @@ async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "🪩 *Welcome To BeSt ChEat SHOP* 🔮\n\n"
 
         "❄️ *Here you can purchase all tg premium*\n"
-        "*hacks for Android & IOS..* 💥\n\n"
+        "*hacks for Android & IOS..*💥\n\n"
 
         "🔻 *Continue Shopping Premium*\n"
         "*Option Below..* 🛍️"
     )
 
-    await context.bot.send_message(
-        chat_id=query.message.chat.id,
+    await update.message.reply_text(
         text=text,
         parse_mode="Markdown",
         reply_markup=main_menu_keyboard()
@@ -436,6 +436,9 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             "⚠️ QR Will Expire Automatically After 10 Minutes.\n\n"
 
+            "🚫 After 10 Minutes Don't Send Payment.\n"
+            "Create A New QR For Successful Payment.\n\n"
+
             "✅ After Payment Click Verify Payment\n\n"
 
             "💖 Thank You For Choosing Us"
@@ -452,18 +455,13 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             [
                 InlineKeyboardButton(
-                    "❌ CANCEL ORDER",
+                    "❌ CANCEL",
                     callback_data="cancel_order"
-                )
-            ],
-
-            [
-                InlineKeyboardButton(
-                    "⬅️ BACK TO MAIN MENU",
-                    callback_data="main_menu"
                 )
             ]
         ]
+
+        await query.message.delete()
 
         await context.bot.send_photo(
             chat_id=query.message.chat.id,
@@ -513,30 +511,7 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             f"👤 User ID : `{query.from_user.id}`"
         ),
-        parse_mode="Markdown",
-        reply_markup=InlineKeyboardMarkup([
-
-            [
-                InlineKeyboardButton(
-                    "✅ APPROVE PAYMENT",
-                    callback_data=f"approve|{query.from_user.id}|{game}|{plan}|{amount}"
-                )
-            ],
-
-            [
-                InlineKeyboardButton(
-                    "🔑 DELIVERY KEY",
-                    callback_data=f"delivery|{query.from_user.id}|{game}|{plan}|{amount}"
-                )
-            ],
-
-            [
-                InlineKeyboardButton(
-                    "❌ CANCEL DELIVERY",
-                    callback_data=f"canceldelivery|{query.from_user.id}"
-                )
-            ]
-        ])
+        parse_mode="Markdown"
     )
 
     await asyncio.sleep(5)
@@ -547,101 +522,6 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         pass
 
 # =========================================
-# APPROVE PAYMENT
-# =========================================
-
-async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    query = update.callback_query
-    await query.answer()
-
-    data = query.data.split("|")
-
-    user_id = int(data[1])
-
-    emoji_msg = await context.bot.send_message(
-        chat_id=user_id,
-        text="🎉💖✅ PAYMENT APPROVED"
-    )
-
-    await asyncio.sleep(5)
-
-    try:
-        await emoji_msg.delete()
-    except:
-        pass
-
-    await query.message.edit_text(
-        "✅ PAYMENT APPROVED SUCCESSFULLY"
-    )
-
-# =========================================
-# DELIVERY KEY
-# =========================================
-
-async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    query = update.callback_query
-    await query.answer()
-
-    data = query.data.split("|")
-
-    user_id = int(data[1])
-    game = data[2]
-    plan = data[3]
-    amount = data[4]
-
-    key = ''.join(random.choices(
-        string.ascii_uppercase + string.digits,
-        k=16
-    ))
-
-    await context.bot.send_message(
-        chat_id=user_id,
-        text=(
-            "✅ *PAYMENT APPROVED*\n\n"
-
-            f"🎮 Product : {game}\n"
-            f"📦 Plan : {plan}\n"
-            f"💰 Amount : ₹{amount}\n\n"
-
-            f"🔑 Key : `{key}`\n\n"
-
-            "💖 Thanks For Purchasing."
-        ),
-        parse_mode="Markdown"
-    )
-
-    await query.message.edit_text(
-        "🔑 DELIVERY SENT SUCCESSFULLY"
-    )
-
-# =========================================
-# CANCEL DELIVERY
-# =========================================
-
-async def cancel_delivery(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    query = update.callback_query
-    await query.answer()
-
-    data = query.data.split("|")
-
-    user_id = int(data[1])
-
-    await context.bot.send_message(
-        chat_id=user_id,
-        text=(
-            "⚠️ Payment not received yet.\n"
-            "Please try again in a few seconds."
-        )
-    )
-
-    await query.message.edit_text(
-        "❌ DELIVERY CANCELLED"
-    )
-
-# =========================================
 # CANCEL ORDER
 # =========================================
 
@@ -650,7 +530,31 @@ async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    await shop_now(update, context)
+    try:
+        await query.message.delete()
+    except:
+        pass
+
+    text = (
+        "╔══════════════════╗\n"
+        " 🆆🅴🅻🅲🅾🅼🅴 🅱🆄🅳🅳🆈\n"
+        "╚══════════════════╝\n\n"
+
+        "🪩 *Welcome To BeSt ChEat SHOP* 🔮\n\n"
+
+        "❄️ *Here you can purchase all tg premium*\n"
+        "*hacks for Android & IOS..*💥\n\n"
+
+        "🔻 *Continue Shopping Premium*\n"
+        "*Option Below..* 🛍️"
+    )
+
+    await context.bot.send_message(
+        chat_id=query.message.chat.id,
+        text=text,
+        parse_mode="Markdown",
+        reply_markup=main_menu_keyboard()
+    )
 
 # =========================================
 # MY ORDERS
@@ -872,27 +776,6 @@ def main():
         CallbackQueryHandler(
             verify_payment,
             pattern=r"^verify\|"
-        )
-    )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            approve_payment,
-            pattern=r"^approve\|"
-        )
-    )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            delivery_key,
-            pattern=r"^delivery\|"
-        )
-    )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            cancel_delivery,
-            pattern=r"^canceldelivery\|"
         )
     )
 

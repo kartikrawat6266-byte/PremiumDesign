@@ -1779,12 +1779,11 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-      query = update.callback_query
+    query = update.callback_query
 
-      user_id = str(query.from_user.id)
+    user_id = str(query.from_user.id)
 
-      data = load_data()
-    
+    data = load_data()
 
     # AUTO CREATE USER
     if user_id not in data:
@@ -1827,7 +1826,7 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
         return
-        
+
     # ==============================
     # ALREADY CLAIMED
     # ==============================
@@ -1858,10 +1857,7 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     save_data(data)
 
-    # ==============================
-    # RANDOM PREMIUM KEY
-    # ==============================
-
+    # RANDOM KEY
     free_key = (
         "FREE-KEY-" +
         ''.join(
@@ -1873,32 +1869,23 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     )
 
-    # ==============================
-    # PREMIUM MESSAGE
-    # ==============================
-
     text = (
 
         "╔════════════════════╗\n"
         "  🎁 𝗙𝗥𝗘𝗘 𝗞𝗘𝗬 𝗖𝗟𝗔𝗜𝗠𝗘𝗗 🔥\n"
         "╚════════════════════╝\n\n"
 
-        "✨ *Congratulations Buddy*\n\n"
+        "✨ Congratulations Buddy\n\n"
 
-        "🎮 *Mod Name :* `Drip ClieNt`\n"
-        "⏳ *Plan :* `7 Day`\n"
-        "💸 *Price :* `₹75`\n\n"
-
-        "━━━━━━━━━━━━━━━━━━\n\n"
-
-        "🔑 *Your Premium Key :*\n\n"
-
-        f"`{free_key}`\n\n"
+        "🎮 Mod Name : Drip ClieNt\n"
+        "⏳ Plan : 7 Day\n"
+        "💸 Price : ₹75\n\n"
 
         "━━━━━━━━━━━━━━━━━━\n\n"
 
-        "🚀 *Thanks For Using Referral System*\n"
-        "💖 *Keep Sharing & Keep Earning*"
+        f"🔑 Your Premium Key :\n\n`{free_key}`\n\n"
+
+        "━━━━━━━━━━━━━━━━━━"
     )
 
     await query.message.edit_text(
@@ -1913,7 +1900,7 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
             ]
         ])
-    )
+    )    
     
 # =========================================
 # MAIN

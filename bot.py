@@ -508,23 +508,28 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
         username = "Not Set"
 
     text = (
-        "👤 *PREMIUM USER PROFILE*\n"
-        "━━━━━━━━━━━━━━━━━━\n\n"
+        "╔══════════════════╗\n"
+        "🅿🆁🅴🅼🅸🆄🅼 🅿🆁🅾🅵🅸🅻🅴\n"
+        "╚══════════════════╝\n\n"
 
-        f"👤 Name : {user_data['name']}\n"
-        f"🆔 Username : {username}\n"
-        f"🆔 User ID : `{user_id}`\n\n"
+       f"👤 ***Name :*** _{user_data['name']}_\n"
+       f"🆔 ***Username :*** _{username}_\n"
+       f"💎 ***User ID :*** _`{user_id}`_\n\n"
 
-        "━━━━━━━━━━━━━━━━━━\n\n"
+        "╔══════════════════╗\n"
+        " 📦 🆄🆂🅴🆁 🆂🆃🅰🆃🆂 📦\n"
+        "╚══════════════════╝\n\n"
 
-        f"📦 Total Orders : {user_data['total_orders']}\n"
-        f"💰 Referral Earnings : ₹{user_data['referral_earnings']:.2f}\n"
-        f"👥 Total Refers : {user_data['total_refers']}\n\n"
+       f"📦 ***Total Orders :*** _{user_data['total_orders']}_\n"
+       f"💰 ***Referral Earnings :*** _₹{user_data['referral_earnings']:.2f}_\n"
+       f"👥 ***Total Refers :*** _{user_data['total_refers']}_\n\n"
 
-        "━━━━━━━━━━━━━━━━━━\n\n"
+        "╔══════════════════╗\n"
+        "⏰ 🅰🅲🅲🅾🆄🅽🆃 🆃🅸🅼🅴 ⏰\n"
+        "╚══════════════════╝\n\n"
 
-        f"⏰ Joined : {user_data['joined']}\n"
-        f"⚡ Last Activity : {user_data['last_activity']}"
+       f"📅 ***Joined :*** _{user_data['joined']}_\n"
+       f"⚡ ***Last Activity :*** _{user_data['last_activity']}_"
     )
 
     keyboard = [

@@ -1077,48 +1077,8 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
 # =====================================
-# SAVE DELIVERY DATA
-# =====================================
-
-data = load_data()
-
-user_id_str = str(user_id)
-
-if user_id_str not in data:
-
-    get_user(user_id_str)
-
-    data = load_data()
-
-if "delivery_data" not in context.bot_data:
-
-    context.bot_data["delivery_data"] = {}
-
-context.bot_data["delivery_data"][order_id] = {
-
-    "user_id": user_id,
-    "game": game,
-    "plan": clean_plan,
-    "amount": amount,
-    "payment_time": payment_time_text,
-    "expiry_time": expiry_time_text
-}
-
-data[user_id_str]["pending_delivery"] = {
-
-    "order_id": order_id,
-    "game": game,
-    "plan": clean_plan,
-    "amount": amount,
-    "payment_time": payment_time_text,
-    "expiry_time": expiry_time_text
-}
-
-save_data(data)
-
-# =====================================
-# SAVE USER ORDER HISTORY
-# =====================================
+        # SAVE DELIVERY DATA
+        # =====================================
 
         data = load_data()
 
@@ -1127,6 +1087,48 @@ save_data(data)
         if user_id_str not in data:
 
             get_user(user_id_str)
+
+            data = load_data()
+
+        if "delivery_data" not in context.bot_data:
+
+            context.bot_data["delivery_data"] = {}
+
+        context.bot_data["delivery_data"][order_id] = {
+
+            "user_id": user_id,
+            "game": game,
+            "plan": clean_plan,
+            "amount": amount,
+            "payment_time": payment_time_text,
+            "expiry_time": expiry_time_text
+        }
+
+        data[user_id_str]["pending_delivery"] = {
+
+            "order_id": order_id,
+            "game": game,
+            "plan": clean_plan,
+            "amount": amount,
+            "payment_time": payment_time_text,
+            "expiry_time": expiry_time_text
+        }
+
+        save_data(data)
+
+        # =====================================
+        # SAVE USER ORDER HISTORY
+        # =====================================
+
+        data = load_data()
+
+        user_id_str = str(user_id)
+
+        if user_id_str not in data:
+
+            get_user(user_id_str)
+
+            data = load_data()
 
         try:
 
@@ -1162,7 +1164,7 @@ save_data(data)
         })
 
         save_data(data)
-
+        
         # =====================================
         # OWNER DELIVERY PANEL
         # =====================================

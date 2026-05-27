@@ -814,16 +814,22 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
     ]
 
-    # OWNER PANEL UPDATE
+# REMOVE OLD OWNER BUTTONS
     try:
 
-        await query.message.edit_text(
-            text="🎁 PaYmeNt AppRoVeD\n\nNow Send Delivery Key.",
-            reply_markup=InlineKeyboardMarkup(keyboard)
+        await query.edit_message_reply_markup(
+            reply_markup=None
         )
 
     except:
         pass
+
+    # SEND NEW DELIVERY PANEL
+    await context.bot.send_message(
+        chat_id=query.message.chat.id,
+        text="🎁 PaYmeNt AppRoVeD\n\nNow Send Delivery Key.",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
     
 # =========================================
 # DELIVERY KEY

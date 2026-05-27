@@ -1305,7 +1305,7 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         text = (
 
-            "🎉 *Payment Successful\\!*\n\n"
+            "🎉 *Payment Successful!*\n\n"
 
             f"🎮 *Game :* `{game}`\n"
             f"⏳ *Duration :* `{plan}`\n"
@@ -1333,7 +1333,13 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(
             chat_id=user_id,
             text=text,
-            parse_mode="MarkdownV2"
+            parse_mode="Markdown"
+        )
+
+        await context.bot.send_message(
+            chat_id=user_id,
+            text=text,
+            parse_mode="Markdown"
         )
 
         # =====================================

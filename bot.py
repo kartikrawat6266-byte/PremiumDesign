@@ -144,8 +144,13 @@ def get_user(user_id):
             "last_activity": current_time(),
             "total_orders": 0,
             "orders": [],
+
             "referral_earnings": 0,
             "total_refers": 0,
+
+            "referral_balance": 0,
+            "referred_users": [],
+            "claimed_keys": []
         }
 
         save_data(data)
@@ -230,9 +235,6 @@ def main_menu_keyboard():
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user = update.effective_user
-    user_id = str(user.id)
-
-    user_data = get_user(user_id)
 
     # =====================================
     # REFERRAL SYSTEM
@@ -242,67 +244,147 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         ref_data = context.args[0]
 
-        if ref_data.startswith("ref"):
+        if ref_data.startswith("ref_"):
 
-            referrer_id = ref_data.replace("ref", "")
+            referrer_id = ref_data.replace(
+                "ref_",
+                ""
+            )
 
-            # SELF REFER BLOCK
-            if referrer_id != user_id:
+            if str(user.id) != referrer_id:
 
                 data = load_data()
 
-                # USER EXIST CHECK
+                user_id = str(user.id)
+
+                # NEW USER ONLY
                 if user_id not in data:
 
                     get_user(user_id)
 
                     data = load_data()
 
-                # ONLY FIRST TIME
-                if "referred_by" not in data[user_id]:
-
-                    data[user_id]["referred_by"] = referrer_id
-
-                    # REFERRER EXIST CHECK
                     if referrer_id in data:
 
-                        # ADD REFER COUNT
-                        data[referrer_id]["total_refers"] += 1
+                        data[referrer_id][
+                            "referral_earnings"
+                        ] += 5
 
-                        # ADD ₹5 BALANCE
-                        data[referrer_id]["referral_earnings"] += 5
+                        data[referrer_id][
+                            "total_refers"
+                        ] += 1
 
                         save_data(data)
 
-                        # SEND SUCCESS MESSAGE
                         try:
 
                             await context.bot.send_message(
+
                                 chat_id=int(referrer_id),
+
                                 text=(
-                                    "🎉 *New Referral Joined Successfully!*\n\n"
 
-                                    "👥 *A User Joined Using Your Invite Link*\n"
-                                    "💸 *₹5 Added To Your Referral Balance*\n\n"
+                                    "🎉 *New Referral Joined*\n\n"
 
-                                    "🚀 *Keep Sharing & Earn More Money!*"
+                                    f"💸 *You Earned ₹5 Reward*\n\n"
+
+                                    f"👥 *Total Refers :* "
+                                    f"`{data[referrer_id]['total_refers']}`\n"
+
+                                    f"💰 *Balance :* "
+                                    f"`₹{data[referrer_id]['referral_earnings']}`"
                                 ),
+
                                 parse_mode="Markdown"
                             )
 
                         except:
                             pass
 
-    # =====================================
-    # USER UPDATE
-    # =====================================
+    user_id = str(user.id)
 
-    if not user_data["name"]:
+    data = load_data()
 
-        update_user(user_id, {
+    # ==============================
+    # CREATE USER
+    # ==============================
+
+    if user_id not in data:
+
+        data[user_id] = {
+
             "name": user.full_name,
-            "username": user.username or ""
-        })
+            "username": user.username or "",
+            "joined": current_time(),
+            "last_activity": current_time(),
+
+            "total_orders": 0,
+            "orders": [],
+
+            "referral_earnings": 0,
+            "total_refers": 0,
+
+            "referral_balance": 0,
+            "referred_users": [],
+            "claimed_keys": []
+        }
+
+    # ==============================
+    # REFERRAL SYSTEM
+    # ==============================
+
+    if context.args:
+
+        ref_arg = context.args[0]
+
+        if ref_arg.startswith("ref_"):
+
+            referrer_id = ref_arg.replace("ref_", "")
+
+            # SELF REFERRAL BLOCK
+            if referrer_id != user_id:
+
+                if referrer_id in data:
+
+                    # DUPLICATE JOIN BLOCK
+                    if user_id not in data[referrer_id]["referred_users"]:
+
+                        data[referrer_id]["referred_users"].append(user_id)
+
+                        data[referrer_id]["total_refers"] += 1
+
+                        data[referrer_id]["referral_balance"] += 5
+
+                        data[referrer_id]["referral_earnings"] += 5
+
+                        try:
+
+                            await context.bot.send_message(
+
+                                chat_id=int(referrer_id),
+
+                                text=(
+
+                                    "🎉 *New Referral Joined Successfully*\n\n"
+
+                                    f"💸 ₹5 Added To Your Balance\n\n"
+
+                                    f"👥 Total Refers : "
+                                    f"{data[referrer_id]['total_refers']}\n"
+
+                                    f"💰 Balance : "
+                                    f"₹{data[referrer_id]['referral_balance']}"
+
+                                ),
+
+                                parse_mode="Markdown"
+
+                            )
+
+                        except:
+                            pass
+
+    save_data(data)
 
     # =====================================
     # START MESSAGE
@@ -1666,83 +1748,174 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user_id = str(query.from_user.id)
 
-    data = load_data()
+    user_data = get_user(user_id)
 
-    if user_id not in data:
+    total_refers = user_data.get("total_refers", 0)
+    earnings = user_data.get("referral_earnings", 0)
 
-        get_user(user_id)
-
-        data = load_data()
-
-    # BOT USERNAME
     bot_username = (await context.bot.get_me()).username
 
-    # REF LINK
     referral_link = (
-        f"https://t.me/{bot_username}?start=ref{user_id}"
+        f"https://t.me/{bot_username}?start=ref_{user_id}"
     )
-
-    # USER DATA
-    total_refers = data[user_id].get(
-        "total_refers",
-        0
-    )
-
-    referral_earnings = data[user_id].get(
-        "referral_earnings",
-        0
-    )
-
-    # =====================================
-    # PREMIUM TEXT
-    # =====================================
 
     text = (
 
-        "╔══════════════════════╗\n"
-        "     🎁 𝗥𝗘𝗙𝗘𝗥 & 𝗘𝗔𝗥𝗡 💸\n"
-        "╚══════════════════════╝\n\n"
+        "╔════════════════════╗\n"
+        "#.   🎁 𝗥𝗘𝗙𝗘𝗥 & 𝗘𝗔𝗥𝗡 💸\n"
+        "╚════════════════════╝\n\n"
 
-        "🔥 *Invite Your Friends & Earn Money*\n"
-        "⚡ *Get ₹5 Reward On Every Successful Join*\n"
-        "🚀 *Unlimited Referral Earnings Available*\n"
-        "🎯 *Share More & Unlock Free Premium Keys*\n\n"
+        "✨ *Invite Your Friends & Earn Money*\n\n"
 
-        "━━━━━━━━━━━━━━━━━━\n\n"
-
-        f"👥 *Total Refers :* `{total_refers}` User(s)\n"
-        f"💰 *Referral Balance :* `₹{referral_earnings}` INR\n\n"
+        "🚀 Share your referral link with friends.\n"
+        "💰 When someone joins using your link,\n"
+        "you will receive *₹5 reward instantly.*\n\n"
 
         "━━━━━━━━━━━━━━━━━━\n\n"
 
-        "🔗 *Your Invite Link :*\n\n"
+        f"🔗 *Your Invite Link :*\n"
         f"`{referral_link}`\n\n"
 
         "━━━━━━━━━━━━━━━━━━\n\n"
 
-        "💖 *Share Your Link With Friends*\n"
-        "🎉 *And Start Earning Rewards!*"
-    )
+        f"👥 *Total Refers :* `{total_refers}`\n"
+        f"💸 *Referral Balance :* `₹{earnings}`\n\n"
 
-    # =====================================
-    # BUTTONS
-    # =====================================
+        "🎯 *Keep Sharing & Unlock Free Premium Keys!*"
+    )
 
     keyboard = [
 
         [
             InlineKeyboardButton(
-                "🗣 Share With Friends",
-                url=(
-                    "https://t.me/share/url?"
-                    f"url={referral_link}"
-                )
+                "📤 Share With Friends",
+                url=f"https://t.me/share/url?url={referral_link}"
             )
         ],
 
         [
             InlineKeyboardButton(
-                "🎨 Back To Main Menu",
+                "🎁 Claim Free Key",
+                callback_data="claim_free_key"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "🧚🏻 Back To Main Menu",
+                callback_data="main_menu"
+            )
+        ]
+    ]
+
+    await query.message.edit_text(
+        text=text,
+        parse_mode="Markdown",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+# =========================================
+# CLAIM FREE KEY
+# =========================================
+
+async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    user_id = str(query.from_user.id)
+
+    data = load_data()
+
+    user_data = data.get(user_id)
+
+    if not user_data:
+        return
+
+    earnings = user_data.get("referral_earnings", 0)
+
+    # =====================================
+    # NOT ENOUGH BALANCE
+    # =====================================
+
+    if earnings < 75:
+
+        await query.answer(
+            "❌ You Need ₹75 To Claim Free Key",
+            show_alert=True
+        )
+
+        return
+
+    # =====================================
+    # ALREADY CLAIMED
+    # =====================================
+
+    if "FREE-KEY" in user_data.get(
+        "claimed_keys",
+        []
+    ):
+
+        await query.answer(
+            "❌ You Already Claimed Free Key",
+            show_alert=True
+        )
+
+        return
+
+    # =====================================
+    # FREE KEY
+    # =====================================
+
+    free_key = (
+        "FREE-7DAY-DRIP-CLIENT"
+    )
+
+    # =====================================
+    # SAVE CLAIM
+    # =====================================
+
+    user_data["referral_earnings"] -= 75
+
+    user_data["claimed_keys"].append(
+        "FREE-KEY"
+    )
+
+    save_data(data)
+
+    # =====================================
+    # PREMIUM MESSAGE
+    # =====================================
+
+    text = (
+
+        "╔════════════════════╗\n"
+        " 🎁 𝗙𝗥𝗘𝗘 𝗞𝗘𝗬 𝗖𝗟𝗔𝗜𝗠𝗘𝗗 🔥\n"
+        "╚════════════════════╝\n\n"
+
+        "✨ *Congratulations Buddy*\n\n"
+
+        "🎮 *Mod Name :* `Drip ClieNt`\n"
+        "⏳ *Plan :* `7 Day`\n"
+        "💸 *Price :* `₹75`\n\n"
+
+        "━━━━━━━━━━━━━━━━━━\n\n"
+
+        "🔑 *Your Premium Key :*\n\n"
+
+        f"`{free_key}`\n\n"
+
+        "━━━━━━━━━━━━━━━━━━\n\n"
+
+        "🚀 *Thanks For Using Referral System*\n"
+        "💖 *Keep Sharing & Keep Earning*"
+    )
+
+    keyboard = [
+
+        [
+            InlineKeyboardButton(
+                "🍓 Back To Main Menu",
                 callback_data="main_menu"
             )
         ]
@@ -1848,6 +2021,13 @@ def main():
         )
     )
 
+    app.add_handler(
+        CallbackQueryHandler(
+            claim_free_key,
+            pattern="^claim_free_key$"
+        )
+    )
+    
     app.add_handler(
         CallbackQueryHandler(
             cancel_order,

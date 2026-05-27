@@ -220,13 +220,22 @@ def main_menu_keyboard():
     return InlineKeyboardMarkup(keyboard)
 
 # =========================================
-# MAIN MENU
+# START
 # =========================================
 
-async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    query = update.callback_query
-    await query.answer()
+    user = update.effective_user
+    user_id = str(user.id)
+
+    user_data = get_user(user_id)
+
+    if not user_data["name"]:
+
+        update_user(user_id, {
+            "name": user.full_name,
+            "username": user.username or ""
+        })
 
     text = (
         "╔══════════════════╗\n"
@@ -238,17 +247,11 @@ async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         "❄️ *Here you can purchase all tg premium*\n"
         "*hacks for Android & IOS..*💥\n\n"
 
-        "🔻 ***Continue Shopping Premium***\n"
-        "***Option Below..***🛍️"
+        "🔻 *Continue Shopping Premium*\n"
+        "*Option Below..* 🛍️"
     )
 
-    try:
-        await query.message.delete()
-    except:
-        pass
-
-    await context.bot.send_message(
-        chat_id=query.message.chat.id,
+    await update.message.reply_text(
         text=text,
         parse_mode="Markdown",
         reply_markup=main_menu_keyboard()

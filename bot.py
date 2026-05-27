@@ -495,9 +495,19 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     amount = data[3]
     order_id = data[4]
 
+    user_id = query.from_user.id
+
+    # SAVE QR MESSAGE ID
+    if "qr_messages" not in context.bot_data:
+        context.bot_data["qr_messages"] = {}
+
+    context.bot_data["qr_messages"][str(user_id)] = query.message.message_id
+
     checking = await query.message.reply_text(
         "🔍 Checking Your Payment Please Wait..."
     )
+
+    order_time = current_time()
 
     await context.bot.send_message(
         chat_id=OWNER_ID,
@@ -507,11 +517,28 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"🎮 Product : {game}\n"
             f"📦 Plan : {plan}\n"
             f"💰 Amount : ₹{amount}\n"
-            f"🆔 Order ID : `{order_id}`\n\n"
+            f"🆔 Order ID : `{order_id}`\n"
+            f"⏰ Order Time : `{order_time}`\n\n"
 
-            f"👤 User ID : `{query.from_user.id}`"
+            f"👤 User ID : `{user_id}`"
         ),
-        parse_mode="Markdown"
+        parse_mode="Markdown",
+        reply_markup=InlineKeyboardMarkup([
+
+            [
+                InlineKeyboardButton(
+                    "✅ APPROVE PAYMENT",
+                    callback_data=f"approve|{user_id}|{game}|{plan}|{amount}"
+                )
+            ],
+
+            [
+                InlineKeyboardButton(
+                    "❌ CANCEL PAYMENT",
+                    callback_data=f"cancelpayment|{user_id}"
+                )
+            ]
+        ])
     )
 
     await asyncio.sleep(5)
@@ -554,6 +581,53 @@ async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=text,
         parse_mode="Markdown",
         reply_markup=main_menu_keyboard()
+    )
+
+# =========================================
+# CANCEL PAYMENT
+# =========================================
+
+async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    data = query.data.split("|")
+
+    user_id = int(data[1])
+
+    # DELETE USER QR
+    try:
+
+        qr_message_id = context.bot_data["qr_messages"].get(str(user_id))
+
+        if qr_message_id:
+
+            await context.bot.delete_message(
+                chat_id=user_id,
+                message_id=qr_message_id
+            )
+
+    except:
+        pass
+
+    # SEND MAIN MENU
+    text = (
+        "❌ *PAYMENT CANCELLED*\n\n"
+        "Your order has been cancelled by owner.\n\n"
+
+        "🛍️ Please create a new order."
+    )
+
+    await context.bot.send_message(
+        chat_id=user_id,
+        text=text,
+        parse_mode="Markdown",
+        reply_markup=main_menu_keyboard()
+    )
+
+    await query.message.edit_text(
+        "❌ PAYMENT CANCELLED SUCCESSFULLY"
     )
 
 # =========================================
@@ -765,6 +839,13 @@ def main():
         )
     )
 
+    app.add_handler(
+        CallbackQueryHandler(
+            cancel_payment,
+            pattern=r"^cancelpayment\|"
+        )
+    )
+    
     app.add_handler(
         CallbackQueryHandler(
             create_payment,

@@ -371,8 +371,7 @@ async def game_plans(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
-        
-# =========================================
+    
 # =========================================
 # CREATE PAYMENT
 # =========================================
@@ -637,6 +636,19 @@ async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # CANCEL PAYMENT
 # =========================================
 
+async def auto_delete_cancel_msg(bot, chat_id, message_id):
+
+    await asyncio.sleep(15)
+
+    try:
+        await bot.delete_message(
+            chat_id=chat_id,
+            message_id=message_id
+        )
+    except:
+        pass
+
+
 async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
@@ -646,7 +658,7 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user_id = int(query.data.split("|")[1])
 
-    # OWNER MESSAGE INSTANT UPDATE
+    # OWNER MESSAGE FAST UPDATE
     try:
         await query.message.edit_text(
             "🍫 User Payment Cancelled Successfully"
@@ -654,7 +666,24 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         pass
 
-    # USER SIDE MESSAGE
+    # DELETE USER QR MESSAGE
+    try:
+
+        if "qr_messages" in context.bot_data:
+
+            qr_message_id = context.bot_data["qr_messages"].get(str(user_id))
+
+            if qr_message_id:
+
+                await context.bot.delete_message(
+                    chat_id=user_id,
+                    message_id=qr_message_id
+                )
+
+    except:
+        pass
+
+    # USER MESSAGE
     sent_msg = await context.bot.send_message(
         chat_id=user_id,
         text=(
@@ -672,16 +701,14 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ])
     )
 
-    # AUTO DELETE AFTER 15 SEC
-    await asyncio.sleep(15)
-
-    try:
-        await context.bot.delete_message(
-            chat_id=user_id,
-            message_id=sent_msg.message_id
+    # AUTO DELETE BACKGROUND
+    asyncio.create_task(
+        auto_delete_cancel_msg(
+            context.bot,
+            user_id,
+            sent_msg.message_id
         )
-    except:
-        pass
+    )
     
 # =========================================
 # APPROVE PAYMENT

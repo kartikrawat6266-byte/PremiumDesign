@@ -1847,7 +1847,7 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     " 🅵🆁🅴🅴 🅺🅴🆈 🅸🅽🅵🅾\n"
                     "╚══════════════════╝\n\n"
 
-                     "🔑 *Key Name :* Drip Client\n"
+                     "🔑 Key Name : Drip Client\n"
                      "⏳ *Plan :* 15 Day\n"
                      "🧚🏻 *Required Balance :* ₹550\n\n"
 

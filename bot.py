@@ -346,7 +346,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                     f"🧚🏻 *Total Refers :* "
                                     f"`{data[referrer_id]['total_refers']}`\n"
 
-                                    f"💰 *Balance :* "
+                                    f"🈲 *Balance :* "
                                     f"`₹{data[referrer_id]['referral_balance']}`"
 
                                 ),
@@ -1800,10 +1800,6 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
-
-    data = load_data()
-
-    data[user_id]["refer_message_id"] = sent_msg.message_id
 
     save_data(data)
     

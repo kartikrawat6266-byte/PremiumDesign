@@ -976,25 +976,53 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         # EXPIRY TIME
         if "1 Day" in plan:
-            expiry_datetime = payment_time + timedelta(days=1, minutes=13)
+
+            expiry_datetime = payment_time + timedelta(
+                days=1,
+                minutes=13
+            )
 
         elif "3 Day" in plan:
-            expiry_datetime = payment_time + timedelta(days=3, minutes=13)
+
+            expiry_datetime = payment_time + timedelta(
+                days=3,
+                minutes=13
+            )
 
         elif "7 Day" in plan:
-            expiry_datetime = payment_time + timedelta(days=7, minutes=13)
+
+            expiry_datetime = payment_time + timedelta(
+                days=7,
+                minutes=13
+            )
 
         elif "10 Day" in plan:
-            expiry_datetime = payment_time + timedelta(days=10, minutes=13)
+
+            expiry_datetime = payment_time + timedelta(
+                days=10,
+                minutes=13
+            )
 
         elif "15 Day" in plan:
-            expiry_datetime = payment_time + timedelta(days=15, minutes=13)
+
+            expiry_datetime = payment_time + timedelta(
+                days=15,
+                minutes=13
+            )
 
         elif "30 Day" in plan:
-            expiry_datetime = payment_time + timedelta(days=30, minutes=13)
+
+            expiry_datetime = payment_time + timedelta(
+                days=30,
+                minutes=13
+            )
 
         else:
-            expiry_datetime = payment_time + timedelta(days=30, minutes=13)
+
+            expiry_datetime = payment_time + timedelta(
+                days=30,
+                minutes=13
+            )
 
         payment_time_text = payment_time.strftime(
             "%d/%m/%Y %I:%M:%S %p"
@@ -1016,9 +1044,9 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # DELETE USER QR
         try:
 
-            qr_message_id = context.bot_data["qr_messages"].get(
-                str(user_id)
-            )
+            qr_message_id = context.bot_data[
+                "qr_messages"
+            ].get(str(user_id))
 
             if qr_message_id:
 
@@ -1048,8 +1076,12 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         )
 
+        # =====================================
         # SAVE DELIVERY DATA
+        # =====================================
+
         if "delivery_data" not in context.bot_data:
+
             context.bot_data["delivery_data"] = {}
 
         context.bot_data["delivery_data"][order_id] = {
@@ -1062,20 +1094,72 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "expiry_time": expiry_time_text
         }
 
+        # =====================================
+        # SAVE USER ORDER HISTORY
+        # =====================================
+
+        data = load_data()
+
+        user_id_str = str(user_id)
+
+        if user_id_str not in data:
+
+            get_user(user_id_str)
+
+        try:
+
+            user_info = await context.bot.get_chat(
+                user_id
+            )
+
+            username = (
+                user_info.username
+                or "NoUsername"
+            )
+
+        except:
+
+            username = "NoUsername"
+
+        data[user_id_str]["total_orders"] += 1
+
+        data[user_id_str]["orders"].append({
+
+            "game": game,
+            "plan": clean_plan,
+            "amount": amount,
+            "username": username,
+            "user_id": user_id,
+            "purchase_time": payment_time_text,
+            "expiry_time": expiry_time_text
+        })
+
+        save_data(data)
+
+        # =====================================
         # OWNER DELIVERY PANEL
+        # =====================================
+
         keyboard = [
 
             [
                 InlineKeyboardButton(
                     "🔑 Delivery Key",
-                    callback_data=f"delivery|{user_id}|{order_id}"
+                    callback_data=(
+                        f"delivery|"
+                        f"{user_id}|"
+                        f"{order_id}"
+                    )
                 )
             ],
 
             [
                 InlineKeyboardButton(
                     "🧚🏻 Cancel",
-                    callback_data=f"cancelpayment|{user_id}"
+                    callback_data=(
+                        f"cancelpayment|"
+                        f"{user_id}"
+                    )
                 )
             ]
         ]
@@ -1085,14 +1169,18 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "🎁 PAYMENT APPROVED\n\n"
                 "Now Send Delivery Key."
             ),
-            reply_markup=InlineKeyboardMarkup(keyboard)
+            reply_markup=InlineKeyboardMarkup(
+                keyboard
+            )
         )
 
     except Exception as e:
 
-        print("APPROVE PAYMENT ERROR :", e)
-
-    
+        print(
+            "APPROVE PAYMENT ERROR :",
+            e
+        )
+ 
 # =========================================
 # DELIVERY KEY
 # =========================================

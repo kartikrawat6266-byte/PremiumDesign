@@ -743,34 +743,34 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     payment_time = datetime.now(IST)
 
     payment_time_str = payment_time.strftime(
-      "%d-%m-%Y %I:%M:%S %p"
+         "%d-%m-%Y %I:%M:%S %p"
     )
 
-    # EXPIRY SYSTEM
-    if "1 Day" in plan:
-        expiry_datetime = payment_time_obj + timedelta(days=1)
+# EXPIRY SYSTEM
+   if "1 Day" in plan:
+     expiry_datetime = payment_time + timedelta(days=2)
 
-    elif "3 Day" in plan:
-        expiry_datetime = payment_time_obj + timedelta(days=3)
+   elif "3 Day" in plan:
+    expiry_datetime = payment_time + timedelta(days=4)
 
     elif "7 Day" in plan:
-        expiry_datetime = payment_time_obj + timedelta(days=7)
+    expiry_datetime = payment_time + timedelta(days=8)
 
-    elif "10 Day" in plan:
-        expiry_datetime = payment_time_obj + timedelta(days=10)
+   elif "10 Day" in plan:
+    expiry_datetime = payment_time + timedelta(days=11)
 
-    elif "15 Day" in plan:
-        expiry_datetime = payment_time_obj + timedelta(days=15)
+   elif "15 Day" in plan:
+    expiry_datetime = payment_time + timedelta(days=16)
 
-    elif "30 Day" in plan:
-        expiry_datetime = payment_time_obj + timedelta(days=30)
+elif "30 Day" in plan:
+    expiry_datetime = payment_time + timedelta(days=31)
 
-    else:
-        expiry_datetime = payment_time_obj + timedelta(days=1)
+else:
+    expiry_datetime = payment_time + timedelta(days=31)
 
-    expiry_time_text = expiry_datetime.strftime(
-        "%d-%m-%Y %I:%M:%S %p"
-    )
+expiry_time = expiry_datetime.strftime(
+    "%d-%m-%Y %I:%M:%S %p"
+)
 
     # RANDOM ORDER ID
     order_id = "ORD" + ''.join(

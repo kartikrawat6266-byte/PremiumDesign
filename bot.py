@@ -1,6 +1,9 @@
 # =========================================
 # PREMIUM TELEGRAM STORE BOT
-# ULTRA PREMIUM FULL FIXED VERSION
+# FULL FIXED VERSION
+# NO COMMAND MENU
+# NO REPLY KEYBOARD
+# PREMIUM UI
 # =========================================
 
 import os
@@ -8,14 +11,13 @@ import json
 import logging
 import random
 import string
-from telegram import ReplyKeyboardRemove
 from datetime import datetime, timezone, timedelta
 
 from telegram import (
     Update,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
-    ReplyKeyboardRemove
+    ReplyKeyboardRemove,
 )
 
 from telegram.ext import (
@@ -73,6 +75,7 @@ def load_data():
     try:
         with open(DB_FILE, "r") as f:
             return json.load(f)
+
     except:
         return {}
 
@@ -172,7 +175,6 @@ def main_menu_keyboard():
 # =========================================
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user = update.effective_user
     user_id = str(user.id)
@@ -210,12 +212,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # =========================================
-# MAIN MENU
+# MAIN MENU CALLBACK
 # =========================================
 
 async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
+
     await query.answer()
 
     try:
@@ -224,18 +227,8 @@ async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         pass
 
     text = (
-        "👋 *WELCOME TO BEST CHEAT SHOP* 👋\n\n"
-
-        "❄️ *Here you can purchase all TG premium hacks "
-        "for Android & IOS..* 💥\n\n"
-
-        "━━━━━━━━━━━━━━━━━━\n\n"
-
-        "🔥 *ULTRA FAST DELIVERY*\n"
-        "💎 *PREMIUM QUALITY PRODUCTS*\n"
-        "⚡ *INSTANT KEY DELIVERY*\n\n"
-
-        "👇 *Choose an option below:*"
+        "🏠 *PREMIUM MAIN MENU*\n\n"
+        "✨ Choose an option below:"
     )
 
     await context.bot.send_message(
@@ -252,6 +245,7 @@ async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
 async def shop_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
+
     await query.answer()
 
     try:
@@ -279,10 +273,7 @@ async def shop_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await context.bot.send_message(
         chat_id=query.message.chat_id,
-        text=(
-            "🛒 *PREMIUM PRODUCTS*\n\n"
-            "💎 Choose your premium plan below:"
-        ),
+        text="🛒 *PREMIUM PRODUCTS*\n\nSelect your plan:",
         reply_markup=InlineKeyboardMarkup(keyboard),
         parse_mode="Markdown"
     )
@@ -294,6 +285,7 @@ async def shop_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def buy_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
+
     await query.answer()
 
     product_name = query.data.replace("buy_", "")
@@ -323,14 +315,11 @@ async def buy_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
 
     text = (
-        "💸 *PAYMENT REQUIRED*\n\n"
-
-        f"📦 *Product:* {product_name}\n"
-        f"💰 *Amount:* ₹{price}\n\n"
-
-        f"💳 *UPI ID:*\n`{UPI_ID}`\n\n"
-
-        "⚠️ *Pay exact amount only.*"
+        f"💸 *PAYMENT REQUIRED*\n\n"
+        f"📦 Product: {product_name}\n"
+        f"💰 Amount: ₹{price}\n\n"
+        f"💳 UPI ID:\n`{UPI_ID}`\n\n"
+        f"⚠️ Pay exact amount."
     )
 
     await context.bot.send_message(
@@ -341,12 +330,13 @@ async def buy_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # =========================================
-# PAYMENT
+# PAID
 # =========================================
 
 async def paid(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
+
     await query.answer()
 
     product = query.data.replace("paid_", "")
@@ -403,8 +393,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(
         f"🎉 *PAYMENT CONFIRMED!*\n\n"
-        f"📦 *Product:* {product}\n"
-        f"🔑 *Your Key:* `{key}`",
+        f"📦 Product: {product}\n"
+        f"🔑 Key: `{key}`",
         parse_mode="Markdown",
         reply_markup=main_menu_keyboard()
     )
@@ -416,6 +406,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
+
     await query.answer()
 
     user_id = str(query.from_user.id)
@@ -433,7 +424,6 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         text = (
             "📭 *No orders yet!*\n\n"
-
             "Start shopping to see your orders here."
         )
 
@@ -463,33 +453,6 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         return
 
-    text = "📦 *YOUR ORDERS*\n\n"
-
-    for order in orders:
-
-        text += (
-            f"📦 {order['product']}\n"
-            f"💰 ₹{order['amount']}\n"
-            f"📅 {order['date']}\n"
-            f"🔑 `{order['key']}`\n\n"
-        )
-
-    keyboard = InlineKeyboardMarkup([
-        [
-            InlineKeyboardButton(
-                "⬅️ BACK TO MENU",
-                callback_data="main_menu"
-            )
-        ]
-    ])
-
-    await context.bot.send_message(
-        chat_id=query.message.chat_id,
-        text=text,
-        reply_markup=keyboard,
-        parse_mode="Markdown"
-    )
-
 # =========================================
 # PROFILE
 # =========================================
@@ -497,6 +460,7 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
+
     await query.answer()
 
     user_id = str(query.from_user.id)
@@ -530,7 +494,7 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         "━━━━━━━━━━━━━━━━━━\n\n"
 
-        f"📅 *Joined Date:* {user_data['joined']}\n"
+        f"⏰ *Joined Date:* {user_data['joined']}\n"
         f"⚡ *Activity Time:* {user_data['last_activity']}"
     )
 
@@ -557,6 +521,7 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def how_to_use(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
+
     await query.answer()
 
     try:
@@ -565,17 +530,15 @@ async def how_to_use(update: Update, context: ContextTypes.DEFAULT_TYPE):
         pass
 
     text = (
-        "📖 *HOW TO BUY — BEST CHEAT SHOP*\n\n"
+        "📖 *How To Buy — SATYAM X MOD STORE*\n\n"
 
-        "1️⃣ Tap 🛒 SHOP NOW\n"
+        "1️⃣ Tap 🛒 Shop Now\n"
         "2️⃣ Pick your product & plan\n"
         "3️⃣ Scan the UPI QR or copy UPI ID\n"
         "4️⃣ Pay the exact amount shown\n"
-        "5️⃣ Tap ✅ I HAVE PAID\n"
+        "5️⃣ Tap ✅ I Have Paid\n"
         "6️⃣ Enter your UPI registered name\n"
-        "7️⃣ Sit back — your key arrives instantly! 🚀\n\n"
-
-        "⚠️ *Always pay exact amount including paisa.*"
+        "7️⃣ Sit back — your key arrives in seconds! 🚀"
     )
 
     keyboard = InlineKeyboardMarkup([
@@ -601,6 +564,7 @@ async def how_to_use(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
+
     await query.answer()
 
     try:
@@ -616,10 +580,8 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "regarding our services, feel free to contact\n"
         "our expert team.\n\n"
 
-        "⏰ *Active Time:* 9 AM - 11 PM\n"
-        "✅ *Response:* 5-10 Minutes\n\n"
-
-        "👇 Click below to contact owner:"
+        "⏰ Active Time: 9 AM - 11 PM\n"
+        "✅ Response: Waiting 5-10 Minutes"
     )
 
     keyboard = InlineKeyboardMarkup([
@@ -653,6 +615,7 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
+
     await query.answer()
 
     user_id = str(query.from_user.id)
@@ -679,14 +642,12 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "for every successful joining.\n\n"
 
         f"😉 *Total Refers:* {user_data['total_refers']} User(s)\n"
-        f"💰 *Invite Reward:* INR {user_data['referral_earnings']:.2f}\n\n"
+        f"💰 *Invite Reward:* INR {user_data['referral_earnings']:.2f} INR\n\n"
 
         "━━━━━━━━━━━━━━━━━━\n\n"
 
         f"🗣 *Your Invite Link:*\n"
-        f"`{referral_link}`\n\n"
-
-        "Share your link to grow your earnings!"
+        f"`{referral_link}`"
     )
 
     keyboard = InlineKeyboardMarkup([
@@ -796,7 +757,7 @@ def main():
         )
     )
 
-    print("BOT STARTED SUCCESSFULLY")
+    print("BOT STARTED")
 
     app.run_polling()
 

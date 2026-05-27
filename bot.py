@@ -1782,9 +1782,18 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    print("CLAIM BUTTON CLICKED")
+
     user_id = str(query.from_user.id)
 
     data = load_data()
+
+    # AUTO CREATE USER
+    if user_id not in data:
+
+        get_user(user_id)
+
+        data = load_data()
 
     balance = data[user_id].get(
         "referral_earnings",

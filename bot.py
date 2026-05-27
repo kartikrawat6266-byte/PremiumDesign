@@ -1781,6 +1781,9 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
 
+    # IMPORTANT
+    await query.answer()
+
     user_id = str(query.from_user.id)
 
     data = load_data()
@@ -1797,46 +1800,43 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         0
     )
 
-    # =================================
-    # REQUIRED BALANCE
-    # =================================
+    # =========================================
+    # NOT ENOUGH BALANCE POPUP
+    # =========================================
 
-    REQUIRED_BALANCE = 550
+    if balance < 75:
 
-    # =================================
-    # NOT ENOUGH BALANCE
-    # =================================
-
-    if balance < REQUIRED_BALANCE:
-
-        need = REQUIRED_BALANCE - balance
+        need = 75 - balance
 
         await query.answer(
+
             text=(
                 "╔══════════════════════╗\n"
-                " 💎 𝗙𝗥𝗘𝗘 𝗣𝗥𝗘𝗠𝗜𝗨𝗠 𝗞𝗘𝗬 💎\n"
+                " 💎 PREMIUM FREE KEY 💎\n"
                 "╚══════════════════════╝\n\n"
 
-                "🔥 𝗞𝗘𝗬 𝗗𝗘𝗧𝗔𝗜𝗟𝗦 🔥\n\n"
+                "🎮 MOD : DRIP CLIENT\n"
+                "⏳ PLAN : 15 DAY\n"
+                "💰 PRICE : ₹550\n\n"
 
-                "🎮 𝗠𝗼𝗱 𝗡𝗮𝗺𝗲 : 𝗗𝗿𝗶𝗽 𝗖𝗹𝗶𝗲𝗡𝘁\n"
-                "⏳ 𝗣𝗹𝗮𝗻 : 𝟭𝟱 𝗗𝗮𝘆\n"
-                "💰 𝗥𝗲𝗾𝘂𝗶𝗿𝗲𝗱 𝗕𝗮𝗹𝗮𝗻𝗰𝗲 : ₹550\n\n"
+                "━━━━━━━━━━━━━━━━━━\n\n"
 
-                f"💸 𝗬𝗼𝘂𝗿 𝗕𝗮𝗹𝗮𝗻𝗰𝗲 : ₹{balance}\n"
-                f"❌ 𝗡𝗲𝗲𝗱 𝗠𝗼𝗿𝗲 : ₹{need}\n\n"
+                f"💸 YOUR BALANCE : ₹{balance}\n"
+                f"❌ NEED MORE : ₹{need}\n\n"
 
-                "👥 𝗜𝗻𝘃𝗶𝘁𝗲 𝗙𝗿𝗶𝗲𝗻𝗱𝘀 & 𝗘𝗮𝗿𝗻 𝗠𝗼𝗿𝗲 💸\n"
-                "🚀 𝗧𝗵𝗲𝗻 𝗖𝗹𝗮𝗶𝗺 𝗬𝗼𝘂𝗿 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗞𝗲𝘆"
+                "👥 INVITE FRIENDS & EARN\n"
+                "💖 CLAIM PREMIUM KEY FREE 🚀"
             ),
-            show_alert=True
+
+            show_alert=True,
+            cache_time=0
         )
 
         return
 
-    # =================================
+    # =========================================
     # ALREADY CLAIMED
-    # =================================
+    # =========================================
 
     if "FREE-KEY" in data[user_id].get(
         "claimed_keys",
@@ -1844,17 +1844,17 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ):
 
         await query.answer(
-            text="🈲 You Already Claimed Free Key 🧚🏻",
+            text="❌ You Already Claimed Free Key",
             show_alert=True
         )
 
         return
 
-    # =================================
+    # =========================================
     # REMOVE BALANCE
-    # =================================
+    # =========================================
 
-    data[user_id]["referral_earnings"] -= REQUIRED_BALANCE
+    data[user_id]["referral_earnings"] -= 75
 
     # SAVE CLAIM
     data[user_id]["claimed_keys"].append(
@@ -1863,58 +1863,58 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     save_data(data)
 
-    # =================================
+    # =========================================
     # AUTO GENERATED PREMIUM KEY
-    # =================================
+    # =========================================
 
-    random_part = ''.join(
-        random.choices(
-            string.ascii_uppercase +
-            string.digits,
-            k=12
+    free_key = (
+        "15Dx-DRIPCLIENT-" +
+        ''.join(
+            random.choices(
+                string.ascii_uppercase +
+                string.digits,
+                k=12
+            )
         )
     )
 
-    free_key = f"15D-DRIP-{random_part}"
-
-    # =================================
+    # =========================================
     # AUTO DELIVERY MESSAGE
-    # =================================
+    # =========================================
 
     text = (
 
         "╔════════════════════╗\n"
-        " 🎁 𝗣𝗥𝗘𝗠𝗜𝗨𝗠 𝗞𝗘𝗬 𝗗𝗘𝗟𝗜𝗩𝗘𝗥𝗘𝗗 🎁\n"
+        " 🎁 PREMIUM KEY DELIVERED 🎁\n"
         "╚════════════════════╝\n\n"
 
-        "✨ 𝗖𝗼𝗻𝗴𝗿𝗮𝘁𝘂𝗹𝗮𝘁𝗶𝗼𝗻𝘀 𝗕𝘂𝗱𝗱𝘆 ✨\n\n"
+        "✨ CONGRATULATIONS BUDDY ✨\n\n"
 
-        "🎮 𝗠𝗼𝗱 𝗡𝗮𝗺𝗲 : 𝗗𝗿𝗶𝗽 𝗖𝗹𝗶𝗲𝗡𝘁\n"
-        "⏳ 𝗣𝗹𝗮𝗻 : 𝟭𝟱 𝗗𝗮𝘆\n"
-        "💸 𝗣𝗿𝗶𝗰𝗲 : ₹550\n\n"
+        "🎮 MOD : DRIP CLIENT\n"
+        "⏳ PLAN : 15 DAY\n"
+        "💰 PRICE : ₹550\n\n"
 
         "━━━━━━━━━━━━━━━━━━\n\n"
 
-        f"🔑 𝗬𝗼𝘂𝗿 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗞𝗲𝘆 :\n\n"
+        f"🔑 YOUR PREMIUM KEY :\n\n"
         f"`{free_key}`\n\n"
 
         "━━━━━━━━━━━━━━━━━━\n\n"
 
-        "🚀 𝗞𝗲𝘆 𝗗𝗲𝗹𝗶𝘃𝗲𝗿𝗲𝗱 𝗦𝘂𝗰𝗰𝗲𝘀𝘀𝗳𝘂𝗹𝗹𝘆 💥"
+        "🚀 AUTO DELIVERY SUCCESSFUL 💖"
     )
 
-    # =================================
-    # AUTO KEY DELIVERY
-    # =================================
-
     await query.message.edit_text(
+
         text=text,
+
         parse_mode="Markdown",
+
         reply_markup=InlineKeyboardMarkup([
 
             [
                 InlineKeyboardButton(
-                    "🍓 Back To Main Menu",
+                    "🍓 BACK TO MAIN MENU",
                     callback_data="main_menu"
                 )
             ]

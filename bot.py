@@ -1402,20 +1402,7 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "    🛒 *𝗡𝗢 𝗢𝗥𝗗𝗘𝗥𝗦 𝗬𝗘𝗧* 🍓\n"
             "╚════════════════════╝\n\n"
 
-            "✨ *𝗬𝗼𝘂𝗿 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗖𝗼𝗹𝗹𝗲𝗰𝘁𝗶𝗼𝗻 𝗜𝘀 𝗘𝗺𝗽𝘁𝘆*\n\n"
-
-            "🚀 *𝗬𝗼𝘂 𝗛𝗮𝘃𝗲𝗻'𝘁 𝗣𝘂𝗿𝗰𝗵𝗮𝘀𝗲𝗱 𝗔𝗻𝘆*\n"
-            "*𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗣𝗿𝗼𝗱𝘂𝗰𝘁𝘀 𝗬𝗲𝘁 𝗙𝗿𝗼𝗺 𝗢𝘂𝗿 𝗦𝘁𝗼𝗿𝗲.*\n\n"
-
-            "🎯 *𝗦𝘁𝗮𝗿𝘁 𝗦𝗵𝗼𝗽𝗽𝗶𝗻𝗴 𝗧𝗼 𝗨𝗻𝗹𝗼𝗰𝗸*\n"
-            "*𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗙𝗲𝗮𝘁𝘂𝗿𝗲𝘀 & 𝗜𝗻𝘀𝘁𝗮𝗻𝘁 𝗗𝗲𝗹𝗶𝘃𝗲𝗿𝘆.*\n\n"
-
-            "🔥 *𝗕𝗲𝘀𝘁 𝗔𝗻𝗱𝗿𝗼𝗶𝗱 & 𝗜𝗢𝗦 𝗣𝗿𝗲𝗺𝗶𝘂𝗺*\n"
-            "*𝗣𝗿𝗼𝗱𝘂𝗰𝘁𝘀 𝗔𝘃𝗮𝗶𝗹𝗮𝗯𝗹𝗲 𝗛𝗲𝗿𝗲.*\n\n"
-
-            "🧚🏻 *𝗖𝗹𝗶𝗰𝗸 𝗕𝗲𝗹𝗼𝘄 𝗕𝘂𝘁𝘁𝗼𝗻 𝗧𝗼 𝗦𝘁𝗮𝗿𝘁*\n"
-            "*𝗦𝗵𝗼𝗽𝗽𝗶𝗻𝗴.*"
-
+            "✨ *𝗬𝗼𝘂𝗿 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗖𝗼𝗹𝗹𝗲𝗰𝘁𝗶𝗼𝗻 𝗜𝘀 𝗘𝗺𝗽𝘁𝘆*"
         )
 
         keyboard = [
@@ -1436,9 +1423,10 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
 
         await query.message.edit_text(
-        text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
+            text=text,
+            parse_mode="Markdown",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
 
         return
 
@@ -1480,6 +1468,10 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         )
 
+    # TELEGRAM MESSAGE LIMIT FIX
+    if len(text) > 4000:
+        text = text[:4000]
+
     keyboard = [
 
         [
@@ -1495,6 +1487,7 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
+    
 # =========================================
 # PROFILE
 # =========================================

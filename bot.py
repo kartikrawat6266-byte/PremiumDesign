@@ -1678,7 +1678,7 @@ async def how_to_use(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # =========================================
-# SUPPORT
+# SUPPORT CENTER
 # =========================================
 
 async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -1686,32 +1686,51 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    text = (
+        "╔════════════════════════╗\n"
+        "  🈲 🆂🆄🅿🅿🅾🆁🆃 🅲🅴🅽🆃🅴🆁 🧛🏻‍♂️\n"
+        "╚════════════════════════╝\n\n"
+
+        "✨ *_𝗪𝗲𝗹𝗰𝗼𝗺𝗲 𝗧𝗼 𝗢𝗳𝗳𝗶𝗰𝗶𝗮𝗹 𝗕𝗲𝗦𝘁𝗖𝗵𝗲𝗮𝘁 𝗦𝘂𝗽𝗽𝗼𝗿𝘁_* ✨\n\n"
+
+        "🧚🏻 *_𝗡𝗲𝗲𝗱 𝗛𝗲𝗹𝗽 𝗪𝗶𝘁𝗵 𝗣𝘂𝗿𝗰𝗵𝗮𝘀𝗲,\n"
+        "𝗞𝗲𝘆, 𝗟𝗼𝗴𝗶𝗻 𝗢𝗿 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗦𝗲𝘁𝘂𝗽?_*\n\n"
+
+        "🧙🏻‍♂️ *_𝗢𝘂𝗿 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗦𝘂𝗽𝗽𝗼𝗿𝘁 𝗧𝗲𝗮𝗺\n"
+        "𝗜𝘀 𝗔𝗹𝘄𝗮𝘆𝘀 𝗥𝗲𝗮𝗱𝘆 𝗧𝗼 𝗛𝗲𝗹𝗽 𝗬𝗼𝘂._*\n\n"
+
+        "━━━━━━━━━━━━━━━━━━\n\n"
+
+        "🧝🏻‍♀️ *𝗙𝗮𝘀𝘁 𝗥𝗲𝗽𝗹𝘆 𝗚𝘂𝗮𝗿𝗮𝗻𝘁𝗲𝗲*\n"
+        "🛡️ *𝗧𝗿𝘂𝘀𝘁𝗲𝗱 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗔𝘀𝘀𝗶𝘀𝘁𝗮𝗻𝗰𝗲*\n"
+        "🎨 *𝗙𝗿𝗶𝗲𝗻𝗱𝗹𝘆 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗦𝘂𝗽𝗽𝗼𝗿𝘁*\n"
+        "🪄 *𝟮𝟰×𝟳 𝗔𝗰𝘁𝗶𝘃𝗲 𝗦𝗲𝗿𝘃𝗶𝗰𝗲*\n\n"
+
+        "━━━━━━━━━━━━━━━━━━\n\n"
+
+        "🔻 *_𝗖𝗹𝗶𝗰𝗸 𝗧𝗵𝗲 𝗕𝘂𝘁𝘁𝗼𝗻 𝗕𝗲𝗹𝗼𝘄\n"
+        "𝗧𝗼 𝗖𝗼𝗻𝘁𝗮𝗰𝘁 𝗢𝗳𝗳𝗶𝗰𝗶𝗮𝗹 𝗢𝘄𝗻𝗲𝗿._*"
+    )
+
     keyboard = [
 
         [
             InlineKeyboardButton(
-                "✨ CONTACT OWNER ✨",
-                url=f"https://t.me/{OWNER_USERNAME}"
+                "🈲 𝐂𝐎𝐍𝐓𝐀𝐂𝐓 𝐎𝐖𝐍𝐄𝐑 🧚🏻",
+                url="http://BESTCHEAT_OWNER.t.me"
             )
         ],
 
         [
             InlineKeyboardButton(
-                "⬅️ BACK TO MENU",
+                "🍓 Back To Main Menu 🎨",
                 callback_data="main_menu"
             )
         ]
     ]
 
     await query.message.edit_text(
-        text=(
-            "💬 *PREMIUM SUPPORT CENTER*\n\n"
-
-            "⚡ Fast Support Available\n"
-            "⏰ Active : 9AM To 11PM\n\n"
-
-            "Click Below Button To Contact Owner."
-        ),
+        text=text,
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )

@@ -150,6 +150,7 @@ def check_and_grant_free_key(user_id):
 # ==================== KEYBOARD BUILDERS ====================
 
 def main_menu_keyboard():
+
     keyboard = [
 
         # Full Width Button
@@ -160,7 +161,7 @@ def main_menu_keyboard():
             )
         ],
 
-        # Same Row Buttons
+        # 2 Buttons Same Row
         [
             InlineKeyboardButton(
                 "📦 My Orders",
@@ -173,7 +174,7 @@ def main_menu_keyboard():
             )
         ],
 
-        # Same Row Buttons
+        # 2 Buttons Same Row
         [
             InlineKeyboardButton(
                 "📖 How to Use",
@@ -201,7 +202,6 @@ def main_menu_keyboard():
 def back_to_menu_button():
 
     keyboard = [
-
         [
             InlineKeyboardButton(
                 "🔙 Back To Menu",
@@ -346,6 +346,29 @@ def refer_earn_keyboard(referral_link):
     ]
 
     return InlineKeyboardMarkup(keyboard)
+
+
+# ==================== MAIN MENU CALLBACK FIX ====================
+
+async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    user_id = str(query.from_user.id)
+    update_last_activity(user_id)
+
+    text = (
+        "🏠 *Main Menu*\n\n"
+        "Choose an option:"
+    )
+
+    await query.edit_message_text(
+        text=text,
+        reply_markup=main_menu_keyboard(),
+        parse_mode="Markdown"
+    )
+
 
 # ==================== HANDLERS ====================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):

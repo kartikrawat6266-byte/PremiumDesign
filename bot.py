@@ -1797,40 +1797,46 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         0
     )
 
-    # ==============================
+    # =================================
+    # REQUIRED BALANCE
+    # =================================
+
+    REQUIRED_BALANCE = 550
+
+    # =================================
     # NOT ENOUGH BALANCE
-    # ==============================
+    # =================================
 
-    if balance < 75:
+    if balance < REQUIRED_BALANCE:
 
-        need = 75 - balance
+        need = REQUIRED_BALANCE - balance
 
-        # IMPORTANT FIX
-        try:
-            await query.answer(
-                text=(
-                    "🎁 FREE KEY INFO\n\n"
+        await query.answer(
+            text=(
+                "╔══════════════════════╗\n"
+                " 💎 𝗙𝗥𝗘𝗘 𝗣𝗥𝗘𝗠𝗜𝗨𝗠 𝗞𝗘𝗬 💎\n"
+                "╚══════════════════════╝\n\n"
 
-                    "🔑 Key Name : Drip Client\n"
-                    "⏳ Plan : 7 Day\n"
-                    "💰 Required Balance : ₹75\n\n"
+                "🔥 𝗞𝗘𝗬 𝗗𝗘𝗧𝗔𝗜𝗟𝗦 🔥\n\n"
 
-                    f"💸 Your Balance : ₹{balance}\n"
-                    f"❌ Need More : ₹{need}\n\n"
+                "🎮 𝗠𝗼𝗱 𝗡𝗮𝗺𝗲 : 𝗗𝗿𝗶𝗽 𝗖𝗹𝗶𝗲𝗡𝘁\n"
+                "⏳ 𝗣𝗹𝗮𝗻 : 𝟭𝟱 𝗗𝗮𝘆\n"
+                "💰 𝗥𝗲𝗾𝘂𝗶𝗿𝗲𝗱 𝗕𝗮𝗹𝗮𝗻𝗰𝗲 : ₹550\n\n"
 
-                    "👥 Invite Friends & Earn More\n"
-                    "Then Claim Your Premium Key 🚀"
-                ),
-                show_alert=True
-            )
-        except Exception as e:
-            print("POPUP ERROR :", e)
+                f"💸 𝗬𝗼𝘂𝗿 𝗕𝗮𝗹𝗮𝗻𝗰𝗲 : ₹{balance}\n"
+                f"❌ 𝗡𝗲𝗲𝗱 𝗠𝗼𝗿𝗲 : ₹{need}\n\n"
+
+                "👥 𝗜𝗻𝘃𝗶𝘁𝗲 𝗙𝗿𝗶𝗲𝗻𝗱𝘀 & 𝗘𝗮𝗿𝗻 𝗠𝗼𝗿𝗲 💸\n"
+                "🚀 𝗧𝗵𝗲𝗻 𝗖𝗹𝗮𝗶𝗺 𝗬𝗼𝘂𝗿 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗞𝗲𝘆"
+            ),
+            show_alert=True
+        )
 
         return
 
-    # ==============================
+    # =================================
     # ALREADY CLAIMED
-    # ==============================
+    # =================================
 
     if "FREE-KEY" in data[user_id].get(
         "claimed_keys",
@@ -1844,11 +1850,11 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         return
 
-    # ==============================
+    # =================================
     # REMOVE BALANCE
-    # ==============================
+    # =================================
 
-    data[user_id]["referral_earnings"] -= 75
+    data[user_id]["referral_earnings"] -= REQUIRED_BALANCE
 
     # SAVE CLAIM
     data[user_id]["claimed_keys"].append(
@@ -1857,36 +1863,49 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     save_data(data)
 
-    # RANDOM KEY
-    free_key = (
-        "FREE-KEY-" +
-        ''.join(
-            random.choices(
-                string.ascii_uppercase +
-                string.digits,
-                k=10
-            )
+    # =================================
+    # AUTO GENERATED PREMIUM KEY
+    # =================================
+
+    random_part = ''.join(
+        random.choices(
+            string.ascii_uppercase +
+            string.digits,
+            k=12
         )
     )
+
+    free_key = f"15D-DRIP-{random_part}"
+
+    # =================================
+    # AUTO DELIVERY MESSAGE
+    # =================================
 
     text = (
 
         "╔════════════════════╗\n"
-        "  🎁 𝗙𝗥𝗘𝗘 𝗞𝗘𝗬 𝗖𝗟𝗔𝗜𝗠𝗘𝗗 🔥\n"
+        " 🎁 𝗣𝗥𝗘𝗠𝗜𝗨𝗠 𝗞𝗘𝗬 𝗗𝗘𝗟𝗜𝗩𝗘𝗥𝗘𝗗 🎁\n"
         "╚════════════════════╝\n\n"
 
-        "✨ Congratulations Buddy\n\n"
+        "✨ 𝗖𝗼𝗻𝗴𝗿𝗮𝘁𝘂𝗹𝗮𝘁𝗶𝗼𝗻𝘀 𝗕𝘂𝗱𝗱𝘆 ✨\n\n"
 
-        "🎮 Mod Name : Drip ClieNt\n"
-        "⏳ Plan : 7 Day\n"
-        "💸 Price : ₹75\n\n"
+        "🎮 𝗠𝗼𝗱 𝗡𝗮𝗺𝗲 : 𝗗𝗿𝗶𝗽 𝗖𝗹𝗶𝗲𝗡𝘁\n"
+        "⏳ 𝗣𝗹𝗮𝗻 : 𝟭𝟱 𝗗𝗮𝘆\n"
+        "💸 𝗣𝗿𝗶𝗰𝗲 : ₹550\n\n"
 
         "━━━━━━━━━━━━━━━━━━\n\n"
 
-        f"🔑 Your Premium Key :\n\n`{free_key}`\n\n"
+        f"🔑 𝗬𝗼𝘂𝗿 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗞𝗲𝘆 :\n\n"
+        f"`{free_key}`\n\n"
 
-        "━━━━━━━━━━━━━━━━━━"
+        "━━━━━━━━━━━━━━━━━━\n\n"
+
+        "🚀 𝗞𝗲𝘆 𝗗𝗲𝗹𝗶𝘃𝗲𝗿𝗲𝗱 𝗦𝘂𝗰𝗰𝗲𝘀𝘀𝗳𝘂𝗹𝗹𝘆 💥"
     )
+
+    # =================================
+    # AUTO KEY DELIVERY
+    # =================================
 
     await query.message.edit_text(
         text=text,

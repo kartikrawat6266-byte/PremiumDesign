@@ -1779,13 +1779,12 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    query = update.callback_query
+      query = update.callback_query
 
-    await query.answer()
+      user_id = str(query.from_user.id)
 
-    user_id = str(query.from_user.id)
-
-    data = load_data()
+      data = load_data()
+    
 
     # AUTO CREATE USER
     if user_id not in data:
@@ -1823,7 +1822,8 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "👥 Invite Friends & Earn More\n"
                 "Then Claim Your Premium Key 🚀"
             ),
-            show_alert=True
+            show_alert=True,
+            cache_time=0
         )
 
         return
@@ -1839,7 +1839,8 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         await query.answer(
             text="🈲 You Already Claimed Free Key 🧚🏻",
-            show_alert=True
+            show_alert=True,
+            cache_time=0
         )
 
         return

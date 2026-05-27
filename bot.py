@@ -363,11 +363,111 @@ async def game_plans(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     ])
 
-    await query.message.edit_text(
-        text=(
+    if game == "Drip ClieNt":
+
+        text = (
+            "╔══════════════════════╗\n"
+            "     🍓 *𝘿𝙧𝙞𝙥 𝘾𝙡𝙞𝙚𝙉𝙩* 🎨\n"
+            "╚══════════════════════╝\n\n"
+
+            "🔥 *Premium Rage + Legit Experience*\n"
+            "⚡ *Ultra Smooth Gameplay*\n"
+            "🛡️ *Safe & Stable Protection*\n"
+            "🎯 *Powerful Premium Features*\n"
+            "🚀 *Trusted By Premium Players*\n\n"
+
+            "🔮 *Select Your Premium Plan Below.*"
+        )
+
+    elif game == "Prime HooK":
+
+        text = (
+            "╔══════════════════════╗\n"
+            "     🧚🏻 *𝙋𝙧𝙞𝙢𝙚 𝙃𝙤𝙤𝙆* 💸\n"
+            "╚══════════════════════╝\n\n"
+
+            "🎯 *Deadly Premium Features*\n"
+            "🔥 *Ultra Legit Gameplay*\n"
+            "🛡️ *Smooth & Secure Client*\n"
+            "🚀 *Fastest Performance Ever*\n"
+            "💎 *Best Premium Experience*\n\n"
+
+            "💸 *Select Your Premium Plan Below.*"
+        )
+
+    elif game == "PaTo TeaM":
+
+        text = (
+            "╔══════════════════════╗\n"
+            "     🐼 *𝙋𝙖𝙏𝙤 𝙏𝙚𝙖𝙈* 🈲\n"
+            "╚══════════════════════╝\n\n"
+
+            "⚡ *Powerful Premium Gameplay*\n"
+            "🎯 *Legit + Rage Features*\n"
+            "🔥 *Smooth Aim Experience*\n"
+            "🛡️ *High Protection System*\n"
+            "🚀 *Trusted By Real Users*\n\n"
+
+            "💎 *Select Your Premium Plan Below.*"
+        )
+
+    elif game == "Hg ChEaTs":
+
+        text = (
+            "╔══════════════════════╗\n"
+            "     🌈 *𝙃𝙜 𝘾𝙝𝙀𝙖𝙏𝙨* 👑\n"
+            "╚══════════════════════╝\n\n"
+
+            "🔥 *High Quality Premium Client*\n"
+            "⚡ *Extreme Smooth Gameplay*\n"
+            "🎯 *Best Legit Features*\n"
+            "🛡️ *Strong Security Protection*\n"
+            "🚀 *Stable & Fast Updates*\n\n"
+
+            "💎 *Select Your Premium Plan Below.*"
+        )
+
+    elif game == "Fʟᴜᴏʀɪᴛᴇ Ff Ios [Iphone]":
+
+        text = (
+            "╔══════════════════════╗\n"
+            "     🙆🏻‍♂️ *𝙁𝙡𝙪𝙤𝙧𝙞𝙩𝙚 𝙄𝙊𝙎* 🍎\n"
+            "╚══════════════════════╝\n\n"
+
+            "⚡ *Premium IOS Experience*\n"
+            "🎯 *Smooth Legit Features*\n"
+            "🔥 *Ultra Stable Gameplay*\n"
+            "🛡️ *Safe For Iphone Users*\n"
+            "🚀 *Luxury Premium Feeling*\n\n"
+
+            "🧑🏻‍🚀 *Select Your Premium Plan Below.*"
+        )
+
+    elif game == "SpotifY EnJecT RooT":
+
+        text = (
+            "╔══════════════════════╗\n"
+            "    🎨 *𝙎𝙥𝙤𝙩𝙞𝙛𝙔 𝙀𝙣𝙅𝙚𝙘𝙏* 🎵\n"
+            "╚══════════════════════╝\n\n"
+
+            "🔥 *Premium Root Experience*\n"
+            "⚡ *Ultra Smooth Injection*\n"
+            "🎯 *Powerful Premium Features*\n"
+            "🛡️ *Safe & Stable Working*\n"
+            "🚀 *Best Performance Ever*\n\n"
+
+            "🏞️ *Select Your Premium Plan Below.*"
+        )
+
+    else:
+
+        text = (
             f"🎮 *{game}*\n\n"
-            "💎 Select Your Premium Plan Below."
-        ),
+            "🧚🏻 Select Your Premium Plan Below."
+        )
+
+    await query.message.edit_text(
+        text=text,
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )

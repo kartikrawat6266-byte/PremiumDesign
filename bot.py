@@ -532,16 +532,6 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         context.bot_data["qr_messages"][str(user_id)] = query.message.message_id
 
-        # REMOVE USER BUTTONS INSTANT
-        try:
-
-            await query.edit_message_reply_markup(
-                reply_markup=None
-            )
-
-        except:
-            pass
-
         # USER MESSAGE
         checking_msg = await context.bot.send_message(
             chat_id=user_id,
@@ -729,6 +719,8 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
+
+    # FAST RESPONSE
     await query.answer()
 
     data = query.data.split("|")
@@ -750,6 +742,24 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     payment_time = datetime.now(IST)
 
+    # DELETE USER QR MESSAGE AFTER APPROVE
+    try:
+
+        if "qr_messages" in context.bot_data:
+
+            qr_message_id = context.bot_data["qr_messages"].get(str(user_id))
+
+            if qr_message_id:
+
+                await context.bot.delete_message(
+                    chat_id=user_id,
+                    message_id=qr_message_id
+                )
+
+    except:
+        pass
+
+    # EXPIRY TIME
     if "1 Day" in plan:
         expiry_datetime = payment_time + timedelta(days=1, hours=2)
 
@@ -774,6 +784,7 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     payment_time_text = payment_time.strftime("%d-%m-%Y %I:%M:%S %p")
     expiry_time_text = expiry_datetime.strftime("%d-%m-%Y %I:%M:%S %p")
 
+    # USER VERIFIED MESSAGE
     await context.bot.send_message(
         chat_id=user_id,
         text=(
@@ -803,10 +814,16 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
     ]
 
-    await query.message.edit_text(
-        text="🎁 PaYmeNt AppRoVeD\n\nNow Send Delivery Key.",
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
+    # OWNER PANEL UPDATE
+    try:
+
+        await query.message.edit_text(
+            text="🎁 PaYmeNt AppRoVeD\n\nNow Send Delivery Key.",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+    except:
+        pass
     
 # =========================================
 # DELIVERY KEY

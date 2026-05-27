@@ -1076,7 +1076,59 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         )
 
-mount": amount,
+        # =====================================
+        # SAVE DELIVERY DATA
+        # =====================================
+
+        if "delivery_data" not in context.bot_data:
+
+            context.bot_data["delivery_data"] = {}
+
+        context.bot_data["delivery_data"][order_id] = {
+
+            "user_id": user_id,
+            "game": game,
+            "plan": clean_plan,
+            "amount": amount,
+            "payment_time": payment_time_text,
+            "expiry_time": expiry_time_text
+        }
+
+        # =====================================
+        # SAVE USER ORDER HISTORY
+        # =====================================
+
+        data = load_data()
+
+        user_id_str = str(user_id)
+
+        if user_id_str not in data:
+
+            get_user(user_id_str)
+
+        try:
+
+            user_info = await context.bot.get_chat(
+                user_id
+            )
+
+            username = (
+                user_info.username
+                if user_info.username
+                else "No Username"
+            )
+
+        except:
+
+            username = "No Username"
+
+        data[user_id_str]["total_orders"] += 1
+
+        data[user_id_str]["orders"].append({
+
+            "game": game,
+            "plan": clean_plan,
+            "amount": amount,
             "username": username,
             "user_id": user_id,
             "order_id": order_id,
@@ -1131,7 +1183,7 @@ mount": amount,
             "APPROVE PAYMENT ERROR :",
             e
         )
- 
+        
 # =========================================
 # DELIVERY KEY
 # =========================================

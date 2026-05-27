@@ -1721,7 +1721,7 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
 
         "╔════════════════════╗\n"
-        "#.   🎁 𝗥𝗘𝗙𝗘𝗥 & 𝗘𝗔𝗥𝗡 💸\n"
+        "    🎁 𝗥𝗘𝗙𝗘𝗥 & 𝗘𝗔𝗥𝗡 💸\n"
         "╚════════════════════╝\n\n"
 
         "✨ *Invite Your Friends & Earn Money*\n\n"
@@ -1801,25 +1801,25 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # NOT ENOUGH BALANCE
     # ==============================
 
-    if balance < 75:
+    if balance < 550:
 
-        need = 75 - balance
+        need = 550 - balance
 
         # IMPORTANT FIX
         try:
             await query.answer(
                 text=(
-                    "🎁 FREE KEY INFO\n\n"
+                    "💎 𝗙𝗥𝗘𝗘 𝗞𝗘𝗬 𝗜𝗡𝗙𝗢 💎\n\n"
 
-                    "🔑 Key Name : Drip Client\n"
-                    "⏳ Plan : 7 Day\n"
-                    "💰 Required Balance : ₹75\n\n"
+                    "🔑 𝗞𝗲𝘆 𝗡𝗮𝗺𝗲 : 𝗗𝗿𝗶𝗽 𝗖𝗹𝗶𝗲𝗻𝘁\n"
+                    "⏳ 𝗣𝗹𝗮𝗻 : 𝟭𝟱 𝗗𝗮𝘆\n"
+                    "💰 𝗥𝗲𝗾𝘂𝗶𝗿𝗲𝗱 𝗕𝗮𝗹𝗮𝗻𝗰𝗲 : ₹𝟱𝟱𝟬\n\n"
 
-                    f"💸 Your Balance : ₹{balance}\n"
-                    f"❌ Need More : ₹{need}\n\n"
+                    f"💸 𝗬𝗼𝘂𝗿 𝗕𝗮𝗹𝗮𝗻𝗰𝗲 : ₹{balance}\n"
+                    f"❌ 𝗡𝗲𝗲𝗱 𝗠𝗼𝗿𝗲 : ₹{need}\n\n"
 
-                    "👥 Invite Friends & Earn More\n"
-                    "Then Claim Your Premium Key 🚀"
+                    "👥 𝗜𝗻𝘃𝗶𝘁𝗲 𝗙𝗿𝗶𝗲𝗻𝗱𝘀 & 𝗘𝗮𝗿𝗻 𝗠𝗼𝗿𝗲\n"
+                    "🚀 𝗧𝗵𝗲𝗻 𝗖𝗹𝗮𝗶𝗺 𝗬𝗼𝘂𝗿 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗞𝗲𝘆"
                 ),
                 show_alert=True
             )
@@ -1848,7 +1848,7 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # REMOVE BALANCE
     # ==============================
 
-    data[user_id]["referral_earnings"] -= 75
+    data[user_id]["referral_earnings"] -= 550
 
     # SAVE CLAIM
     data[user_id]["claimed_keys"].append(
@@ -1875,15 +1875,15 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "  🎁 𝗙𝗥𝗘𝗘 𝗞𝗘𝗬 𝗖𝗟𝗔𝗜𝗠𝗘𝗗 🔥\n"
         "╚════════════════════╝\n\n"
 
-        "✨ Congratulations Buddy\n\n"
+        "✨ 𝗖𝗼𝗻𝗴𝗿𝗮𝘁𝘂𝗹𝗮𝘁𝗶𝗼𝗻𝘀 𝗕𝘂𝗱𝗱𝘆 ✨\n\n"
 
-        "🎮 Mod Name : Drip ClieNt\n"
-        "⏳ Plan : 7 Day\n"
-        "💸 Price : ₹75\n\n"
+        "🎮 𝗠𝗼𝗱 𝗡𝗮𝗺𝗲 : 𝗗𝗿𝗶𝗽 𝗖𝗹𝗶𝗲𝗡𝘁\n"
+        "⏳ 𝗣𝗹𝗮𝗻 : 𝟭𝟱 𝗗𝗮𝘆\n"
+        "💸 𝗣𝗿𝗶𝗰𝗲 : ₹𝟱𝟱𝟬\n\n"
 
         "━━━━━━━━━━━━━━━━━━\n\n"
 
-        f"🔑 Your Premium Key :\n\n`{free_key}`\n\n"
+        f"🔑 𝗬𝗼𝘂𝗿 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗞𝗲𝘆 :\n\n`{free_key}`\n\n"
 
         "━━━━━━━━━━━━━━━━━━"
     )

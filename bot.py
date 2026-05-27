@@ -1843,7 +1843,9 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         try:
             await query.answer(
                 text=(
-                    "💎 𝗙𝗥𝗘𝗘 𝗞𝗘𝗬 𝗜𝗡𝗙𝗢 💎\n\n"
+                    "╔══════════════════╗\n"
+                    "  🅵🆁🅴🅴 🅺🅴🆈 🅸🅽🅵🅾\n"
+                    "╚══════════════════╝\n\n"
 
                     "🔑 𝗞𝗲𝘆 𝗡𝗮𝗺𝗲 : 𝗗𝗿𝗶𝗽 𝗖𝗹𝗶𝗲𝗻𝘁\n"
                     "⏳ 𝗣𝗹𝗮𝗻 : 𝟭𝟱 𝗗𝗮𝘆\n"

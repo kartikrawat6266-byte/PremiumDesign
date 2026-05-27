@@ -738,7 +738,6 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
 
-    # FAST RESPONSE
     await query.answer()
 
     try:
@@ -747,7 +746,6 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         user_id = int(data[1])
 
-        # VERIFY ORDER CHECK
         if "verify_orders" not in context.bot_data:
             return
 
@@ -761,10 +759,8 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         amount = order_data["amount"]
         order_id = order_data["order_id"]
 
-        # PAYMENT TIME
         payment_time = datetime.now(IST)
 
-        # EXPIRY TIME
         if "1 Day" in plan:
             expiry_datetime = payment_time + timedelta(days=1, hours=2)
 
@@ -786,25 +782,37 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             expiry_datetime = payment_time + timedelta(days=30, hours=2)
 
-        payment_time_text = payment_time.strftime("%d-%m-%Y %I:%M:%S %p")
-        expiry_time_text = expiry_datetime.strftime("%d-%m-%Y %I:%M:%S %p")
+        payment_time_text = payment_time.strftime("%d-%m-%Y")
+        expiry_time_text = expiry_datetime.strftime("%d-%m-%Y")
 
-        # USER QR DELETE
+        # DELETE USER QR
         try:
 
-            qr_message_id = context.bot_data["qr_messages"].get(str(user_id))
+            if "qr_messages" in context.bot_data:
 
-            if qr_message_id:
+                qr_message_id = context.bot_data["qr_messages"].get(str(user_id))
 
-                await context.bot.delete_message(
-                    chat_id=user_id,
-                    message_id=qr_message_id
-                )
+                if qr_message_id:
+
+                    await context.bot.delete_message(
+                        chat_id=user_id,
+                        message_id=qr_message_id
+                    )
 
         except:
             pass
 
-        # USER MESSAGE
+        # REMOVE VERIFY BUTTONS
+        try:
+
+            await query.message.edit_reply_markup(
+                reply_markup=None
+            )
+
+        except:
+            pass
+
+        # USER VERIFY MESSAGE
         verify_msg = await context.bot.send_message(
             chat_id=user_id,
             text=(
@@ -813,7 +821,7 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         )
 
-        # AUTO DELETE MESSAGE WITHOUT DELAY
+        # AUTO DELETE AFTER 15 SEC
         asyncio.create_task(
             auto_delete_message(
                 context.bot,
@@ -829,9 +837,8 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InlineKeyboardButton(
                     "🔑 Delivery Key",
                     callback_data=(
-                        f"delivery|{user_id}|{game}|{plan}|"
-                        f"{amount}|{order_id}|"
-                        f"{payment_time_text}|{expiry_time_text}"
+                        f"delivery|{user_id}|"
+                        f"{order_id}"
                     )
                 )
             ],
@@ -844,17 +851,33 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         ]
 
-        await query.message.edit_text(
+        await context.bot.send_message(
+            chat_id=OWNER_ID,
             text=(
                 "🎁 PAYMENT APPROVED\n\n"
-                "Now Send Delivery Key."
+                "Now Click Delivery Key Button."
             ),
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
+        # SAVE DELIVERY DATA
+        if "delivery_data" not in context.bot_data:
+            context.bot_data["delivery_data"] = {}
+
+        context.bot_data["delivery_data"][order_id] = {
+
+            "user_id": user_id,
+            "game": game,
+            "plan": plan,
+            "amount": amount,
+            "payment_time": payment_time.strftime("%d/%m/%Y %I:%M:%S %p"),
+            "expiry_time": expiry_datetime.strftime("%d/%m/%Y %I:%M:%S %p")
+        }
+
     except Exception as e:
 
         print("APPROVE PAYMENT ERROR :", e)
+
     
 # =========================================
 # DELIVERY KEY
@@ -863,17 +886,28 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
+
     await query.answer()
 
     data = query.data.split("|")
 
     user_id = int(data[1])
-    game = data[2]
-    plan = data[3]
-    amount = data[4]
-    order_id = data[5]
-    payment_time = data[6]
-    expiry_time = data[7]
+
+    order_id = data[2]
+
+    if "delivery_data" not in context.bot_data:
+        return
+
+    if order_id not in context.bot_data["delivery_data"]:
+        return
+
+    order_data = context.bot_data["delivery_data"][order_id]
+
+    game = order_data["game"]
+    plan = order_data["plan"]
+    amount = order_data["amount"]
+    payment_time = order_data["payment_time"]
+    expiry_time = order_data["expiry_time"]
 
     days = (
         plan.replace("💸", "")
@@ -923,7 +957,7 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     await query.message.edit_text(
-        "🍓 KeY Delevery Successfully"
+        "🍓 KeY Delevery Successfully 🪩"
     )
     
 # =========================================

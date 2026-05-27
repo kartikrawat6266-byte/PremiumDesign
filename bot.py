@@ -1076,39 +1076,49 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         )
 
-        # =====================================
-        # SAVE DELIVERY DATA
-        # =====================================
+# =====================================
+# SAVE DELIVERY DATA
+# =====================================
 
-        if "delivery_data" not in context.bot_data:
+data = load_data()
 
-            context.bot_data["delivery_data"] = {}
+user_id_str = str(user_id)
 
-        context.bot_data["delivery_data"][order_id] = {
+if user_id_str not in data:
 
-            "user_id": user_id,
-            "game": game,
-            "plan": clean_plan,
-            "amount": amount,
-            "payment_time": payment_time_text,
-            "expiry_time": expiry_time_text
-        }
+    get_user(user_id_str)
 
-        data[user_id_str]["pending_delivery"] = {
+    data = load_data()
 
-            "order_id": order_id,
-            "game": game,
-            "plan": clean_plan,
-            "amount": amount,
-            "payment_time": payment_time_text,
-            "expiry_time": expiry_time_text
-        }
+if "delivery_data" not in context.bot_data:
 
-        save_data(data)
+    context.bot_data["delivery_data"] = {}
 
-        # =====================================
-        # SAVE USER ORDER HISTORY
-        # =====================================
+context.bot_data["delivery_data"][order_id] = {
+
+    "user_id": user_id,
+    "game": game,
+    "plan": clean_plan,
+    "amount": amount,
+    "payment_time": payment_time_text,
+    "expiry_time": expiry_time_text
+}
+
+data[user_id_str]["pending_delivery"] = {
+
+    "order_id": order_id,
+    "game": game,
+    "plan": clean_plan,
+    "amount": amount,
+    "payment_time": payment_time_text,
+    "expiry_time": expiry_time_text
+}
+
+save_data(data)
+
+# =====================================
+# SAVE USER ORDER HISTORY
+# =====================================
 
         data = load_data()
 

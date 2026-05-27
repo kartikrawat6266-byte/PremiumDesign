@@ -1347,60 +1347,115 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     data = load_data()
 
+    # =====================================
+    # NO ORDERS
+    # =====================================
+
     if user_id not in data or not data[user_id]["orders"]:
 
-        await query.message.edit_text(
-            text="❌ No Orders Found.",
-            reply_markup=InlineKeyboardMarkup([
+        text = (
 
-                [
-                    InlineKeyboardButton(
-                        "⬅️ Back",
-                        callback_data="main_menu"
-                    )
-                ]
-            ])
+            "╔════════════════════╗\n"
+            "    🛒 𝗡𝗢 𝗢𝗥𝗗𝗘𝗥𝗦 𝗬𝗘𝗧 🍓\n"
+            "╚════════════════════╝\n\n"
+
+            "✨ 𝗬𝗼𝘂𝗿 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗖𝗼𝗹𝗹𝗲𝗰𝘁𝗶𝗼𝗻 𝗜𝘀 𝗘𝗺𝗽𝘁𝘆\n\n"
+
+            "🚀 𝗬𝗼𝘂 𝗛𝗮𝘃𝗲𝗻'𝘁 𝗣𝘂𝗿𝗰𝗵𝗮𝘀𝗲𝗱 𝗔𝗻𝘆\n"
+            "𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗣𝗿𝗼𝗱𝘂𝗰𝘁𝘀 𝗬𝗲𝘁.\n\n"
+
+            "🎯 Start Shopping Now."
+        )
+
+        keyboard = [
+
+            [
+                InlineKeyboardButton(
+                    "🎨 Shop Now 🈲",
+                    callback_data="shop_now"
+                )
+            ],
+
+            [
+                InlineKeyboardButton(
+                    "🍓 Back To Menu",
+                    callback_data="main_menu"
+                )
+            ]
+        ]
+
+        await query.message.edit_text(
+            text=text,
+            reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
         return
 
+    # =====================================
+    # ORDERS
+    # =====================================
+
     orders = data[user_id]["orders"]
 
-    text = "📦 YOUR ORDERS\n\n"
+    text = (
+
+        "╔════════════════════╗\n"
+        "     📦 𝗠𝗬 𝗢𝗥𝗗𝗘𝗥𝗦 🧚🏻\n"
+        "╚════════════════════╝\n\n"
+
+    )
 
     for count, order in enumerate(orders, start=1):
 
+        username = order.get("username", "No Username")
+
+        if username != "No Username":
+            username = f"@{username}"
+
         text += (
 
-            f"━━━━━━━━━━━━━━\n"
-            f"🛒 Order {count}\n\n"
+            f"✨ Order {count}\n\n"
 
-            f"🎮 Game: {order['game']}\n"
-            f"⏳ Plan: {order['plan']}\n"
-            f"💰 Price: ₹{order['amount']}\n\n"
+            f"🎮 Game : {order['game']}\n"
+            f"⏳ Plan : {order['plan']}\n"
+            f"💰 Price : ₹{order['amount']}\n\n"
 
-            f"🆔 Order ID:\n"
-            f"{order.get('order_id', 'N/A')}\n\n"
+            f"🧑🏻 Username : {username}\n"
+            f"🥇 User ID : {order['user_id']}\n"
+            f"🧾 Order ID : {order.get('order_id', 'Not Available')}\n\n"
 
-            f"🔑 Key:\n"
+            f"🕒 Purchase Time :\n"
+            f"{order['purchase_time']}\n\n"
+
+            f"⚠️ Expire Time :\n"
+            f"{order['expiry_time']}\n\n"
+
+            "━━━━━━━━━━━━━━━━━━\n\n"
+
+            f"🔑 Key :\n"
             f"{order.get('key', 'Pending')}\n\n"
+
+            "━━━━━━━━━━━━━━━━━━\n\n"
+
         )
 
-    # MESSAGE LIMIT FIX
+    keyboard = [
+
+        [
+            InlineKeyboardButton(
+                "📨 Back To Menu",
+                callback_data="main_menu"
+            )
+        ]
+    ]
+
+    # TELEGRAM LIMIT FIX
     if len(text) > 4000:
         text = text[:4000]
 
     await query.message.edit_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup([
-
-            [
-                InlineKeyboardButton(
-                    "⬅️ Back To Menu",
-                    callback_data="main_menu"
-                )
-            ]
-        ])
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
     
 # =========================================

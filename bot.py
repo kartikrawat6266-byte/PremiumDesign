@@ -371,7 +371,7 @@ async def game_plans(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
-
+        
 # =========================================
 # CREATE PAYMENT
 # =========================================
@@ -396,6 +396,17 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             string.ascii_uppercase + string.digits,
             k=10
         ))
+
+        # SAVE ORDER DATA
+        if "orders" not in context.bot_data:
+            context.bot_data["orders"] = {}
+
+        context.bot_data["orders"][order_id] = {
+            "game": game,
+            "plan": plan,
+            "amount": amount,
+            "user_id": user_id
+        }
 
         upi_link = (
             f"upi://pay?pa={UPI_ID}"
@@ -449,7 +460,7 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [
                 InlineKeyboardButton(
                     "✅ VERIFY PAYMENT",
-                    callback_data=f"verify|{game}|{plan}|{amount}|{order_id}"
+                    callback_data=f"verify|{order_id}"
                 )
             ],
 
@@ -490,44 +501,63 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     data = query.data.split("|")
 
-    game = data[1]
-    plan = data[2]
-    amount = data[3]
-    order_id = data[4]
+    order_id = data[1]
 
-    user_id = query.from_user.id
+    # GET ORDER DATA
+    order_data = context.bot_data["orders"].get(order_id)
 
-    username = query.from_user.username
+    if not order_data:
 
-    if username:
-        username_text = f"@{username}"
-    else:
-        username_text = "Not Set"
+        return await query.message.reply_text(
+            "❌ Order Expired"
+        )
 
+    game = order_data["game"]
+    plan = order_data["plan"]
+    amount = order_data["amount"]
+    user_id = order_data["user_id"]
+
+    # SAVE QR MESSAGE ID
     if "qr_messages" not in context.bot_data:
         context.bot_data["qr_messages"] = {}
 
     context.bot_data["qr_messages"][str(user_id)] = query.message.message_id
 
-    checking = await query.message.reply_text(
-        "🔍 Checking Your Payment Please Wait..."
+    # REMOVE BUTTONS
+    try:
+        await query.message.edit_reply_markup(reply_markup=None)
+    except:
+        pass
+
+    # SUCCESS ALERT
+    await query.answer(
+        "🔍 Payment Request Sent Successfully",
+        show_alert=True
     )
 
     order_time = current_time()
 
+    username = query.from_user.username
+
+    if username:
+        username = f"@{username}"
+    else:
+        username = "Not Set"
+
+    # SEND REQUEST TO OWNER
     await context.bot.send_message(
         chat_id=OWNER_ID,
         text=(
             "🚨 *NEW PAYMENT REQUEST*\n\n"
 
+            f"👤 Username : {username}\n"
+            f"🆔 User ID : `{user_id}`\n\n"
+
             f"🎮 Product : {game}\n"
             f"📦 Plan : {plan}\n"
-            f"💰 Price : ₹{amount}\n"
+            f"💰 Amount : ₹{amount}\n"
             f"🆔 Order ID : `{order_id}`\n"
-            f"⏰ Order Time : `{order_time}`\n\n"
-
-            f"👤 User ID : `{user_id}`\n"
-            f"💌 Username : {username_text}"
+            f"⏰ Order Time : `{order_time}`"
         ),
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup([
@@ -535,7 +565,7 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [
                 InlineKeyboardButton(
                     "✅ APPROVE PAYMENT",
-                    callback_data=f"approve|{user_id}|{game}|{plan}|{amount}|{order_id}"
+                    callback_data=f"approve|{order_id}"
                 )
             ],
 
@@ -547,13 +577,6 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         ])
     )
-
-    await asyncio.sleep(5)
-
-    try:
-        await checking.delete()
-    except:
-        pass
 
 # =========================================
 # CANCEL ORDER

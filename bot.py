@@ -1076,7 +1076,7 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         )
 
-# =====================================
+        # =====================================
         # SAVE DELIVERY DATA
         # =====================================
 
@@ -1333,7 +1333,6 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(
             chat_id=user_id,
             text=text,
-            parse_mode="Markdown"
         )
 
         # =====================================

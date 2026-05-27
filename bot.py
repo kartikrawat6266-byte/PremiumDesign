@@ -128,42 +128,42 @@ def main_menu_keyboard():
 
         [
             InlineKeyboardButton(
-                "🛒 PREMIUM SHOP 🛒",
+                "🗳️ PREMIUM SHOP 🛒",
                 callback_data="shop_now"
             )
         ],
 
         [
             InlineKeyboardButton(
-                "📦 MY ORDERS 📦",
+                "🪩 MY ORDERS 📦",
                 callback_data="my_orders"
             )
         ],
 
         [
             InlineKeyboardButton(
-                "👤 MY PROFILE 👤",
+                "🎨 MY PROFILE 🙆🏻‍♂️",
                 callback_data="profile"
             )
         ],
 
         [
             InlineKeyboardButton(
-                "📖 HOW TO USE 📖",
+                "🌌 HOW TO USE 🈲",
                 callback_data="how_to_use"
             )
         ],
 
         [
             InlineKeyboardButton(
-                "💬 SUPPORT CENTER 💬",
+                "📩 SUPPORT CENTER 📬",
                 callback_data="support"
             )
         ],
 
         [
             InlineKeyboardButton(
-                "💰 REFER & EARN 💰",
+                "🎁 REFER & EARN 🔑",
                 callback_data="refer_earn"
             )
         ]
@@ -194,13 +194,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         " 🆆🅴🅻🅲🅾🅼🅴 🅱🆄🅳🅳🆈\n"
         "╚══════════════════╝\n\n"
 
-        "👋 *Welcome To BeSt ChEat SHOP* 👋\n\n"
+        "🪩 *Welcome To BeSt ChEat SHOP* 🔮\n\n"
 
         "❄️ *Here you can purchase all tg premium*\n"
-        "*hacks for Android & IOS..* 💥\n\n"
+        "*hacks for Android & IOS..*💥\n\n"
 
         "🔻 ***Continue Shopping Premium***\n"
-        "***Option Below..*** 🛍️"
+        "***Option Below..***🛍️"
     )
  
     await update.message.reply_text(
@@ -227,13 +227,13 @@ async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         " 🅵🆁🅴🅴 🅵🅸🆁🅴 🆂🅷🅾🅿\n"
         "╚══════════════════╝\n\n"
 
-        "👋 *Welcome To BeSt ChEat SHOP* 👋\n\n"
+        "🌈 *Welcome To BeSt ChEat SHOP* 🎨\n\n"
 
         "❄️ _Here you can purchase all tg premium_\n"
         "_hacks for Android & IOS.._ 💥\n\n"
 
-        "🔻 *Continue Shopping Premium*\n"
-        "*Option Below..* 🛍️"
+        "🔻*Continue Shopping Premium*\n"
+        "*Option Below...*🛍️"
     )
 
     await query.message.edit_text(

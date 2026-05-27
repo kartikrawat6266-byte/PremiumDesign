@@ -490,6 +490,7 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         print("PAYMENT ERROR :", e)
 
 # =========================================
+# =========================================
 # VERIFY PAYMENT
 # =========================================
 
@@ -532,14 +533,6 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         context.bot_data["qr_messages"][str(user_id)] = query.message.message_id
 
-        # USER MESSAGE
-        checking_msg = await context.bot.send_message(
-            chat_id=user_id,
-            text="🔍 Checking Your Payment Please Wait..."
-        )
-
-        verify_time = current_time()
-
         # SAVE VERIFY DATA
         if "verify_orders" not in context.bot_data:
             context.bot_data["verify_orders"] = {}
@@ -550,6 +543,23 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "amount": amount,
             "order_id": order_id
         }
+
+        # USER CHECKING MESSAGE
+        checking_msg = await context.bot.send_message(
+            chat_id=user_id,
+            text="🔍 Checking Your Payment Please Wait..."
+        )
+
+        # AUTO DELETE AFTER 15 SEC
+        asyncio.create_task(
+            auto_delete_message(
+                context.bot,
+                user_id,
+                checking_msg.message_id
+            )
+        )
+
+        verify_time = current_time()
 
         # OWNER REQUEST
         await context.bot.send_message(
@@ -585,17 +595,26 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ])
         )
 
-        # AUTO DELETE MESSAGE
-        asyncio.create_task(
-            auto_delete_message(
-                context.bot,
-                user_id,
-                checking_msg.message_id
-            )
+    except Exception as e:
+        print(f"VERIFY ERROR : {e}")
+
+# =========================================
+# AUTO DELETE MESSAGE
+# =========================================
+
+async def auto_delete_message(bot, chat_id, message_id):
+
+    await asyncio.sleep(15)
+
+    try:
+
+        await bot.delete_message(
+            chat_id=chat_id,
+            message_id=message_id
         )
 
-    except Exception as e:
-        print(e)
+    except:
+        pass
 
 # =========================================
 # CANCEL ORDER

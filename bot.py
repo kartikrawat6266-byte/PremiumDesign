@@ -807,6 +807,24 @@ async def auto_delete_message(bot, chat_id, message_id):
         pass
 
 # =========================================
+# AUTO DELETE CANCEL MESSAGE
+# =========================================
+
+async def auto_delete_cancel_msg(bot, chat_id, message_id):
+
+    await asyncio.sleep(15)
+
+    try:
+
+        await bot.delete_message(
+            chat_id=chat_id,
+            message_id=message_id
+        )
+
+    except:
+        pass
+        
+# =========================================
 # CANCEL ORDER
 # =========================================
 
@@ -1132,11 +1150,34 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "❄️ Thanks For Purchasing 💥"
     )
 
-    await context.bot.send_message(
+await context.bot.send_message(
         chat_id=user_id,
         text=text,
         parse_mode="Markdown"
     )
+
+    # SAVE USER ORDER
+
+    data = load_data()
+
+    uid = str(user_id)
+
+    if uid in data:
+
+        data[uid]["total_orders"] += 1
+
+        data[uid]["orders"].append({
+
+            "game": game,
+            "plan": plan,
+            "amount": amount,
+            "order_id": order_id,
+            "payment_time": payment_time,
+            "expiry_time": expiry_time
+
+        })
+
+        save_data(data)
 
     await query.message.edit_text(
         "🍓 KeY Delevery Successfully"
@@ -1151,14 +1192,49 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    user_id = str(query.from_user.id)
+
+    data = load_data()
+
+    orders = data.get(user_id, {}).get("orders", [])
+
+    if not orders:
+
+        await query.message.edit_text(
+            text="📭 *NO ORDERS FOUND*",
+            parse_mode="Markdown",
+            reply_markup=InlineKeyboardMarkup([
+
+                [
+                    InlineKeyboardButton(
+                        "🍓 BACK TO MENU",
+                        callback_data="main_menu"
+                    )
+                ]
+            ])
+        )
+
+        return
+
+    text = "📦 *YouR OrDerS*\n\n"
+
+    for order in reversed(orders[-10:]):
+
+        text += (
+            f"🎮 {order['game']}\n"
+            f"⏳ {order['plan']}\n"
+            f"💸 ₹{order['amount']}\n"
+            f"🈲 `{order['order_id']}`\n\n"
+        )
+
     await query.message.edit_text(
-        text="📭 *NO ORDERS FOUND*",
+        text=text,
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup([
 
             [
                 InlineKeyboardButton(
-                    "⬅️ BACK TO MENU",
+                    "🧚🏻 BACK TO MENU",
                     callback_data="main_menu"
                 )
             ]

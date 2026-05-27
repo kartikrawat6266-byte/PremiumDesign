@@ -658,11 +658,18 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user_id = int(query.data.split("|")[1])
 
-    # OWNER MESSAGE FAST UPDATE
+# OWNER PANEL FAST UPDATE
     try:
-        await query.message.edit_text(
-            "🍫 User Payment Cancelled Successfully"
+
+        await query.edit_message_reply_markup(
+            reply_markup=None
         )
+
+        await context.bot.send_message(
+            chat_id=query.message.chat.id,
+            text="🍫 User Payment Cancelled Successfully"
+        )
+
     except:
         pass
 

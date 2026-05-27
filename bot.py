@@ -1244,25 +1244,44 @@ await context.bot.send_message(
         parse_mode="Markdown"
     )
 
-    # SAVE USER ORDER
+        # =====================================
+        # SAVE USER ORDER HISTORY
+        # =====================================
 
-    data = load_data()
+        data = load_data()
 
-    uid = str(user_id)
+        user_id_str = str(user_id)
 
-    if uid in data:
+        if user_id_str not in data:
 
-        data[uid]["total_orders"] += 1
+            get_user(user_id_str)
 
-        data[uid]["orders"].append({
+        try:
+
+            user_info = await context.bot.get_chat(
+                user_id
+            )
+
+            username = (
+                user_info.username
+                or "NoUsername"
+            )
+
+        except:
+
+            username = "NoUsername"
+
+        data[user_id_str]["total_orders"] += 1
+
+        data[user_id_str]["orders"].append({
 
             "game": game,
-            "plan": plan,
+            "plan": clean_plan,
             "amount": amount,
-            "order_id": order_id,
-            "payment_time": payment_time,
-            "expiry_time": expiry_time
-
+            "username": username,
+            "user_id": user_id,
+            "purchase_time": payment_time_text,
+            "expiry_time": expiry_time_text
         })
 
         save_data(data)

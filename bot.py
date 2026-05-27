@@ -190,19 +190,19 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         })
 
     text = (
-        "╔══════════════════════════════╗\n"
-        "       🔳 W E L C O M E 🔳\n"
-        "╚══════════════════════════════╝\n\n"
+        "╔══════════════════╗\n"
+        " 🆆🅴🅻🅲🅾🅼🅴 🅱🆄🅳🅳🆈\n"
+        "╚══════════════════╝\n\n"
 
         "👋 *Welcome To BeSt ChEat SHOP* 👋\n\n"
 
-        "❄️ _Here you can purchase all tg_\n"
-        "_premium hacks for Android & IOS.._ 💥\n\n"
+        "❄️ *Here you can purchase all tg premium*\n"
+        "*hacks for Android & IOS..* 💥\n\n"
 
-        "🔻 _Continue Shopping Premium_\n"
-        "_Option Below.._ 🛍️"
+        "🔻 ***Continue Shopping Premium***\n"
+        "***Option Below..*** 🛍️"
     )
-
+ 
     await update.message.reply_text(
         text=text,
         parse_mode="Markdown",

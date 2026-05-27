@@ -1195,8 +1195,16 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         await query.message.edit_text(
             text=(
-                "🎁 PAYMENT APPROVED\n\n"
-                "Now Send Delivery Key."
+                "╔════════════════════╗\n"
+                "  🈲 𝗣𝗔𝗬𝗠𝗘𝗡𝗧 𝗔𝗣𝗣𝗥𝗢𝗩𝗘𝗗 💸\n"
+                "╚════════════════════╝\n\n"
+
+                "🎨 𝗣𝗮𝘆𝗺𝗲𝗻𝘁 𝗩𝗲𝗿𝗶𝗳𝗶𝗲𝗱 𝗦𝘂𝗰𝗰𝗲𝘀𝘀𝗳𝘂𝗹𝗹𝘆\n\n"
+
+                "🔑 𝗡𝗼𝘄 𝗦𝗲𝗻𝗱 𝗧𝗵𝗲 𝗣𝗿𝗲𝗺𝗶𝘂𝗺\n"
+                "𝗗𝗲𝗹𝗶𝘃𝗲𝗿𝘆 𝗞𝗲𝘆 𝗧𝗼 𝗧𝗵𝗲 𝗨𝘀𝗲𝗿.\n\n"
+
+                "🧚🏻 𝗗𝗲𝗹𝗶𝘃𝗲𝗿 𝗧𝗵𝗲 𝗞𝗲𝘆 𝗕𝗲𝗹𝗼𝘄."
             ),
             reply_markup=InlineKeyboardMarkup(
                 keyboard
@@ -1332,7 +1340,7 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         save_data(data_db)
 
         await query.message.edit_text(
-            "✅ Key Delivered Successfully"
+            "🍓 Key Delivered Successfully 🗳️"
         )
 
     except Exception as e:

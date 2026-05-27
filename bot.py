@@ -1781,10 +1781,10 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
 
-    print("CLAIM BUTTON CLICKED")
+    await query.answer()
 
     user_id = str(query.from_user.id)
-    
+
     data = load_data()
 
     # AUTO CREATE USER

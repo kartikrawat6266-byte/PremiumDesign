@@ -509,27 +509,27 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = (
         "╔══════════════════╗\n"
-        "🅿🆁🅴🅼🅸🆄🅼 🅿🆁🅾🅵🅸🅻🅴\n"
+        "  🆈🅾🆄🆁 🅿🆁🅾🅵🅸🅻🅴 \n"
         "╚══════════════════╝\n\n"
 
-       f"👤 ***Name :*** _{user_data['name']}_\n"
-       f"🆔 ***Username :*** _{username}_\n"
-       f"💎 ***User ID :*** _`{user_id}`_\n\n"
-
+       f"🍇 ***Name :*** _{user_data['name']}_\n"
+       f"💌 ***Username :*** _{username}_\n"
+       f"🫅🏻 ***User ID :*** _`{user_id}`_\n\n"
+ 
         "╔══════════════════╗\n"
-        " 📦 🆄🆂🅴🆁 🆂🆃🅰🆃🆂 📦\n"
+        "  🆈🅾🆄🆁 🆂🆃🅰🆃🆄🆂 \n"
         "╚══════════════════╝\n\n"
 
-       f"📦 ***Total Orders :*** _{user_data['total_orders']}_\n"
-       f"💰 ***Referral Earnings :*** _₹{user_data['referral_earnings']:.2f}_\n"
-       f"👥 ***Total Refers :*** _{user_data['total_refers']}_\n\n"
+       f"❄️ ***Total Orders :*** _{user_data['total_orders']}_\n"
+       f"🍫 ***Referral Earnings :*** _₹{user_data['referral_earnings']:.2f}_\n"
+       f"🍓 ***Total Refers :*** _{user_data['total_refers']}_\n\n"
 
         "╔══════════════════╗\n"
-        "⏰ 🅰🅲🅲🅾🆄🅽🆃 🆃🅸🅼🅴 ⏰\n"
+        " 🅰🅲🆃🅸🆅🅸🆃🆈 🆃🅸🅼🅴 \n"
         "╚══════════════════╝\n\n"
 
        f"📅 ***Joined :*** _{user_data['joined']}_\n"
-       f"⚡ ***Last Activity :*** _{user_data['last_activity']}_"
+       f"🧚🏻 ***Activity :*** _{user_data['last_activity']}_"
     )
 
     keyboard = [

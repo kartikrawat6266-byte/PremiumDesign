@@ -1801,6 +1801,10 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
+    data = load_data()
+
+    data[user_id]["refer_message_id"] = sent_msg.message_id
+
     save_data(data)
     
 # =========================================

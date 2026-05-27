@@ -315,7 +315,7 @@ if context.args:
 
                     try:
 
-                        # DELETE OLD REFER PAGE
+                        # DELETE OLD REFER MESSAGE
                         old_message_id = data[
                             referrer_id
                         ].get(

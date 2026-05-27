@@ -497,7 +497,13 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user_id = query.from_user.id
 
-    # SAVE QR MESSAGE ID
+    username = query.from_user.username
+
+    if username:
+        username_text = f"@{username}"
+    else:
+        username_text = "Not Set"
+
     if "qr_messages" not in context.bot_data:
         context.bot_data["qr_messages"] = {}
 
@@ -516,11 +522,11 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             f"🎮 Product : {game}\n"
             f"📦 Plan : {plan}\n"
-            f"💰 Amount : ₹{amount}\n"
+            f"💰 Price : ₹{amount}\n"
             f"🆔 Order ID : `{order_id}`\n"
             f"⏰ Order Time : `{order_time}`\n\n"
 
-            f"👤 User Id : `{user_id}`\n"
+            f"👤 User ID : `{user_id}`\n"
             f"💌 Username : {username_text}"
         ),
         parse_mode="Markdown",
@@ -529,7 +535,7 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [
                 InlineKeyboardButton(
                     "✅ APPROVE PAYMENT",
-                    callback_data=f"approve|{user_id}|{game}|{plan}|{amount}"
+                    callback_data=f"approve|{user_id}|{game}|{plan}|{amount}|{order_id}"
                 )
             ],
 
@@ -608,14 +614,12 @@ async def auto_delete_message(bot, chat_id, message_id):
 async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
-
     await query.answer()
 
     data = query.data.split("|")
 
     user_id = int(data[1])
 
-    # DELETE USER QR MESSAGE
     try:
 
         qr_message_id = context.bot_data["qr_messages"].get(str(user_id))
@@ -630,8 +634,7 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         pass
 
-    # ONLY CANCEL MESSAGE
-    failed_msg = await context.bot.send_message(
+    await context.bot.send_message(
         chat_id=user_id,
         text=(
             "⚠️ Payment not received yet.\n"
@@ -639,20 +642,6 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     )
 
-    # AUTO DELETE AFTER 15 SEC
-    await asyncio.sleep(15)
-
-    try:
-
-        await context.bot.delete_message(
-            chat_id=user_id,
-            message_id=failed_msg.message_id
-        )
-
-    except:
-        pass
-
-    # OWNER SIDE MESSAGE
     await query.message.edit_text(
         "❌ User Payment Cancelled Successfully"
     )
@@ -664,17 +653,42 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
-
     await query.answer()
 
     data = query.data.split("|")
 
-    user_id = data[1]
+    user_id = int(data[1])
     game = data[2]
     plan = data[3]
     amount = data[4]
+    order_id = data[5]
 
-    # USER QR MESSAGE DELETE
+    payment_time = datetime.now(IST)
+
+    if "1 Day" in plan:
+        expiry_datetime = payment_time + timedelta(days=1, hours=2)
+
+    elif "3 Day" in plan:
+        expiry_datetime = payment_time + timedelta(days=3, hours=2)
+
+    elif "7 Day" in plan:
+        expiry_datetime = payment_time + timedelta(days=7, hours=2)
+
+    elif "10 Day" in plan:
+        expiry_datetime = payment_time + timedelta(days=10, hours=2)
+
+    elif "15 Day" in plan:
+        expiry_datetime = payment_time + timedelta(days=15, hours=2)
+
+    elif "30 Day" in plan:
+        expiry_datetime = payment_time + timedelta(days=31, hours=2)
+
+    else:
+        expiry_datetime = payment_time + timedelta(days=30, hours=2)
+
+    payment_time_text = payment_time.strftime("%d-%m-%Y %I:%M:%S %p")
+    expiry_time_text = expiry_datetime.strftime("%d-%m-%Y %I:%M:%S %p")
+
     try:
 
         qr_message_id = context.bot_data["qr_messages"].get(str(user_id))
@@ -682,29 +696,31 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if qr_message_id:
 
             await context.bot.delete_message(
-                chat_id=int(user_id),
+                chat_id=user_id,
                 message_id=qr_message_id
             )
 
     except:
         pass
 
-    # ONLY SUCCESS MESSAGE
     await context.bot.send_message(
-        chat_id=int(user_id),
+        chat_id=user_id,
         text=(
             "✅ Payment Verified Successfully\n\n"
-            "🔑 Your key will be delivered shortly."
+            "Your key will be delivered shortly."
         )
     )
 
-    # OWNER SIDE BUTTON CHANGE
     keyboard = [
 
         [
             InlineKeyboardButton(
                 "🔑 DELIVERY KEY",
-                callback_data=f"delivery|{user_id}|{game}|{plan}"
+                callback_data=(
+                    f"delivery|{user_id}|{game}|{plan}|"
+                    f"{amount}|{order_id}|"
+                    f"{payment_time_text}|{expiry_time_text}"
+                )
             )
         ],
 
@@ -718,13 +734,12 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.message.edit_text(
         text=(
-            "✅ Payment Approve Successfully\n\n"
-            "Now Click Delivery Key."
+            "✅ PAYMENT APPROVED\n\n"
+            "Now Send Delivery Key."
         ),
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
-
-# =========================================
+    
 # =========================================
 # DELIVERY KEY
 # =========================================
@@ -739,95 +754,60 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = int(data[1])
     game = data[2]
     plan = data[3]
+    amount = data[4]
+    order_id = data[5]
+    payment_time = data[6]
+    expiry_time = data[7]
 
-    # PAYMENT TIME
-    payment_time = datetime.now(IST)
-
-    payment_time_str = payment_time.strftime(
-        "%d-%m-%Y %I:%M:%S %p"
+    days = (
+        plan.replace("💸", "")
+        .replace("🍫", "")
+        .replace("🍓", "")
+        .replace("🧚🏻", "")
+        .replace("🍇", "")
+        .replace(" ", "")
     )
 
-    # EXPIRY SYSTEM
-    if "1 Day" in plan:
-        expiry_datetime = payment_time + timedelta(days=2)
-
-    elif "3 Day" in plan:
-        expiry_datetime = payment_time + timedelta(days=4)
-
-    elif "7 Day" in plan:
-        expiry_datetime = payment_time + timedelta(days=8)
-
-    elif "10 Day" in plan:
-        expiry_datetime = payment_time + timedelta(days=11)
-
-    elif "15 Day" in plan:
-        expiry_datetime = payment_time + timedelta(days=16)
-
-    elif "30 Day" in plan:
-        expiry_datetime = payment_time + timedelta(days=31)
-
-    else:
-        expiry_datetime = payment_time + timedelta(days=31)
-
-    expiry_time = expiry_datetime.strftime(
-        "%d-%m-%Y %I:%M:%S %p"
-    )
-
-    # PLAN DAYS
-    days = plan.split(" ")[1]
-
-    # GAME NAME CLEAN
-    clean_game = (
+    game_key = (
         game.upper()
         .replace(" ", "-")
         .replace("[", "")
         .replace("]", "")
     )
 
-    # FINAL KEY
-    final_key = f"{days}x-{clean_game}"
+    final_key = f"{days}x-{game_key}"
 
-    # RANDOM ORDER ID
-    order_id = "ORD" + ''.join(
-        random.choices(string.digits, k=20)
-    )
-
-    key_text = (
+    text = (
         "🎉 *Payment Successful!*\n\n"
 
-        f"🎮 *Game :* {game}\n"
-        f"⏳ *Duration :* {plan}\n"
-        f"💰 *Price :* ₹1200\n\n"
+        f"🎮 Game : {game}\n"
+        f"⏳ Duration : {plan}\n"
+        f"💰 Price : ₹{amount}\n\n"
 
         "📋 *Order Details :*\n\n"
 
-        f"🆔 *Order ID :*\n"
-        f"`{order_id}`\n\n"
-
-        f"🕒 *Payment Time :*\n"
-        f"`{payment_time_str}`\n\n"
-
-        f"⚠️ *Expiry Time :*\n"
-        f"`{expiry_time}`\n\n"
+        f"🆔 Order ID : `{order_id}`\n"
+        f"🕒 Order Time : {current_time()}\n"
+        f"⏰ Payment Time : {payment_time}\n"
+        f"⚠️ Expiry Time : {expiry_time}\n\n"
 
         "━━━━━━━━━━━━━━━━━━\n\n"
 
-        "🔑 *Your Key :*\n"
-        f"`{final_key}`\n\n"
+        f"🔑 Your Key :\n`{final_key}`\n\n"
 
         "━━━━━━━━━━━━━━━━━━\n\n"
 
-        "❄️ *Thanks For Purchasing 💥*"
+        "❄️ Thanks For Purchasing 💥"
     )
 
     await context.bot.send_message(
         chat_id=user_id,
-        text=key_text,
+        text=text,
         parse_mode="Markdown"
     )
 
     await query.message.edit_text(
-        "✅ KEY DELIVERED SUCCESSFULLY"
+        "✅ KeY Delevery Successfully"
     )
     
 # =========================================

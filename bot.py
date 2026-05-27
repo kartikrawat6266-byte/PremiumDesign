@@ -783,42 +783,90 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
+
     await query.answer()
 
     data = query.data.split("|")
 
     user_id = int(data[1])
+    game = data[2]
+    plan = data[3]
 
-    # DEMO KEY
-    key_text = (
-        "🔑 *YOUR PREMIUM KEY*\n\n"
-        "`BESTCHEAT-VIP-2026`\n\n"
-        "✅ Thank You For Purchase."
+    # CURRENT TIME
+    payment_time_obj = datetime.now(IST)
+
+    payment_time = payment_time_obj.strftime(
+        "%d-%m-%Y %I:%M:%S %p"
+    )
+
+    # EXPIRY SYSTEM
+    if "1 Day" in plan:
+        expiry_datetime = payment_time_obj + timedelta(days=1)
+
+    elif "3 Day" in plan:
+        expiry_datetime = payment_time_obj + timedelta(days=3)
+
+    elif "7 Day" in plan:
+        expiry_datetime = payment_time_obj + timedelta(days=7)
+
+    elif "10 Day" in plan:
+        expiry_datetime = payment_time_obj + timedelta(days=10)
+
+    elif "15 Day" in plan:
+        expiry_datetime = payment_time_obj + timedelta(days=15)
+
+    elif "30 Day" in plan:
+        expiry_datetime = payment_time_obj + timedelta(days=30)
+
+    else:
+        expiry_datetime = payment_time_obj + timedelta(days=1)
+
+    expiry_time_text = expiry_datetime.strftime(
+        "%d-%m-%Y %I:%M:%S %p"
+    )
+
+    # RANDOM ORDER ID
+    order_id = "ORD" + ''.join(
+        random.choices(string.digits, k=20)
+    )
+
+    # RANDOM KEY
+    key_text_value = (
+        f"{plan.replace(' ', '').replace('💸', '').replace('🍫', '').replace('🍓', '').replace('🧚🏻', '').replace('🍇', '')}"
+        f"x-{game.upper().replace(' ', '-')}"
+    )
+
+    # DELIVERY TEXT
+    text = (
+        "🎉 *Payment Successful!*\n\n"
+
+        f"🎮 *Game :* {game}\n"
+        f"⏳ *Duration :* {plan}\n"
+        f"💰 *Amount Paid :* Successfully Paid\n\n"
+
+        "📋 *Order Details :*\n\n"
+
+        f"🆔 *Order ID :* `{order_id}`\n"
+        f"🕒 *Payment Time :*\n`{payment_time}`\n"
+        f"⚠️ *Expiry Time :*\n`{expiry_time_text}`\n\n"
+
+        "━━━━━━━━━━━━━━━━━━\n\n"
+
+        f"🔑 *Your Key :*\n`{key_text_value}`\n\n"
+
+        "━━━━━━━━━━━━━━━━━━\n\n"
+
+        "❄️ *Thanks For Purchasing* 💥"
     )
 
     await context.bot.send_message(
         chat_id=user_id,
-        text=key_text,
+        text=text,
         parse_mode="Markdown"
     )
 
-    await context.bot.send_message(
-        chat_id=user_id,
-        text=(
-            "╔══════════════════╗\n"
-            " 🆆🅴🅻🅲🅾🅼🅴 🅱🆄🅳🅳🆈\n"
-            "╚══════════════════╝\n\n"
-
-            "🪩 *Welcome To BeSt ChEat SHOP* 🔮\n\n"
-
-            "🔻 *Continue Shopping Premium* 🛍️"
-        ),
-        parse_mode="Markdown",
-        reply_markup=main_menu_keyboard()
-    )
-
     await query.message.edit_text(
-        "✅ KEY DELIVERED SUCCESSFULLY"
+        "✅ Key Are Delivered Successfully"
     )
     
 # =========================================

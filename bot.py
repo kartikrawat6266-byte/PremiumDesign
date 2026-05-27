@@ -1306,7 +1306,16 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(
             chat_id=user_id,
             text=text,
-            parse_mode="Markdown"
+            parse_mode="Markdown",
+            reply_markup=InlineKeyboardMarkup([
+
+                [
+                    InlineKeyboardButton(
+                        "🏚️ Go To Main Menu 🧚🏻",
+                        callback_data="main_menu"
+                    )
+                ]
+            ])
         )
 
         # UPDATE ORDER

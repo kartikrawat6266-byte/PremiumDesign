@@ -1305,20 +1305,20 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         text = (
 
-            "🎉 *Payment Successful!*\n\n"
+            "🎉 *Payment Successful\\!*\n\n"
 
-            f"🎮 *Game :* {game}\n"
-            f"⏳ *Duration :* {plan}\n"
-            f"💰 *Price :* ₹{amount}\n\n"
+            f"🎮 *Game :* `{game}`\n"
+            f"⏳ *Duration :* `{plan}`\n"
+            f"💰 *Price :* `₹{amount}`\n\n"
 
             "📋 *Order Details :*\n\n"
 
-            f"👤 *Username :* {username_text}\n"
+            f"👤 *Username :* `{username_text}`\n"
             f"🙆🏻‍♂️ *User Id :* `{user_id}`\n\n"
 
-            f"🧾 *Order Id :* `{order_id}`\n"
-            f"🕒 *Purchase Time :* {payment_time}\n"
-            f"⚠️ *Expire Time :* {expiry_time}\n\n"
+            f"🧾 *Order ID :* `{order_id}`\n"
+            f"🕒 *Purchase Time :* `{payment_time}`\n"
+            f"⚠️ *Expire Time :* `{expiry_time}`\n\n"
 
             "━━━━━━━━━━━━━━━━━━\n\n"
 
@@ -1333,7 +1333,7 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(
             chat_id=user_id,
             text=text,
-            parse_mode="Markdown"
+            parse_mode="MarkdownV2"
         )
 
         # =====================================

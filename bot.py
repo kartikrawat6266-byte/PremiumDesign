@@ -8,6 +8,7 @@ import json
 import logging
 import random
 import string
+from telegram import ReplyKeyboardRemove
 from datetime import datetime, timezone, timedelta
 
 from telegram import (
@@ -171,6 +172,7 @@ def main_menu_keyboard():
 # =========================================
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user = update.effective_user
     user_id = str(user.id)
@@ -184,26 +186,27 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "username": user.username or ""
         })
 
+    welcome_text = (
+        "👋 *Welcome To BeSt ChEat SHOP* 👋\n\n"
+        "❄️ _Here you can purchase all tg premium hacks "
+        "for Android & IOS.._ 💥"
+    )
+
+    await update.message.reply_text(
+        text=welcome_text,
+        parse_mode="Markdown",
+        reply_markup=ReplyKeyboardRemove()
+    )
+
     text = (
-        "👋 *WELCOME TO BEST CHEAT SHOP* 👋\n\n"
-
-        "❄️ *Here you can purchase all TG premium hacks "
-        "for Android & IOS..* 💥\n\n"
-
-        "━━━━━━━━━━━━━━━━━━\n\n"
-
-        "🔥 *ULTRA FAST DELIVERY*\n"
-        "💎 *PREMIUM QUALITY PRODUCTS*\n"
-        "⚡ *INSTANT KEY DELIVERY*\n\n"
-
-        "👇 *Choose an option below:*"
+        "🏠 *PREMIUM MAIN MENU*\n\n"
+        "✨ Choose an option below:"
     )
 
     await update.message.reply_text(
         text=text,
         reply_markup=main_menu_keyboard(),
-        parse_mode="Markdown",
-        reply_markup_remove=True if False else None
+        parse_mode="Markdown"
     )
 
 # =========================================

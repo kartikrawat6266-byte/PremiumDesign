@@ -496,6 +496,7 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
+
     await query.answer()
 
     try:
@@ -519,6 +520,7 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = query.from_user.id
 
         username = query.from_user.username
+
         if username:
             username_text = f"@{username}"
         else:
@@ -529,6 +531,16 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             context.bot_data["qr_messages"] = {}
 
         context.bot_data["qr_messages"][str(user_id)] = query.message.message_id
+
+        # REMOVE USER BUTTONS INSTANT
+        try:
+
+            await query.edit_message_reply_markup(
+                reply_markup=None
+            )
+
+        except:
+            pass
 
         # USER MESSAGE
         checking_msg = await context.bot.send_message(
@@ -583,16 +595,17 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ])
         )
 
-        # AUTO DELETE
-        await asyncio.sleep(15)
+        # AUTO DELETE MESSAGE
+        asyncio.create_task(
+            auto_delete_message(
+                context.bot,
+                user_id,
+                checking_msg.message_id
+            )
+        )
 
-        try:
-            await checking_msg.delete()
-        except:
-            pass
-
-    except:
-        pass
+    except Exception as e:
+        print(e)
 
 # =========================================
 # CANCEL ORDER
@@ -636,34 +649,26 @@ async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # CANCEL PAYMENT
 # =========================================
 
-async def auto_delete_cancel_msg(bot, chat_id, message_id):
-
-    await asyncio.sleep(15)
-
-    try:
-        await bot.delete_message(
-            chat_id=chat_id,
-            message_id=message_id
-        )
-    except:
-        pass
-
-
 async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
 
-    # FAST BUTTON RESPONSE
     await query.answer()
 
     user_id = int(query.data.split("|")[1])
 
-# OWNER PANEL FAST UPDATE
+    # REMOVE OWNER BUTTONS FAST
     try:
 
         await query.edit_message_reply_markup(
             reply_markup=None
         )
+
+    except:
+        pass
+
+    # OWNER SUCCESS MESSAGE
+    try:
 
         await context.bot.send_message(
             chat_id=query.message.chat.id,
@@ -673,7 +678,7 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         pass
 
-    # DELETE USER QR MESSAGE
+    # DELETE USER QR
     try:
 
         if "qr_messages" in context.bot_data:
@@ -708,7 +713,7 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ])
     )
 
-    # AUTO DELETE BACKGROUND
+    # AUTO DELETE
     asyncio.create_task(
         auto_delete_cancel_msg(
             context.bot,

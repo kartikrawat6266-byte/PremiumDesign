@@ -685,17 +685,33 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
+
     await query.answer()
 
     data = query.data.split("|")
 
-    user_id = data[1]
+    user_id = int(data[1])
     game = data[2]
     plan = data[3]
     amount = data[4]
 
-    # SEND VERIFY MESSAGE TO USER
-    await context.bot.send_message(
+    # DELETE USER QR / PAYMENT MESSAGE
+    try:
+
+        qr_message_id = context.bot_data["qr_messages"].get(str(user_id))
+
+        if qr_message_id:
+
+            await context.bot.delete_message(
+                chat_id=user_id,
+                message_id=qr_message_id
+            )
+
+    except:
+        pass
+
+    # SUCCESS MESSAGE
+    success_msg = await context.bot.send_message(
         chat_id=user_id,
         text=(
             "✅ Payment Verified Successfully\n\n"
@@ -703,7 +719,38 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     )
 
-    # OWNER SIDE NEW BUTTONS
+    # AUTO DELETE SUCCESS MESSAGE
+    asyncio.create_task(
+        auto_delete_message(
+            context.bot,
+            user_id,
+            success_msg.message_id
+        )
+    )
+
+    # AUTO MAIN MENU
+    text = (
+        "╔══════════════════╗\n"
+        " 🆆🅴🅻🅲🅾🅼🅴 🅱🆄🅳🅳🆈\n"
+        "╚══════════════════╝\n\n"
+
+        "🪩 *Welcome To BeSt ChEat SHOP* 🔮\n\n"
+
+        "❄️ *Here you can purchase all tg premium*\n"
+        "*hacks for Android & IOS..*💥\n\n"
+
+        "🔻 *Continue Shopping Premium*\n"
+        "*Option Below..* 🛍️"
+    )
+
+    await context.bot.send_message(
+        chat_id=user_id,
+        text=text,
+        parse_mode="Markdown",
+        reply_markup=main_menu_keyboard()
+    )
+
+    # OWNER SIDE BUTTONS
     keyboard = [
 
         [

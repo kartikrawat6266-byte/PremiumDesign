@@ -1363,27 +1363,91 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         return
 
-    # =====================================
-    # SHOW ORDERS
-    # =====================================
+# =========================================
+# MY ORDERS
+# =========================================
+
+async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    user_id = str(query.from_user.id)
+
+    data = load_data()
+
+    if user_id not in data or not data[user_id]["orders"]:
+
+        text = (
+
+            "╔════════════════════╗\n"
+            " 🛒 *𝗡𝗢 𝗢𝗥𝗗𝗘𝗥𝗦 𝗬𝗘𝗧* 🪩\n"
+            "╚════════════════════╝\n\n"
+
+            "✨ *𝗬𝗼𝘂𝗿 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗖𝗼𝗹𝗹𝗲𝗰𝘁𝗶𝗼𝗻 𝗜𝘀 𝗘𝗺𝗽𝘁𝘆*\n\n"
+
+            "🚀 *𝗬𝗼𝘂 𝗛𝗮𝘃𝗲𝗻'𝘁 𝗣𝘂𝗿𝗰𝗵𝗮𝘀𝗲𝗱 𝗔𝗻𝘆*\n"
+            "*𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗣𝗿𝗼𝗱𝘂𝗰𝘁𝘀 𝗬𝗲𝘁 𝗙𝗿𝗼𝗺 𝗢𝘂𝗿 𝗦𝘁𝗼𝗿𝗲.*\n\n"
+
+            "🎯 *𝗦𝘁𝗮𝗿𝘁 𝗦𝗵𝗼𝗽𝗽𝗶𝗻𝗴 𝗧𝗼 𝗨𝗻𝗹𝗼𝗰𝗸*\n"
+            "*𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗙𝗲𝗮𝘁𝘂𝗿𝗲𝘀 & 𝗜𝗻𝘀𝘁𝗮𝗻𝘁 𝗗𝗲𝗹𝗶𝘃𝗲𝗿𝘆.*\n\n"
+
+            "🔥 *𝗕𝗲𝘀𝘁 𝗔𝗻𝗱𝗿𝗼𝗶𝗱 & 𝗜𝗢𝗦 𝗣𝗿𝗲𝗺𝗶𝘂𝗺*\n"
+            "*𝗣𝗿𝗼𝗱𝘂𝗰𝘁𝘀 𝗔𝘃𝗮𝗶𝗹𝗮𝗯𝗹𝗲 𝗛𝗲𝗿𝗲.*\n\n"
+
+            "🧚🏻 *𝗖𝗹𝗶𝗰𝗸 𝗕𝗲𝗹𝗼𝘄 𝗕𝘂𝘁𝘁𝗼𝗻 𝗧𝗼 𝗦𝘁𝗮𝗿𝘁*\n"
+            "*𝗦𝗵𝗼𝗽𝗽𝗶𝗻𝗴.*"
+
+        )
+
+        keyboard = [
+
+            [
+                InlineKeyboardButton(
+                    "🎨 Shop Now 🈲",
+                    callback_data="shop_now"
+                )
+            ],
+
+            [
+                InlineKeyboardButton(
+                    "🍓 Back To Menu",
+                    callback_data="main_menu"
+                )
+            ]
+        ]
+
+        await query.message.edit_text(
+            text=text,
+            parse_mode="Markdown",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+        return
+
+    orders = data[user_id]["orders"]
 
     text = (
-        "╔══════════════════════╗\n"
-        "       📦 𝗠𝗬 𝗢𝗥𝗗𝗘𝗥𝗦 🧚🏻\n"
-        "╚══════════════════════╝\n\n"
+
+        "╔════════════════════╗\n"
+        "     📦 𝗠𝗬 𝗢𝗥𝗗𝗘𝗥𝗦 🧚🏻\n"
+        "╚════════════════════╝\n\n"
+
     )
 
     for count, order in enumerate(orders, start=1):
 
         text += (
+
             f"✨ *Order {count}*\n\n"
 
             f"🎮 Game : {order['game']}\n"
             f"⏳ Plan : {order['plan']}\n"
             f"💰 Price : ₹{order['amount']}\n\n"
 
-            f"🙆🏻‍♂️ Username : @{order['username']}\n"
-            f"🥇 User ID : `{order['user_id']}`\n\n"
+            f"🧑🏻 Username : @{order['username']}\n"
+            f"🥇 User ID : `{order['user_id']}`\n"
+            f"🧾 Order ID : `{order['order_id']}`\n\n"
 
             f"🕒 Purchase Time :\n"
             f"`{order['purchase_time']}`\n\n"
@@ -1392,13 +1456,19 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"`{order['expiry_time']}`\n\n"
 
             "━━━━━━━━━━━━━━━━━━\n\n"
+
+            f"🔑 Your Key :\n"
+            f"`{order['key']}`\n\n"
+
+            "━━━━━━━━━━━━━━━━━━\n\n"
+
         )
 
     keyboard = [
 
         [
             InlineKeyboardButton(
-                "🍓 BACK TO MENU",
+                "📨 Back To Menu",
                 callback_data="main_menu"
             )
         ]
@@ -1409,7 +1479,6 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
-
 # =========================================
 # PROFILE
 # =========================================

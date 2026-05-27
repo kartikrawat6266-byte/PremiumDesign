@@ -315,7 +315,6 @@ if context.args:
 
                     try:
 
-                        # DELETE OLD REFER MESSAGE
                         old_message_id = data[
                             referrer_id
                         ].get(
@@ -365,7 +364,6 @@ if context.args:
                             ])
                         )
 
-                        # SAVE NEW MESSAGE ID
                         data[referrer_id][
                             "refer_message_id"
                         ] = sent_msg.message_id

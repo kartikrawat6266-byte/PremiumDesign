@@ -1206,6 +1206,20 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     payment_time = delivery_data["payment_time"]
     expiry_time = delivery_data["expiry_time"]
 
+    # USERNAME FIX
+    try:
+
+        user_info = await context.bot.get_chat(user_id)
+
+        if user_info.username:
+            username_text = f"@{user_info.username}"
+        else:
+            username_text = "No Username"
+
+    except:
+
+        username_text = "No Username"
+
     days = (
         plan.replace(" ", "")
     )
@@ -1229,10 +1243,10 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         "📋 *Order Details :*\n\n"
 
-        f"👤 Username : @{query.from_user.username}\n"
-        f"🆔 User ID : `{user_id}`\n\n"
+        f"👤 Username : {username_text}\n"
+        f"🙆🏻‍♂️ User Id : `{user_id}`\n\n"
 
-        f"🆔 Order ID : `{order_id}`\n"
+        f"🧾 Order ID : `{order_id}`\n"
         f"🕒 Purchase Time : {payment_time}\n"
         f"⚠️ Expire Time : {expiry_time}\n\n"
 
@@ -1264,7 +1278,7 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         for order in data[user_id_str]["orders"]:
 
-            if order["order_id"] == order_id:
+            if order.get("order_id") == order_id:
 
                 order["key"] = final_key
                 break
@@ -1359,7 +1373,7 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             f"🧑🏻 Username : @{order['username']}\n"
             f"🥇 User ID : `{order['user_id']}`\n"
-            f"🧾 Order ID : `{order['order_id']}`\n\n"
+            f"🧾 Order ID : `{order.get('order_id', 'Not Available')}`\n\n"
 
             f"🕒 Purchase Time :\n"
             f"`{order['purchase_time']}`\n\n"
@@ -1369,7 +1383,7 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             "━━━━━━━━━━━━━━━━━━\n\n"
 
-            f"🔑 Your Key :\n"
+            f"`{order.get('key', 'Pending')}`\n\n"
             f"`{order['key']}`\n\n"
 
             "━━━━━━━━━━━━━━━━━━\n\n"

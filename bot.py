@@ -1196,49 +1196,105 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     data = load_data()
 
-    orders = data.get(user_id, {}).get("orders", [])
+    user_data = data.get(user_id, {})
+
+    orders = user_data.get("orders", [])
+
+    # =====================================
+    # NO ORDERS
+    # =====================================
 
     if not orders:
 
-        await query.message.edit_text(
-            text="📭 *NO ORDERS FOUND*",
-            parse_mode="Markdown",
-            reply_markup=InlineKeyboardMarkup([
+        text = (
+            "╔══════════════════════╗\n"
+            "      🛒 𝗡𝗢 𝗢𝗥𝗗𝗘𝗥𝗦 𝗬𝗘𝗧 🪩\n"
+            "╚══════════════════════╝\n\n"
 
-                [
-                    InlineKeyboardButton(
-                        "🍓 BACK TO MENU",
-                        callback_data="main_menu"
-                    )
-                ]
-            ])
+            "✨ *Your Premium Collection Is Empty*\n\n"
+
+            "🚀 You Haven't Purchased Any Premium\n"
+            "Products Yet From Our Store.\n\n"
+
+            "🎯 Start Shopping To Unlock\n"
+            "Premium Features & Instant Delivery.\n\n"
+
+            "🔥 Best Android & IOS Premium\n"
+            "Products Available Here.\n\n"
+
+            "🧚🏻 Click Below Button To Start Shopping."
+        )
+
+        keyboard = [
+
+            [
+                InlineKeyboardButton(
+                    "🛒 SHOP NOW",
+                    callback_data="shop_now"
+                )
+            ],
+
+            [
+                InlineKeyboardButton(
+                    "🈲 BACK TO MENU",
+                    callback_data="main_menu"
+                )
+            ]
+        ]
+
+        await query.message.edit_text(
+            text=text,
+            parse_mode="Markdown",
+            reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
         return
 
-    text = "📦 *YouR OrDerS*\n\n"
+    # =====================================
+    # SHOW ORDERS
+    # =====================================
 
-    for order in reversed(orders[-10:]):
+    text = (
+        "╔══════════════════════╗\n"
+        "       📦 𝗠𝗬 𝗢𝗥𝗗𝗘𝗥𝗦 🧚🏻\n"
+        "╚══════════════════════╝\n\n"
+    )
+
+    for count, order in enumerate(orders, start=1):
 
         text += (
-            f"🎮 {order['game']}\n"
-            f"⏳ {order['plan']}\n"
-            f"💸 ₹{order['amount']}\n"
-            f"🈲 `{order['order_id']}`\n\n"
+            f"✨ *Order {count}*\n\n"
+
+            f"🎮 Game : {order['game']}\n"
+            f"⏳ Plan : {order['plan']}\n"
+            f"💰 Price : ₹{order['amount']}\n\n"
+
+            f"🙆🏻‍♂️ Username : @{order['username']}\n"
+            f"🥇 User ID : `{order['user_id']}`\n\n"
+
+            f"🕒 Purchase Time :\n"
+            f"`{order['purchase_time']}`\n\n"
+
+            f"⚠️ Expire Time :\n"
+            f"`{order['expiry_time']}`\n\n"
+
+            "━━━━━━━━━━━━━━━━━━\n\n"
         )
+
+    keyboard = [
+
+        [
+            InlineKeyboardButton(
+                "🍓 BACK TO MENU",
+                callback_data="main_menu"
+            )
+        ]
+    ]
 
     await query.message.edit_text(
         text=text,
         parse_mode="Markdown",
-        reply_markup=InlineKeyboardMarkup([
-
-            [
-                InlineKeyboardButton(
-                    "🧚🏻 BACK TO MENU",
-                    callback_data="main_menu"
-                )
-            ]
-        ])
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
 # =========================================

@@ -1791,11 +1791,17 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
     ]
 
-    await query.message.edit_text(
+    sent_msg = await query.message.edit_text(
         text=text,
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
+
+    data = load_data()
+
+    data[user_id]["refer_message_id"] = sent_msg.message_id
+
+    save_data(data)
     
 # =========================================
 # CLAIM FREE KEY

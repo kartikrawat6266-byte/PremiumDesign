@@ -1371,7 +1371,7 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"⏳ Plan : {order['plan']}\n"
             f"💰 Price : ₹{order['amount']}\n\n"
 
-            f"🧑🏻 Username : @{order['username']}\n"
+            f"🧑🏻 Username : {('@' + order['username']) if order.get('username') != 'No Username' else 'No Username'}\n"
             f"🥇 User ID : `{order['user_id']}`\n"
             f"🧾 Order ID : `{order.get('order_id', 'Not Available')}`\n\n"
 

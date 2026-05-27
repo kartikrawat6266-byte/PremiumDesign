@@ -1112,12 +1112,13 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 user_id
             )
 
-            username = (
-                user_info.username
-                if user_info.username
-                else "No Username"
-            )
+        if user_info.username and user_info.username.lower() != "none":
 
+            username = user_info.username
+
+            else:
+
+            username = "No Username"
         except:
 
             username = "No Username"
@@ -1198,6 +1199,18 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = int(data[1])
     order_id = data[2]
 
+    if "delivery_data" not in context.bot_data:
+
+        return
+
+    if order_id not in context.bot_data["delivery_data"]:
+
+        await query.message.edit_text(
+            "❌ Delivery data expired."
+        )
+
+        return
+
     delivery_data = context.bot_data["delivery_data"][order_id]
 
     game = delivery_data["game"]
@@ -1211,7 +1224,7 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         user_info = await context.bot.get_chat(user_id)
 
-        if user_info.username:
+        if user_info.username and user_info.username.lower() != "none":
             username_text = f"@{user_info.username}"
         else:
             username_text = "No Username"
@@ -1383,8 +1396,7 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             "━━━━━━━━━━━━━━━━━━\n\n"
 
-            f"`{order.get('key', 'Pending')}`\n\n"
-            f"`{order['key']}`\n\n"
+            f"🔑 Key :\n`{order.get('key', 'Pending')}`\n\n"
 
             "━━━━━━━━━━━━━━━━━━\n\n"
 

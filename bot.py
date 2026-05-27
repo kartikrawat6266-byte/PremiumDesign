@@ -490,7 +490,6 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         print("PAYMENT ERROR :", e)
 
 # =========================================
-# =========================================
 # VERIFY PAYMENT
 # =========================================
 
@@ -742,29 +741,56 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # FAST RESPONSE
     await query.answer()
 
-    data = query.data.split("|")
-
-    user_id = int(data[1])
-
-    if "verify_orders" not in context.bot_data:
-        return
-
-    if str(user_id) not in context.bot_data["verify_orders"]:
-        return
-
-    order_data = context.bot_data["verify_orders"][str(user_id)]
-
-    game = order_data["game"]
-    plan = order_data["plan"]
-    amount = order_data["amount"]
-    order_id = order_data["order_id"]
-
-    payment_time = datetime.now(IST)
-
-    # DELETE USER QR MESSAGE AFTER APPROVE
     try:
 
-        if "qr_messages" in context.bot_data:
+        data = query.data.split("|")
+
+        user_id = int(data[1])
+
+        # VERIFY ORDER CHECK
+        if "verify_orders" not in context.bot_data:
+            return
+
+        if str(user_id) not in context.bot_data["verify_orders"]:
+            return
+
+        order_data = context.bot_data["verify_orders"][str(user_id)]
+
+        game = order_data["game"]
+        plan = order_data["plan"]
+        amount = order_data["amount"]
+        order_id = order_data["order_id"]
+
+        # PAYMENT TIME
+        payment_time = datetime.now(IST)
+
+        # EXPIRY TIME
+        if "1 Day" in plan:
+            expiry_datetime = payment_time + timedelta(days=1, hours=2)
+
+        elif "3 Day" in plan:
+            expiry_datetime = payment_time + timedelta(days=3, hours=2)
+
+        elif "7 Day" in plan:
+            expiry_datetime = payment_time + timedelta(days=7, hours=2)
+
+        elif "10 Day" in plan:
+            expiry_datetime = payment_time + timedelta(days=10, hours=2)
+
+        elif "15 Day" in plan:
+            expiry_datetime = payment_time + timedelta(days=15, hours=2)
+
+        elif "30 Day" in plan:
+            expiry_datetime = payment_time + timedelta(days=31, hours=2)
+
+        else:
+            expiry_datetime = payment_time + timedelta(days=30, hours=2)
+
+        payment_time_text = payment_time.strftime("%d-%m-%Y %I:%M:%S %p")
+        expiry_time_text = expiry_datetime.strftime("%d-%m-%Y %I:%M:%S %p")
+
+        # USER QR DELETE
+        try:
 
             qr_message_id = context.bot_data["qr_messages"].get(str(user_id))
 
@@ -775,80 +801,59 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     message_id=qr_message_id
                 )
 
-    except:
-        pass
+        except:
+            pass
 
-    # EXPIRY TIME
-    if "1 Day" in plan:
-        expiry_datetime = payment_time + timedelta(days=1, hours=2)
-
-    elif "3 Day" in plan:
-        expiry_datetime = payment_time + timedelta(days=3, hours=2)
-
-    elif "7 Day" in plan:
-        expiry_datetime = payment_time + timedelta(days=7, hours=2)
-
-    elif "10 Day" in plan:
-        expiry_datetime = payment_time + timedelta(days=10, hours=2)
-
-    elif "15 Day" in plan:
-        expiry_datetime = payment_time + timedelta(days=15, hours=2)
-
-    elif "30 Day" in plan:
-        expiry_datetime = payment_time + timedelta(days=31, hours=2)
-
-    else:
-        expiry_datetime = payment_time + timedelta(days=30, hours=2)
-
-    payment_time_text = payment_time.strftime("%d-%m-%Y %I:%M:%S %p")
-    expiry_time_text = expiry_datetime.strftime("%d-%m-%Y %I:%M:%S %p")
-
-    # USER VERIFIED MESSAGE
-    await context.bot.send_message(
-        chat_id=user_id,
-        text=(
-            "🧚🏻 Payment Verified Successfully\n\n"
-            "Your key will be delivered shortly."
+        # USER MESSAGE
+        verify_msg = await context.bot.send_message(
+            chat_id=user_id,
+            text=(
+                "🧚🏻 Payment Verified Successfully\n\n"
+                "Your key will be delivered shortly."
+            )
         )
-    )
 
-    keyboard = [
+        # AUTO DELETE AFTER 15 SEC
+        await asyncio.sleep(15)
 
-        [
-            InlineKeyboardButton(
-                "🔑 Delivery Key",
-                callback_data=(
-                    f"delivery|{user_id}|{game}|{plan}|"
-                    f"{amount}|{order_id}|"
-                    f"{payment_time_text}|{expiry_time_text}"
+        try:
+            await verify_msg.delete()
+        except:
+            pass
+
+        # OWNER DELIVERY PANEL
+        keyboard = [
+
+            [
+                InlineKeyboardButton(
+                    "🔑 Delivery Key",
+                    callback_data=(
+                        f"delivery|{user_id}|{game}|{plan}|"
+                        f"{amount}|{order_id}|"
+                        f"{payment_time_text}|{expiry_time_text}"
+                    )
                 )
-            )
-        ],
+            ],
 
-        [
-            InlineKeyboardButton(
-                "🧚🏻 Cancel",
-                callback_data=f"cancelpayment|{user_id}"
-            )
+            [
+                InlineKeyboardButton(
+                    "🧚🏻 Cancel",
+                    callback_data=f"cancelpayment|{user_id}"
+                )
+            ]
         ]
-    ]
 
-# REMOVE OLD OWNER BUTTONS
-    try:
-
-        await query.edit_message_reply_markup(
-            reply_markup=None
+        await query.message.edit_text(
+            text=(
+                "🎁 PAYMENT APPROVED\n\n"
+                "Now Send Delivery Key."
+            ),
+            reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-    except:
-        pass
+    except Exception as e:
 
-    # SEND NEW DELIVERY PANEL
-    await context.bot.send_message(
-        chat_id=query.message.chat.id,
-        text="🎁 PaYmeNt AppRoVeD\n\nNow Send Delivery Key.",
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
+        print("APPROVE PAYMENT ERROR :", e)
     
 # =========================================
 # DELIVERY KEY

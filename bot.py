@@ -274,9 +274,21 @@ async def shop_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ])
 
     await query.message.edit_text(
-        text=(
-            "🛒 *PREMIUM PRODUCT STORE*\n\n"
-            "✨ Select Your Premium Plan Below ✨"
+        text = (
+             "╔══════════════════╗\n"
+             " 🪩 🆂🅴🅻🅴🅲🆃 🅶🅰🅼🅴 \n"
+             "╚══════════════════╝\n\n"
+
+             "🎨 *Choose Your Favorite Premium Game*\n\n"
+
+             "❄️ _Select any game from the options below_\n"
+             "_to continue your premium shopping experience._ 💥\n\n"
+
+              "🛒 *Available Premium Hacks & Mods*\n"
+              "⚡ Android & IOS Supported\n"
+              "🚀 Instant Delivery Available\n\n"
+
+              "🔻 *Select Your Game Below* 🎯"
         ),
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup(keyboard)

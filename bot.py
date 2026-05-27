@@ -1983,15 +1983,15 @@ def main():
 
     app.add_handler(
         CallbackQueryHandler(
-            refer_earn,
-            pattern="^refer_earn$"
+            approve_payment,
+            pattern=r"^approve\|"
         )
     )
 
     app.add_handler(
         CallbackQueryHandler(
-            approve_payment,
-            pattern=r"^approve\|"
+            refer_earn,
+            pattern="^refer_earn$"
         )
     )
 

@@ -264,86 +264,110 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "claimed_keys": []
         }
 
-    # ==============================
-    # REFERRAL SYSTEM
-    # ==============================
+# ==============================
+# REFERRAL SYSTEM
+# ==============================
 
-    if context.args:
+if context.args:
 
-        ref_arg = context.args[0]
+    ref_arg = context.args[0]
 
-        if ref_arg.startswith("ref_"):
+    if ref_arg.startswith("ref_"):
 
-            referrer_id = ref_arg.replace(
-                "ref_",
-                ""
-            )
+        referrer_id = ref_arg.replace(
+            "ref_",
+            ""
+        )
 
-            # SELF REFERRAL BLOCK
-            if referrer_id != user_id:
+        # SELF REFERRAL BLOCK
+        if referrer_id != user_id:
 
-                if referrer_id in data:
+            if referrer_id in data:
 
-                    # DUPLICATE JOIN BLOCK
-                    if user_id not in data[
-                        referrer_id
-                    ][
+                # DUPLICATE JOIN BLOCK
+                if user_id not in data[
+                    referrer_id
+                ][
+                    "referred_users"
+                ]:
+
+                    data[referrer_id][
                         "referred_users"
-                    ]:
+                    ].append(user_id)
 
-                        data[referrer_id][
-                            "referred_users"
-                        ].append(user_id)
+                    data[referrer_id][
+                        "total_refers"
+                    ] += 1
 
-                        data[referrer_id][
-                            "total_refers"
-                        ] += 1
+                    data[referrer_id][
+                        "referral_balance"
+                    ] += 5
 
-                        data[referrer_id][
-                            "referral_balance"
-                        ] += 5
+                    data[referrer_id][
+                        "referral_earnings"
+                    ] += 5
 
-                        data[referrer_id][
-                            "referral_earnings"
-                        ] += 5
+                    try:
 
+                        # DELETE OLD REFER MESSAGE
                         try:
 
-                            await context.bot.send_message(
-
-                                chat_id=int(referrer_id),
-
-                                text=(
-
-                                    "🎉 *New Referral Joined Successfully*\n\n"
-
-                                    "💸 *₹5 Added To Your Balance*\n\n"
-
-                                    f"🧚🏻 *Total Refers :* "
-                                    f"`{data[referrer_id]['total_refers']}`\n"
-
-                                    f"💰 *Balance :* "
-                                    f"`₹{data[referrer_id]['referral_balance']}`"
-
-                                ),
-
-                                parse_mode="Markdown",
-
-                                reply_markup=InlineKeyboardMarkup([
-
-                                    [
-                                        InlineKeyboardButton(
-                                            "🈲 Back To Main Menu",
-                                            callback_data="main_menu"
-                                        )
-                                    ]
-                                ])
+                            old_message_id = data[
+                                referrer_id
+                            ].get(
+                                "refer_message_id"
                             )
+
+                            if old_message_id:
+
+                                await context.bot.delete_message(
+                                    chat_id=int(referrer_id),
+                                    message_id=old_message_id
+                                )
 
                         except:
                             pass
 
-    save_data(data)
+                        sent_msg = await context.bot.send_message(
+
+                            chat_id=int(referrer_id),
+
+                            text=(
+
+                                "🎉 *New Referral Joined Successfully*\n\n"
+
+                                "💸 *₹5 Added To Your Balance*\n\n"
+
+                                f"🧚🏻 *Total Refers :* "
+                                f"`{data[referrer_id]['total_refers']}`\n"
+
+                                f"💰 *Balance :* "
+                                f"`₹{data[referrer_id]['referral_balance']}`"
+
+                            ),
+
+                            parse_mode="Markdown",
+
+                            reply_markup=InlineKeyboardMarkup([
+
+                                [
+                                    InlineKeyboardButton(
+                                        "🈲 Back To Main Menu",
+                                        callback_data="main_menu"
+                                    )
+                                ]
+                            ])
+                        )
+
+                        # SAVE NEW MESSAGE ID
+                        data[referrer_id][
+                            "refer_message_id"
+                        ] = sent_msg.message_id
+
+                        save_data(data)
+
+                    except:
+                        pass       
 
     # =====================================
     # START MESSAGE

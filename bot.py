@@ -220,13 +220,23 @@ def main_menu_keyboard():
     return InlineKeyboardMarkup(keyboard)
 
 # =========================================
+# =========================================
 # START
 # =========================================
 
-async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    query = update.callback_query
-    await query.answer()
+    user = update.effective_user
+    user_id = str(user.id)
+
+    user_data = get_user(user_id)
+
+    if not user_data["name"]:
+
+        update_user(user_id, {
+            "name": user.full_name,
+            "username": user.username or ""
+        })
 
     text = (
         "╔══════════════════╗\n"
@@ -242,15 +252,7 @@ async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         "***Option Below..***🛍️"
     )
 
-    try:
-
-        await query.message.delete()
-
-    except:
-        pass
-
-    await context.bot.send_message(
-        chat_id=query.message.chat_id,
+    await update.message.reply_text(
         text=text,
         parse_mode="Markdown",
         reply_markup=main_menu_keyboard()

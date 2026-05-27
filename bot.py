@@ -499,72 +499,96 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    data = query.data.split("|")
-
-    game = data[1]
-    plan = data[2]
-    amount = data[3]
-    order_id = data[4]
-
-    user_id = query.from_user.id
-    username = query.from_user.username or "NoUsername"
-
-    # SAVE QR MESSAGE ID
-    if "qr_messages" not in context.bot_data:
-        context.bot_data["qr_messages"] = {}
-
-    context.bot_data["qr_messages"][str(user_id)] = query.message.message_id
-
-    # USER KO MESSAGE JAYE
-    checking_msg = await context.bot.send_message(
-        chat_id=user_id,
-        text="🔍 Checking Your Payment Please Wait..."
-    )
-
-    order_time = current_time()
-
-    # OWNER KO PAYMENT REQUEST JAYE
-    await context.bot.send_message(
-        chat_id=OWNER_ID,
-        text=(
-            "🚨 *NEW PAYMENT REQUEST*\n\n"
-
-            f"🎮 Game : {game}\n"
-            f"📦 Plan : {plan}\n"
-            f"💵 Price : ₹{amount}\n"
-            f"🆔 Order ID : `{order_id}`\n\n"
-
-            f"👤 User ID : `{user_id}`\n"
-            f"🌐 Username : @{username}\n\n"
-
-            f"🕒 Verify Time : `{order_time}`"
-        ),
-        parse_mode="Markdown",
-        reply_markup=InlineKeyboardMarkup([
-
-            [
-                InlineKeyboardButton(
-                    "🧚🏻 APPROVE PAYMENT",
-                    callback_data=f"approve|{user_id}|{game}|{plan}|{amount}|{order_id}"
-                )
-            ],
-
-            [
-                InlineKeyboardButton(
-                    "🪩 CANCEL PAYMENT",
-                    callback_data=f"cancelpayment|{user_id}"
-                )
-            ]
-        ])
-    )
-
-    # AUTO DELETE AFTER 15 SEC
-    await asyncio.sleep(15)
-
     try:
-        await checking_msg.delete()
-    except:
-        pass
+
+        data = query.data.split("|")
+
+        order_id = data[1]
+
+        # GET ORDER DATA
+        order_data = context.bot_data["orders"].get(order_id)
+
+        if not order_data:
+
+            await query.message.reply_text(
+                "❌ Order Data Not Found"
+            )
+            return
+
+        game = order_data["game"]
+        plan = order_data["plan"]
+        amount = order_data["amount"]
+        user_id = int(order_data["user_id"])
+
+        username = query.from_user.username or "NoUsername"
+
+        # SAVE QR MESSAGE ID
+        if "qr_messages" not in context.bot_data:
+            context.bot_data["qr_messages"] = {}
+
+        context.bot_data["qr_messages"][str(user_id)] = query.message.message_id
+
+        # USER MESSAGE
+        checking_msg = await context.bot.send_message(
+            chat_id=user_id,
+            text="🔍 Checking Your Payment Please Wait..."
+        )
+
+        verify_time = current_time()
+
+        # OWNER PAYMENT REQUEST
+        await context.bot.send_message(
+            chat_id=OWNER_ID,
+            text=(
+                "🚨 *NEW PAYMENT REQUEST*\n\n"
+
+                f"🎮 Game : {game}\n"
+                f"📦 Plan : {plan}\n"
+                f"💵 Price : ₹{amount}\n"
+                f"🆔 Order ID : `{order_id}`\n\n"
+
+                f"👤 User ID : `{user_id}`\n"
+                f"🌐 Username : @{username}\n\n"
+
+                f"🕒 Verify Time : `{verify_time}`"
+            ),
+            parse_mode="Markdown",
+            reply_markup=InlineKeyboardMarkup([
+
+                [
+                    InlineKeyboardButton(
+                        "🧚🏻 APPROVE PAYMENT",
+                        callback_data=(
+                            f"approve|{user_id}|{game}|"
+                            f"{plan}|{amount}|{order_id}"
+                        )
+                    )
+                ],
+
+                [
+                    InlineKeyboardButton(
+                        "🪩 CANCEL PAYMENT",
+                        callback_data=f"cancelpayment|{user_id}"
+                    )
+                ]
+            ])
+        )
+
+        # AUTO DELETE USER MESSAGE AFTER 15 SEC
+        await asyncio.sleep(15)
+
+        try:
+            await checking_msg.delete()
+        except:
+            pass
+
+    except Exception as e:
+
+        print("VERIFY PAYMENT ERROR :", e)
+
+        await query.message.reply_text(
+            f"🎨 Verify Error\n\n{e}"
+        )
 
 # =========================================
 # CANCEL ORDER

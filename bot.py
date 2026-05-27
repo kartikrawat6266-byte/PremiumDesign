@@ -234,12 +234,79 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user_data = get_user(user_id)
 
+    # =====================================
+    # REFERRAL SYSTEM
+    # =====================================
+
+    if context.args:
+
+        ref_data = context.args[0]
+
+        if ref_data.startswith("ref"):
+
+            referrer_id = ref_data.replace("ref", "")
+
+            # SELF REFER BLOCK
+            if referrer_id != user_id:
+
+                data = load_data()
+
+                # USER EXIST CHECK
+                if user_id not in data:
+
+                    get_user(user_id)
+
+                    data = load_data()
+
+                # ONLY FIRST TIME
+                if "referred_by" not in data[user_id]:
+
+                    data[user_id]["referred_by"] = referrer_id
+
+                    # REFERRER EXIST CHECK
+                    if referrer_id in data:
+
+                        # ADD REFER COUNT
+                        data[referrer_id]["total_refers"] += 1
+
+                        # ADD ₹5 BALANCE
+                        data[referrer_id]["referral_earnings"] += 5
+
+                        save_data(data)
+
+                        # SEND SUCCESS MESSAGE
+                        try:
+
+                            await context.bot.send_message(
+                                chat_id=int(referrer_id),
+                                text=(
+                                    "🎉 *New Referral Joined Successfully!*\n\n"
+
+                                    "👥 *A User Joined Using Your Invite Link*\n"
+                                    "💸 *₹5 Added To Your Referral Balance*\n\n"
+
+                                    "🚀 *Keep Sharing & Earn More Money!*"
+                                ),
+                                parse_mode="Markdown"
+                            )
+
+                        except:
+                            pass
+
+    # =====================================
+    # USER UPDATE
+    # =====================================
+
     if not user_data["name"]:
 
         update_user(user_id, {
             "name": user.full_name,
             "username": user.username or ""
         })
+
+    # =====================================
+    # START MESSAGE
+    # =====================================    
 
     text = (
         "╔══════════════════╗\n"
@@ -1599,33 +1666,94 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user_id = str(query.from_user.id)
 
+    data = load_data()
+
+    if user_id not in data:
+
+        get_user(user_id)
+
+        data = load_data()
+
+    # BOT USERNAME
     bot_username = (await context.bot.get_me()).username
 
+    # REF LINK
     referral_link = (
-        f"https://t.me/{bot_username}?start=ref_{user_id}"
+        f"https://t.me/{bot_username}?start=ref{user_id}"
     )
+
+    # USER DATA
+    total_refers = data[user_id].get(
+        "total_refers",
+        0
+    )
+
+    referral_earnings = data[user_id].get(
+        "referral_earnings",
+        0
+    )
+
+    # =====================================
+    # PREMIUM TEXT
+    # =====================================
 
     text = (
-        "😉 *REFERRAL PROGRAM*\n"
+
+        "╔══════════════════════╗\n"
+        "     🎁 𝗥𝗘𝗙𝗘𝗥 & 𝗘𝗔𝗥𝗡 💸\n"
+        "╚══════════════════════╝\n\n"
+
+        "🔥 *Invite Your Friends & Earn Money*\n"
+        "⚡ *Get ₹5 Reward On Every Successful Join*\n"
+        "🚀 *Unlimited Referral Earnings Available*\n"
+        "🎯 *Share More & Unlock Free Premium Keys*\n\n"
+
         "━━━━━━━━━━━━━━━━━━\n\n"
 
-        f"🗣 Your Invite Link :\n`{referral_link}`"
+        f"👥 *Total Refers :* `{total_refers}` User(s)\n"
+        f"💰 *Referral Balance :* `₹{referral_earnings}` INR\n\n"
+
+        "━━━━━━━━━━━━━━━━━━\n\n"
+
+        "🔗 *Your Invite Link :*\n\n"
+        f"`{referral_link}`\n\n"
+
+        "━━━━━━━━━━━━━━━━━━\n\n"
+
+        "💖 *Share Your Link With Friends*\n"
+        "🎉 *And Start Earning Rewards!*"
     )
+
+    # =====================================
+    # BUTTONS
+    # =====================================
+
+    keyboard = [
+
+        [
+            InlineKeyboardButton(
+                "🗣 Share With Friends",
+                url=(
+                    "https://t.me/share/url?"
+                    f"url={referral_link}"
+                )
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "🎨 Back To Main Menu",
+                callback_data="main_menu"
+            )
+        ]
+    ]
 
     await query.message.edit_text(
         text=text,
         parse_mode="Markdown",
-        reply_markup=InlineKeyboardMarkup([
-
-            [
-                InlineKeyboardButton(
-                    "⬅️ BACK TO MENU",
-                    callback_data="main_menu"
-                )
-            ]
-        ])
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
-
+    
 # =========================================
 # MAIN
 # =========================================

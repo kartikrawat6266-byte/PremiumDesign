@@ -1430,10 +1430,10 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
 
         await query.message.edit_text(
-            text=text,
-            parse_mode="Markdown",
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
+        text=text,
+        parse_mode=None,
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
 
         return
 

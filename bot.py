@@ -285,48 +285,32 @@ if context.args:
             if referrer_id in data:
 
                 # DUPLICATE JOIN BLOCK
-                if user_id not in data[
-                    referrer_id
-                ][
-                    "referred_users"
-                ]:
+                if user_id not in data[referrer_id]["referred_users"]:
 
-                    data[referrer_id][
-                        "referred_users"
-                    ].append(user_id)
+                    data[referrer_id]["referred_users"].append(user_id)
 
-                    data[referrer_id][
-                        "total_refers"
-                    ] += 1
+                    data[referrer_id]["total_refers"] += 1
 
-                    data[referrer_id][
-                        "referral_balance"
-                    ] += 5
+                    data[referrer_id]["referral_balance"] += 5
 
-                    data[referrer_id][
-                        "referral_earnings"
-                    ] += 5
+                    data[referrer_id]["referral_earnings"] += 5
 
                     try:
 
                         # DELETE OLD REFER MESSAGE
-                        try:
+                        old_message_id = data[referrer_id].get(
+                            "refer_message_id"
+                        )
 
-                            old_message_id = data[
-                                referrer_id
-                            ].get(
-                                "refer_message_id"
-                            )
+                        if old_message_id:
 
-                            if old_message_id:
-
+                            try:
                                 await context.bot.delete_message(
                                     chat_id=int(referrer_id),
                                     message_id=old_message_id
                                 )
-
-                        except:
-                            pass
+                            except:
+                                pass
 
                         sent_msg = await context.bot.send_message(
 

@@ -520,7 +520,8 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"🆔 Order ID : `{order_id}`\n"
             f"⏰ Order Time : `{order_time}`\n\n"
 
-            f"👤 User ID : `{user_id}`"
+            f"👤 User Id : `{user_id}`\n"
+            f"💌 Username : {username_text}"
         ),
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup([
@@ -724,13 +725,13 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # =========================================
+# =========================================
 # DELIVERY KEY
 # =========================================
 
 async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
-
     await query.answer()
 
     data = query.data.split("|")
@@ -739,81 +740,94 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     game = data[2]
     plan = data[3]
 
-# PAYMENT TIME
+    # PAYMENT TIME
     payment_time = datetime.now(IST)
 
     payment_time_str = payment_time.strftime(
-         "%d-%m-%Y %I:%M:%S %p"
+        "%d-%m-%Y %I:%M:%S %p"
     )
 
-# EXPIRY SYSTEM
-   if "1 Day" in plan:
-     expiry_datetime = payment_time + timedelta(days=2)
+    # EXPIRY SYSTEM
+    if "1 Day" in plan:
+        expiry_datetime = payment_time + timedelta(days=2)
 
-   elif "3 Day" in plan:
-    expiry_datetime = payment_time + timedelta(days=4)
+    elif "3 Day" in plan:
+        expiry_datetime = payment_time + timedelta(days=4)
 
     elif "7 Day" in plan:
-    expiry_datetime = payment_time + timedelta(days=8)
+        expiry_datetime = payment_time + timedelta(days=8)
 
-   elif "10 Day" in plan:
-    expiry_datetime = payment_time + timedelta(days=11)
+    elif "10 Day" in plan:
+        expiry_datetime = payment_time + timedelta(days=11)
 
-   elif "15 Day" in plan:
-    expiry_datetime = payment_time + timedelta(days=16)
+    elif "15 Day" in plan:
+        expiry_datetime = payment_time + timedelta(days=16)
 
-elif "30 Day" in plan:
-    expiry_datetime = payment_time + timedelta(days=31)
+    elif "30 Day" in plan:
+        expiry_datetime = payment_time + timedelta(days=31)
 
-else:
-    expiry_datetime = payment_time + timedelta(days=31)
+    else:
+        expiry_datetime = payment_time + timedelta(days=31)
 
-expiry_time = expiry_datetime.strftime(
-    "%d-%m-%Y %I:%M:%S %p"
-)
+    expiry_time = expiry_datetime.strftime(
+        "%d-%m-%Y %I:%M:%S %p"
+    )
+
+    # PLAN DAYS
+    days = plan.split(" ")[1]
+
+    # GAME NAME CLEAN
+    clean_game = (
+        game.upper()
+        .replace(" ", "-")
+        .replace("[", "")
+        .replace("]", "")
+    )
+
+    # FINAL KEY
+    final_key = f"{days}x-{clean_game}"
 
     # RANDOM ORDER ID
     order_id = "ORD" + ''.join(
         random.choices(string.digits, k=20)
     )
 
-    # RANDOM KEY
-    key_text_value = (
-        f"{plan.replace(' ', '').replace('💸', '').replace('🍫', '').replace('🍓', '').replace('🧚🏻', '').replace('🍇', '')}"
-        f"x-{game.upper().replace(' ', '-')}"
-    )
-
-    # DELIVERY TEXT
-    text = (
+    key_text = (
         "🎉 *Payment Successful!*\n\n"
 
         f"🎮 *Game :* {game}\n"
         f"⏳ *Duration :* {plan}\n"
-        f"💰 Amount Paid : {price}\n"
+        f"💰 *Price :* ₹1200\n\n"
 
         "📋 *Order Details :*\n\n"
 
-        f"🆔 *Order ID :* `{order_id}`\n"
-        f"🕒 *Payment Time :*\n`{payment_time}`\n"
-        f"⚠️ *Expiry Time :*\n`{expiry_time_text}`\n\n"
+        f"🆔 *Order ID :*\n"
+        f"`{order_id}`\n\n"
+
+        f"🕒 *Payment Time :*\n"
+        f"`{payment_time_str}`\n\n"
+
+        f"⚠️ *Expiry Time :*\n"
+        f"`{expiry_time}`\n\n"
 
         "━━━━━━━━━━━━━━━━━━\n\n"
 
-        f"🔑 *Your Key :*\n`{key_text_value}`\n\n"
+        "🔑 *Your Key :*\n"
+        f"`{final_key}`\n\n"
 
         "━━━━━━━━━━━━━━━━━━\n\n"
 
-        "❄️ *Thanks For Purchasing* 💥"
+        "❄️ *Thanks For Purchasing 💥*"
     )
 
     await context.bot.send_message(
         chat_id=user_id,
-        text=text,
+        text=key_text,
         parse_mode="Markdown"
     )
 
     await query.message.edit_text(
-        "✅ Key Are Delivered Successfully"
+        "✅ KEY DELIVERED SUCCESSFULLY"
     )
     
 # =========================================

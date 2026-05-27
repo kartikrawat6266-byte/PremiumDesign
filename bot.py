@@ -1095,6 +1095,7 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         }
 
         # =====================================
+# =====================================
         # SAVE USER ORDER HISTORY
         # =====================================
 
@@ -1112,7 +1113,7 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 user_id
             )
 
-        if user_info.username and user_info.username.lower() != "none":
+            if user_info.username and user_info.username.lower() != "none":
 
                 username = user_info.username
 

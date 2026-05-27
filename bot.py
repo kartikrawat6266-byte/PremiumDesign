@@ -595,40 +595,6 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         pass
 
-# =========================================
-# CANCEL ORDER
-# =========================================
-
-async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    query = update.callback_query
-    await query.answer()
-
-    try:
-        await query.message.delete()
-    except:
-        pass
-
-    text = (
-        "╔══════════════════╗\n"
-        " 🆆🅴🅻🅲🅾🅼🅴 🅱🆄🅳🅳🆈\n"
-        "╚══════════════════╝\n\n"
-
-        "🪩 *Welcome To BeSt ChEat SHOP* 🔮\n\n"
-
-        "❄️ *Here you can purchase all tg premium*\n"
-        "*hacks for Android & IOS..*💥\n\n"
-
-        "🔻 *Continue Shopping Premium*\n"
-        "*Option Below..* 🛍️"
-    )
-
-    await context.bot.send_message(
-        chat_id=query.message.chat.id,
-        text=text,
-        parse_mode="Markdown",
-        reply_markup=main_menu_keyboard()
-    )
 
 # =========================================
 # AUTO DELETE FUNCTION
@@ -648,6 +614,7 @@ async def auto_delete_message(bot, chat_id, message_id):
 
 
 # =========================================
+# =========================================
 # CANCEL PAYMENT
 # =========================================
 
@@ -655,31 +622,20 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
 
-    # FAST BUTTON RESPONSE
-    await query.answer(
-        text="🧚🏻 Payment Cancelled Successfully 🍓",
-        show_alert=False
-    )
+    # INSTANT BUTTON RESPONSE
+    await query.answer()
 
-    data = query.data.split("|")
+    user_id = int(query.data.split("|")[1])
 
-    user_id = int(data[1])
-
+    # OWNER PANEL FAST UPDATE
     try:
-
-        qr_message_id = context.bot_data["qr_messages"].get(str(user_id))
-
-        if qr_message_id:
-
-            await context.bot.delete_message(
-                chat_id=user_id,
-                message_id=qr_message_id
-            )
-
+        await query.message.edit_text(
+            "🍫 User Payment Cancelled Successfully"
+        )
     except:
         pass
 
-# USER KO CANCEL MESSAGE + BUTTON
+    # USER MESSAGE
     await context.bot.send_message(
         chat_id=user_id,
         text=(

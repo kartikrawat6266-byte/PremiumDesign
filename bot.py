@@ -565,6 +565,15 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         verify_time = current_time()
 
+        # REMOVE PLAN EMOJIS
+        clean_plan = (
+            plan.replace("💸 ", "")
+            .replace("🍫 ", "")
+            .replace("🍓 ", "")
+            .replace("🧚🏻 ", "")
+            .replace("🍇 ", "")
+        )
+
         # OWNER REQUEST
         await context.bot.send_message(
             chat_id=OWNER_ID,
@@ -572,7 +581,7 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"🧚🏻 New Payment Request 🪩\n\n"
 
                 f"🎮 Game : {game}\n"
-                f"📦 Plan : {plan}\n"
+                f"📦 Plan : {clean_plan}\n"
                 f"💵 Price : ₹{amount}\n"
                 f"🆔 Order ID : {order_id}\n\n"
 
@@ -601,7 +610,7 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     except Exception as e:
         print(f"VERIFY ERROR : {e}")
-
+        
 # =========================================
 # AUTO DELETE MESSAGE
 # =========================================
@@ -764,55 +773,56 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         amount = order_data["amount"]
         order_id = order_data["order_id"]
 
-        payment_time = datetime.now(IST)
+        # VERIFY BUTTON CLICK TIME
+        payment_time = datetime.strptime(
+            order_data["verify_time"],
+            "%d/%m/%Y %I:%M:%S %p"
+        ).replace(tzinfo=IST)
 
+        # EXPIRY TIME
         if "1 Day" in plan:
-            expiry_datetime = payment_time + timedelta(days=1, hours=2)
+            expiry_datetime = payment_time + timedelta(days=1, minutes=13)
 
         elif "3 Day" in plan:
-            expiry_datetime = payment_time + timedelta(days=3, hours=2)
+            expiry_datetime = payment_time + timedelta(days=3, minutes=13)
 
         elif "7 Day" in plan:
-            expiry_datetime = payment_time + timedelta(days=7, hours=2)
+            expiry_datetime = payment_time + timedelta(days=7, minutes=13)
 
         elif "10 Day" in plan:
-            expiry_datetime = payment_time + timedelta(days=10, hours=2)
+            expiry_datetime = payment_time + timedelta(days=10, minutes=13)
 
         elif "15 Day" in plan:
-            expiry_datetime = payment_time + timedelta(days=15, hours=2)
+            expiry_datetime = payment_time + timedelta(days=15, minutes=13)
 
         elif "30 Day" in plan:
-            expiry_datetime = payment_time + timedelta(days=31, hours=2)
+            expiry_datetime = payment_time + timedelta(days=30, minutes=13)
 
         else:
-            expiry_datetime = payment_time + timedelta(days=30, hours=2)
+            expiry_datetime = payment_time + timedelta(days=30, minutes=13)
 
-        payment_time_text = payment_time.strftime("%d-%m-%Y")
-        expiry_time_text = expiry_datetime.strftime("%d-%m-%Y")
+        # REMOVE PLAN EMOJIS
+        clean_plan = (
+            plan.replace("💸 ", "")
+            .replace("🍫 ", "")
+            .replace("🍓 ", "")
+            .replace("🧚🏻 ", "")
+            .replace("🍇 ", "")
+        )
 
         # DELETE USER QR
         try:
 
-            if "qr_messages" in context.bot_data:
-
-                qr_message_id = context.bot_data["qr_messages"].get(str(user_id))
-
-                if qr_message_id:
-
-                    await context.bot.delete_message(
-                        chat_id=user_id,
-                        message_id=qr_message_id
-                    )
-
-        except:
-            pass
-
-        # REMOVE VERIFY BUTTONS
-        try:
-
-            await query.message.edit_reply_markup(
-                reply_markup=None
+            qr_message_id = context.bot_data["qr_messages"].get(
+                str(user_id)
             )
+
+            if qr_message_id:
+
+                await context.bot.delete_message(
+                    chat_id=user_id,
+                    message_id=qr_message_id
+                )
 
         except:
             pass
@@ -835,15 +845,56 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         )
 
-        # OWNER DELIVERY PANEL
+        # DELIVERY BUTTONS
         keyboard = [
 
             [
                 InlineKeyboardButton(
                     "🔑 Delivery Key",
                     callback_data=(
-                        f"delivery|{user_id}|"
-                        f"{order_id}"
+                        f"delivery|{user_id}|{order_id}"
+                    )
+                )
+            ],
+
+            [
+                InlineKeyboardButton(
+                    "🧚🏻 Cancel",
+                    callback_data=f"cancelpayment|{user_id}"
+                )
+            ]
+        ]
+
+        await context.bot.send_message(
+            chat_id=OWNER_ID,
+            text=(
+                "🎁 PAYMENT APPROVED\n\n"
+                "Now Click Delivery Key Button."
+            ),
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+        # SAVE DELIVERY DATA
+        if "delivery_data" not in context.bot_data:
+            context.bot_data["delivery_data"] = {}
+
+        context.bot_data["delivery_data"][order_id] = {
+
+            "user_id": user_id,
+            "game": game,
+            "plan": clean_plan,
+            "amount": amount,
+            "payment_time": payment_time.strftime(
+                "%d/%m/%Y %I:%M:%S %p"
+            ),
+            "expiry_time": expiry_datetime.strftime(
+                "%d/%m/%Y %I:%M:%S %p"
+            )
+        }
+
+    except Exception as e:
+
+        print("APPROVE PAYMENT ERROR :", e)
                         
 # =========================================
 # APPROVE PAYMENT
@@ -996,36 +1047,23 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
-
     await query.answer()
 
     data = query.data.split("|")
 
     user_id = int(data[1])
-
     order_id = data[2]
 
-    if "delivery_data" not in context.bot_data:
-        return
+    delivery_data = context.bot_data["delivery_data"][order_id]
 
-    if order_id not in context.bot_data["delivery_data"]:
-        return
-
-    order_data = context.bot_data["delivery_data"][order_id]
-
-    game = order_data["game"]
-    plan = order_data["plan"]
-    amount = order_data["amount"]
-    payment_time = order_data["payment_time"]
-    expiry_time = order_data["expiry_time"]
+    game = delivery_data["game"]
+    plan = delivery_data["plan"]
+    amount = delivery_data["amount"]
+    payment_time = delivery_data["payment_time"]
+    expiry_time = delivery_data["expiry_time"]
 
     days = (
-        plan.replace("💸", "")
-        .replace("🍫", "")
-        .replace("🍓", "")
-        .replace("🧚🏻", "")
-        .replace("🍇", "")
-        .replace(" ", "")
+        plan.replace(" ", "")
     )
 
     game_key = (
@@ -1047,8 +1085,7 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "📋 *Order Details :*\n\n"
 
         f"🆔 Order ID : `{order_id}`\n"
-        f"🕒 Order Time : {current_time()}\n"
-        f"⏰ Payment Time : {payment_time}\n"
+        f"🕒 Payment Time : {payment_time}\n"
         f"⚠️ Expiry Time : {expiry_time}\n\n"
 
         "━━━━━━━━━━━━━━━━━━\n\n"
@@ -1067,7 +1104,7 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     await query.message.edit_text(
-        "🍓 KeY Delevery Successfully 🪩"
+        "🍓 KeY Delevery Successfully"
     )
     
 # =========================================

@@ -584,6 +584,7 @@ async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # =========================================
+# =========================================
 # CANCEL PAYMENT
 # =========================================
 
@@ -611,12 +612,39 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         pass
 
+    # SEND FAILED MESSAGE
+    failed_msg = await context.bot.send_message(
+        chat_id=user_id,
+        text=(
+            "⚠️ Payment not received yet.\n"
+            "Please try again in a few seconds."
+        )
+    )
+
+    # AUTO DELETE AFTER 15 SEC
+    await asyncio.sleep(15)
+
+    try:
+        await context.bot.delete_message(
+            chat_id=user_id,
+            message_id=failed_msg.message_id
+        )
+    except:
+        pass
+
     # SEND MAIN MENU
     text = (
-        "❌ *PAYMENT CANCELLED*\n\n"
-        "Your order has been cancelled by owner.\n\n"
+        "╔══════════════════╗\n"
+        " 🆆🅴🅻🅲🅾🅼🅴 🅱🆄🅳🅳🆈\n"
+        "╚══════════════════╝\n\n"
 
-        "🛍️ Please create a new order."
+        "🪩 *Welcome To BeSt ChEat SHOP* 🔮\n\n"
+
+        "❄️ *Here you can purchase all tg premium*\n"
+        "*hacks for Android & IOS..*💥\n\n"
+
+        "🔻 *Continue Shopping Premium*\n"
+        "*Option Below..* 🛍️"
     )
 
     await context.bot.send_message(
@@ -630,6 +658,102 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "❌ PAYMENT CANCELLED SUCCESSFULLY"
     )
 
+# =========================================
+# APPROVE PAYMENT
+# =========================================
+
+async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    data = query.data.split("|")
+
+    user_id = data[1]
+    game = data[2]
+    plan = data[3]
+    amount = data[4]
+
+    # SEND VERIFY MESSAGE TO USER
+    await context.bot.send_message(
+        chat_id=user_id,
+        text=(
+            "✅ Payment Verified Successfully\n\n"
+            "Your key will be delivered shortly."
+        )
+    )
+
+    # OWNER SIDE NEW BUTTONS
+    keyboard = [
+
+        [
+            InlineKeyboardButton(
+                "🔑 DELIVERY KEY",
+                callback_data=f"delivery|{user_id}|{game}|{plan}"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "❌ CANCEL",
+                callback_data=f"cancelpayment|{user_id}"
+            )
+        ]
+    ]
+
+    await query.message.edit_text(
+        text=(
+            "✅ PAYMENT APPROVED\n\n"
+            "Now Send Delivery Key."
+        ),
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+# =========================================
+# DELIVERY KEY
+# =========================================
+
+async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    data = query.data.split("|")
+
+    user_id = int(data[1])
+
+    # DEMO KEY
+    key_text = (
+        "🔑 *YOUR PREMIUM KEY*\n\n"
+        "`BESTCHEAT-VIP-2026`\n\n"
+        "✅ Thank You For Purchase."
+    )
+
+    await context.bot.send_message(
+        chat_id=user_id,
+        text=key_text,
+        parse_mode="Markdown"
+    )
+
+    await context.bot.send_message(
+        chat_id=user_id,
+        text=(
+            "╔══════════════════╗\n"
+            " 🆆🅴🅻🅲🅾🅼🅴 🅱🆄🅳🅳🆈\n"
+            "╚══════════════════╝\n\n"
+
+            "🪩 *Welcome To BeSt ChEat SHOP* 🔮\n\n"
+
+            "🔻 *Continue Shopping Premium* 🛍️"
+        ),
+        parse_mode="Markdown",
+        reply_markup=main_menu_keyboard()
+    )
+
+    await query.message.edit_text(
+        "✅ KEY DELIVERED SUCCESSFULLY"
+    )
+    
 # =========================================
 # MY ORDERS
 # =========================================
@@ -899,6 +1023,20 @@ def main():
         CallbackQueryHandler(
             refer_earn,
             pattern="^refer_earn$"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            approve_payment,
+            pattern=r"^approve\|"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            delivery_key,
+            pattern=r"^delivery\|"
         )
     )
 

@@ -614,7 +614,7 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user_id = int(data[1])
 
-    # DELETE USER QR
+    # DELETE USER QR MESSAGE
     try:
 
         qr_message_id = context.bot_data["qr_messages"].get(str(user_id))
@@ -629,7 +629,7 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         pass
 
-    # SEND FAILED MESSAGE
+    # ONLY CANCEL MESSAGE
     failed_msg = await context.bot.send_message(
         chat_id=user_id,
         text=(
@@ -638,46 +638,24 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     )
 
-    # AUTO DELETE IN BACKGROUND
-    asyncio.create_task(
-        auto_delete_message(
-            context.bot,
-            user_id,
-            failed_msg.message_id
-        )
-    )
+    # AUTO DELETE AFTER 15 SEC
+    await asyncio.sleep(15)
 
-    # INSTANT MAIN MENU
-    text = (
-        "╔══════════════════╗\n"
-        " 🆆🅴🅻🅲🅾🅼🅴 🅱🆄🅳🅳🆈\n"
-        "╚══════════════════╝\n\n"
-
-        "🪩 *Welcome To BeSt ChEat SHOP* 🔮\n\n"
-
-        "❄️ *Here you can purchase all tg premium*\n"
-        "*hacks for Android & IOS..*💥\n\n"
-
-        "🔻 *Continue Shopping Premium*\n"
-        "*Option Below..* 🛍️"
-    )
-
-    await context.bot.send_message(
-        chat_id=user_id,
-        text=text,
-        parse_mode="Markdown",
-        reply_markup=main_menu_keyboard()
-    )
-
-    # OWNER SIDE UPDATE
     try:
 
-        await query.message.edit_text(
-            "❌ PAYMENT CANCELLED SUCCESSFULLY"
+        await context.bot.delete_message(
+            chat_id=user_id,
+            message_id=failed_msg.message_id
         )
 
     except:
         pass
+
+    # OWNER SIDE MESSAGE
+    await query.message.edit_text(
+        "❌ User Payment Cancelled Successfully"
+    )
+    
 # =========================================
 # APPROVE PAYMENT
 # =========================================
@@ -739,8 +717,8 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.message.edit_text(
         text=(
-            "✅ PAYMENT APPROVED\n\n"
-            "Now Send Delivery Key."
+            "✅ Payment Approve Successfully\n\n"
+            "Now Click Delivery Key."
         ),
         reply_markup=InlineKeyboardMarkup(keyboard)
     )

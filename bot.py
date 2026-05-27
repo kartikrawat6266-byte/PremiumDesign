@@ -467,7 +467,7 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             [
                 InlineKeyboardButton(
-                    "🪩 Cancel Payment",
+                    "🪩 Cancel OrDeR",
                     callback_data="cancel_order"
                 )
             ]
@@ -595,6 +595,44 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         pass
 
+# =========================================
+# CANCEL ORDER
+# =========================================
+
+async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+
+    await query.answer()
+
+    # DELETE QR MESSAGE
+    try:
+        await query.message.delete()
+    except:
+        pass
+
+    text = (
+        "╔══════════════════╗\n"
+        " 🆆🅴🅻🅲🅾🅼🅴 🅱🆄🅳🅳🆈\n"
+        "╚══════════════════╝\n\n"
+
+        "🪩 *Welcome To BeSt ChEat SHOP* 🔮\n\n"
+
+        "❄️ *Here you can purchase all tg premium*\n"
+        "*hacks for Android & IOS..*💥\n\n"
+
+        "🔻 *Continue Shopping Premium*\n"
+        "*Option Below..* 🛍️"
+    )
+
+    # SEND MAIN MENU
+    await context.bot.send_message(
+        chat_id=query.message.chat.id,
+        text=text,
+        parse_mode="Markdown",
+        reply_markup=main_menu_keyboard()
+    )
+    
 # =========================================
 # CANCEL PAYMENT
 # =========================================
@@ -1073,6 +1111,13 @@ def main():
         )
     )
 
+    app.add_handler(
+        CallbackQueryHandler(
+            cancel_order,
+            pattern="^cancel_order$"
+        )
+    )
+    
     app.add_handler(
         CallbackQueryHandler(
             delivery_key,

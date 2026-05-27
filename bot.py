@@ -189,7 +189,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 text = (
     "╔══════════════════════════════╗\n"
-    "      🔳 M Y  F R I E N D S 🔳\n"
+    "        🔳 MY FRIENDS 🔳\n"
     "╚══════════════════════════════╝\n\n"
 
     "👋 *Welcome To BeSt ChEat SHOP* 👋\n\n"
@@ -200,7 +200,6 @@ text = (
     "🔻 _Continue Shopping Premium_\n"
     "_Option Below.._ 🛍️"
 )
-
     await update.message.reply_text(
         text=text,
         reply_markup=main_menu_keyboard(),

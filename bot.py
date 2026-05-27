@@ -224,23 +224,22 @@ def main_menu_keyboard():
     return InlineKeyboardMarkup(keyboard)
 
 # =========================================
-# START
+# =========================================
+# CANCEL ORDER
 # =========================================
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    user = update.effective_user
-    user_id = str(user.id)
+    query = update.callback_query
+    await query.answer()
 
-    user_data = get_user(user_id)
+    # QR MESSAGE DELETE
+    try:
+        await query.message.delete()
+    except:
+        pass
 
-    if not user_data["name"]:
-
-        update_user(user_id, {
-            "name": user.full_name,
-            "username": user.username or ""
-        })
-
+    # MAIN MENU OPEN
     text = (
         "╔══════════════════╗\n"
         " 🆆🅴🅻🅲🅾🅼🅴 🅱🆄🅳🅳🆈\n"
@@ -255,7 +254,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "*Option Below..* 🛍️"
     )
 
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=query.message.chat.id,
         text=text,
         parse_mode="Markdown",
         reply_markup=main_menu_keyboard()

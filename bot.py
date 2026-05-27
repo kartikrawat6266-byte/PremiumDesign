@@ -131,6 +131,8 @@ def save_data(data):
 
 def get_user(user_id):
 
+    user_id = str(user_id)
+
     data = load_data()
 
     if user_id not in data:
@@ -151,6 +153,8 @@ def get_user(user_id):
     return data[user_id]
 
 def update_user(user_id, updates=None):
+
+    user_id = str(user_id)
 
     data = load_data()
 
@@ -245,7 +249,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "🪩 *Welcome To BeSt ChEat SHOP* 🔮\n\n"
 
         "❄️ *Here you can purchase all tg premium*\n"
-        "*hacks for Android & IOS..*💥\n\n"
+        "*hacks for Android & IOS..* 💥\n\n"
 
         "🔻 *Continue Shopping Premium*\n"
         "*Option Below..* 🛍️"
@@ -377,100 +381,105 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    data = query.data.split("|")
+    try:
 
-    game = data[1]
-    plan = data[2]
+        data = query.data.split("|")
 
-    amount = GAMES[game][plan]
+        game = data[1]
+        plan = data[2]
 
-    user_id = str(query.from_user.id)
+        amount = GAMES[game][plan]
 
-    order_id = ''.join(random.choices(
-        string.ascii_uppercase + string.digits,
-        k=10
-    ))
+        user_id = str(query.from_user.id)
 
-    upi_link = (
-        f"upi://pay?pa={UPI_ID}"
-        f"&pn=BeStCheat"
-        f"&am={amount}"
-        f"&cu=INR"
-    )
+        order_id = ''.join(random.choices(
+            string.ascii_uppercase + string.digits,
+            k=10
+        ))
 
-    qr = qrcode.make(upi_link)
-
-    bio = BytesIO()
-    bio.name = "payment_qr.png"
-
-    qr.save(bio, "PNG")
-
-    bio.seek(0)
-
-    text = (
-        "🛒 *Order Created Successfully!*\n\n"
-
-        "━━━━━━━━━━━━━━━━━━\n\n"
-
-        f"🎮 Product : {game}\n"
-        f"📦 Plan : {plan}\n"
-        f"💰 Amount To Pay : ₹{amount}\n\n"
-
-        f"🏦 UPI ID : `{UPI_ID}`\n"
-        f"🆔 Order ID : `{order_id}`\n\n"
-
-        f"📩 Telegram ID : `{user_id}`\n\n"
-
-        f"⌛ Payment Expiry :\n{expiry_time()}\n\n"
-
-        "━━━━━━━━━━━━━━━━━━\n\n"
-
-        "📲 Scan The QR Code Above\n"
-        "And Complete Your Payment Successfully.\n\n"
-
-        "⚠️ QR Will Expire Automatically After 10 Minutes.\n\n"
-
-        "🚫 After 10 Minutes Don't Send Payment.\n"
-        "Create A New QR For Successful Payment.\n\n"
-
-        "✅ After Payment Click Verify Payment\n\n"
-
-        "💖 Thank You For Choosing Us"
-    )
-
-    keyboard = [
-
-    [
-        InlineKeyboardButton(
-            "✅ VERIFY PAYMENT",
-            callback_data=f"verify|{game}|{plan}|{amount}|{order_id}"
+        upi_link = (
+            f"upi://pay?pa={UPI_ID}"
+            f"&pn=BeStCheat"
+            f"&am={amount}"
+            f"&cu=INR"
         )
-    ],
 
-    [
-        InlineKeyboardButton(
-            "❌ CANCEL ORDER",
-            callback_data="cancel_order"
+        qr = qrcode.make(upi_link)
+
+        bio = BytesIO()
+        bio.name = "payment_qr.png"
+
+        qr.save(bio, "PNG")
+
+        bio.seek(0)
+
+        text = (
+            "🛒 *Order Created Successfully!*\n\n"
+
+            "━━━━━━━━━━━━━━━━━━\n\n"
+
+            f"🎮 Product : {game}\n"
+            f"📦 Plan : {plan}\n"
+            f"💰 Amount To Pay : ₹{amount}\n\n"
+
+            f"🏦 UPI ID : `{UPI_ID}`\n"
+            f"🆔 Order ID : `{order_id}`\n\n"
+
+            f"📩 Telegram ID : `{user_id}`\n\n"
+
+            f"⌛ Payment Expiry :\n{expiry_time()}\n\n"
+
+            "━━━━━━━━━━━━━━━━━━\n\n"
+
+            "📲 Scan The QR Code Above\n"
+            "And Complete Your Payment Successfully.\n\n"
+
+            "⚠️ QR Will Expire Automatically After 10 Minutes.\n\n"
+
+            "✅ After Payment Click Verify Payment\n\n"
+
+            "💖 Thank You For Choosing Us"
         )
-    ],
 
-    [
-        InlineKeyboardButton(
-            "⬅️ BACK TO MAIN MENU",
-            callback_data="main_menu"
+        keyboard = [
+
+            [
+                InlineKeyboardButton(
+                    "✅ VERIFY PAYMENT",
+                    callback_data=f"verify|{game}|{plan}|{amount}|{order_id}"
+                )
+            ],
+
+            [
+                InlineKeyboardButton(
+                    "❌ CANCEL ORDER",
+                    callback_data="cancel_order"
+                )
+            ],
+
+            [
+                InlineKeyboardButton(
+                    "⬅️ BACK TO MAIN MENU",
+                    callback_data="main_menu"
+                )
+            ]
+        ]
+
+        await context.bot.send_photo(
+            chat_id=query.message.chat.id,
+            photo=InputFile(bio),
+            caption=text,
+            parse_mode="Markdown",
+            reply_markup=InlineKeyboardMarkup(keyboard)
         )
-    ]
-    ]
 
-    await query.message.delete()
+    except Exception as e:
 
-    await context.bot.send_photo(
-        chat_id=query.message.chat_id,
-        photo=InputFile(bio),
-        caption=text,
-        parse_mode="Markdown",
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
+        print("PAYMENT ERROR :", e)
+
+        await query.message.reply_text(
+            f"❌ QR GENERATE ERROR\n\n{e}"
+        )
 
 # =========================================
 # VERIFY PAYMENT
@@ -502,9 +511,9 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"💰 Amount : ₹{amount}\n"
             f"🆔 Order ID : `{order_id}`\n\n"
 
-            f"👤 User : {query.from_user.mention_html()}"
+            f"👤 User ID : `{query.from_user.id}`"
         ),
-        parse_mode="HTML",
+        parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup([
 
             [
@@ -530,7 +539,7 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ])
     )
 
-    await asyncio.sleep(10)
+    await asyncio.sleep(5)
 
     try:
         await checking.delete()
@@ -552,10 +561,10 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     emoji_msg = await context.bot.send_message(
         chat_id=user_id,
-        text="🎉💖✅"
+        text="🎉💖✅ PAYMENT APPROVED"
     )
 
-    await asyncio.sleep(15)
+    await asyncio.sleep(5)
 
     try:
         await emoji_msg.delete()
@@ -641,43 +650,7 @@ async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    await query.message.delete()
-
-    keyboard = []
-
-    for game in GAMES.keys():
-
-        keyboard.append([
-            InlineKeyboardButton(
-                f"🎮 {game}",
-                callback_data=f"game_{game}"
-            )
-        ])
-
-    keyboard.append([
-        InlineKeyboardButton(
-            "⬅️ BACK TO MENU",
-            callback_data="main_menu"
-        )
-    ])
-
-    await context.bot.send_message(
-        chat_id=query.message.chat_id,
-        text=(
-            "╔══════════════════╗\n"
-            " 🪩 🆂🅴🅻🅴🅲🆃 🅶🅰🅼🅴 \n"
-            "╚══════════════════╝\n\n"
-
-            "🎨 *Choose Your Favorite Premium Game*\n\n"
-
-            "⚡ Android & IOS Supported\n"
-            "🚀 Instant Delivery Available\n\n"
-
-            "🔻 *Select Your Game Below* 🎯"
-        ),
-        parse_mode="Markdown",
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
+    await shop_now(update, context)
 
 # =========================================
 # MY ORDERS
@@ -891,35 +864,35 @@ def main():
     app.add_handler(
         CallbackQueryHandler(
             create_payment,
-            pattern="^plan\\|"
+            pattern=r"^plan\|"
         )
     )
 
     app.add_handler(
         CallbackQueryHandler(
             verify_payment,
-            pattern="^verify\\|"
+            pattern=r"^verify\|"
         )
     )
 
     app.add_handler(
         CallbackQueryHandler(
             approve_payment,
-            pattern="^approve\\|"
+            pattern=r"^approve\|"
         )
     )
 
     app.add_handler(
         CallbackQueryHandler(
             delivery_key,
-            pattern="^delivery\\|"
+            pattern=r"^delivery\|"
         )
     )
 
     app.add_handler(
         CallbackQueryHandler(
             cancel_delivery,
-            pattern="^canceldelivery\\|"
+            pattern=r"^canceldelivery\|"
         )
     )
 

@@ -148,52 +148,203 @@ def check_and_grant_free_key(user_id):
     return False, None
 
 # ==================== KEYBOARD BUILDERS ====================
+
 def main_menu_keyboard():
     keyboard = [
-        [InlineKeyboardButton("🛍️ Shop Now", callback_data="shop_now")],
-        [InlineKeyboardButton("📦 My Orders", callback_data="my_orders")],
-        [InlineKeyboardButton("👤 Profile", callback_data="profile")],
-        [InlineKeyboardButton("📖 How to Use", callback_data="how_to_use")],
-        [InlineKeyboardButton("🆘 Support", callback_data="support")],
-        [InlineKeyboardButton("💰 Refer & Earn", callback_data="refer_earn")],
+
+        # Full Width Button
+        [
+            InlineKeyboardButton(
+                "🛒 Shop Now",
+                callback_data="shop_now"
+            )
+        ],
+
+        # Same Row Buttons
+        [
+            InlineKeyboardButton(
+                "📦 My Orders",
+                callback_data="my_orders"
+            ),
+
+            InlineKeyboardButton(
+                "👤 Profile",
+                callback_data="profile"
+            )
+        ],
+
+        # Same Row Buttons
+        [
+            InlineKeyboardButton(
+                "📖 How to Use",
+                callback_data="how_to_use"
+            ),
+
+            InlineKeyboardButton(
+                "💬 Support",
+                callback_data="support"
+            )
+        ],
+
+        # Full Width Button
+        [
+            InlineKeyboardButton(
+                "💰 Refer & Earn",
+                callback_data="refer_earn"
+            )
+        ]
     ]
+
     return InlineKeyboardMarkup(keyboard)
+
 
 def back_to_menu_button():
-    return InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")]])
+
+    keyboard = [
+
+        [
+            InlineKeyboardButton(
+                "🔙 Back To Menu",
+                callback_data="main_menu"
+            )
+        ]
+    ]
+
+    return InlineKeyboardMarkup(keyboard)
+
 
 def shop_now_button():
-    return InlineKeyboardMarkup([[InlineKeyboardButton("🛍️ Shop Now", callback_data="shop_now")]])
+
+    keyboard = [
+
+        [
+            InlineKeyboardButton(
+                "🛒 Shop Now",
+                callback_data="shop_now"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "🔙 Back To Menu",
+                callback_data="main_menu"
+            )
+        ]
+    ]
+
+    return InlineKeyboardMarkup(keyboard)
+
 
 def product_list_keyboard():
+
     keyboard = []
+
     for name, price in PRODUCTS.items():
-        keyboard.append([InlineKeyboardButton(f"{name} - ₹{price:.2f}", callback_data=f"product_{name}")])
-    keyboard.append([InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")])
+
+        keyboard.append([
+            InlineKeyboardButton(
+                f"🛍️ {name} - ₹{price:.2f}",
+                callback_data=f"product_{name}"
+            )
+        ])
+
+    keyboard.append([
+        InlineKeyboardButton(
+            "🔙 Back To Menu",
+            callback_data="main_menu"
+        )
+    ])
+
     return InlineKeyboardMarkup(keyboard)
+
 
 def payment_keyboard(product_name, amount):
-    upi_link = f"upi://pay?pa={UPI_ID}&pn=Satyam%20X%20Store&am={amount}&cu=INR"
+
+    upi_link = (
+        f"upi://pay?"
+        f"pa={UPI_ID}"
+        f"&pn=Satyam%20X%20Store"
+        f"&am={amount}"
+        f"&cu=INR"
+    )
+
     keyboard = [
-        [InlineKeyboardButton("✅ I Have Paid", callback_data=f"paid_{product_name}")],
-        [InlineKeyboardButton("💳 Copy UPI ID", callback_data="copy_upi")],
-        [InlineKeyboardButton("📱 Open UPI App", url=upi_link)],
-        [InlineKeyboardButton("🔙 Cancel", callback_data="shop_now")],
+
+        [
+            InlineKeyboardButton(
+                "✅ I Have Paid",
+                callback_data=f"paid_{product_name}"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "💳 Copy UPI ID",
+                callback_data="copy_upi"
+            ),
+
+            InlineKeyboardButton(
+                "📱 Open UPI App",
+                url=upi_link
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "🔙 Cancel",
+                callback_data="shop_now"
+            )
+        ]
     ]
+
     return InlineKeyboardMarkup(keyboard)
+
 
 def admin_contact_keyboard():
+
     keyboard = [
-        [InlineKeyboardButton("📞 Contact Admin", url="https://t.me/SATYAM_X_OFC")],
-        [InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")],
+
+        [
+            InlineKeyboardButton(
+                "📞 Contact Admin",
+                url="https://t.me/SATYAM_X_OFC"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "🔙 Back To Menu",
+                callback_data="main_menu"
+            )
+        ]
     ]
+
     return InlineKeyboardMarkup(keyboard)
 
+
 def refer_earn_keyboard(referral_link):
+
     keyboard = [
-        [InlineKeyboardButton("📤 Share with Friend", url=f"https://t.me/share/url?url={referral_link}&text=🔥 Join Satyam X Ofc Store and get premium keys! Use my referral link:")],
-        [InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")],
+
+        [
+            InlineKeyboardButton(
+                "📤 Share With Friend",
+                url=(
+                    f"https://t.me/share/url?"
+                    f"url={referral_link}"
+                    f"&text=🔥 Join Satyam X Ofc Store and get premium keys!"
+                )
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "🔙 Back To Menu",
+                callback_data="main_menu"
+            )
+        ]
     ]
+
     return InlineKeyboardMarkup(keyboard)
 
 # ==================== HANDLERS ====================

@@ -1801,34 +1801,35 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     # ==============================
-    # NOT ENOUGH BALANCE
-    # ==============================
+# ==============================
+# NOT ENOUGH BALANCE
+# ==============================
 
-if balance < 75:
+    if balance < 75:
 
-    need = 75 - balance
+        need = 75 - balance
 
-    await query.answer(
-        text=(
-            "╔════════════════╗\n"
-            "  🎁 FREE KEY INFO\n"
-            "╚════════════════╝\n\n"
+        await query.answer(
+            text=(
+                "╔════════════════╗\n"
+                " 🎁 FREE KEY INFO\n"
+                "╚════════════════╝\n\n"
 
-            "🔑 Key Name : Drip Client\n"
-            "⏳ Plan : 7 Day\n"
-            "💰 Required Balance : ₹75\n\n"
+                "🔑 Key Name : Drip Client\n"
+                "⏳ Plan : 7 Day\n"
+                "💰 Required Balance : ₹75\n\n"
 
-            f"💸 Your Balance : ₹{balance}\n"
-            f"❌ Need More : ₹{need}\n\n"
+                f"💸 Your Balance : ₹{balance}\n"
+                f"❌ Need More : ₹{need}\n\n"
 
-            "👥 Invite Friends & Earn More\n"
-            "Then Claim Your Premium Key 🚀"
-        ),
-        show_alert=True
-    )
+                "👥 Invite Friends & Earn More\n"
+                "Then Claim Your Premium Key 🚀"
+            ),
+            show_alert=True
+        )
 
-    return
-
+        return
+        
     # ==============================
     # ALREADY CLAIMED
     # ==============================

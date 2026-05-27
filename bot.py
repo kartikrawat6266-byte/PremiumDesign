@@ -390,6 +390,15 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         amount = GAMES[game][plan]
 
+        # REMOVE PLAN EMOJIS
+        clean_plan = (
+            plan.replace("💸 ", "")
+            .replace("🍫 ", "")
+            .replace("🍓 ", "")
+            .replace("🧚🏻 ", "")
+            .replace("🍇 ", "")
+        )
+
         user_id = str(query.from_user.id)
 
         order_id = ''.join(random.choices(
@@ -403,7 +412,7 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         context.bot_data["orders"][order_id] = {
             "game": game,
-            "plan": plan,
+            "plan": clean_plan,
             "amount": amount,
             "user_id": user_id
         }
@@ -430,7 +439,7 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "━━━━━━━━━━━━━━━━━━\n\n"
 
             f"🎮 Product : {game}\n"
-            f"📦 Plan : {plan}\n"
+            f"📦 Plan : {clean_plan}\n"
             f"💰 Amount To Pay : ₹{amount}\n\n"
 
             f"🏦 UPI ID : `{UPI_ID}`\n"

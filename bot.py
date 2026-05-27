@@ -1314,7 +1314,7 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text = (
 
             "╔════════════════════╗\n"
-            " 🛒 *𝗡𝗢 𝗢𝗥𝗗𝗘𝗥𝗦 𝗬𝗘𝗧* 🪩\n"
+            "    🛒 *𝗡𝗢 𝗢𝗥𝗗𝗘𝗥𝗦 𝗬𝗘𝗧* 🍓\n"
             "╚════════════════════╝\n\n"
 
             "✨ *𝗬𝗼𝘂𝗿 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗖𝗼𝗹𝗹𝗲𝗰𝘁𝗶𝗼𝗻 𝗜𝘀 𝗘𝗺𝗽𝘁𝘆*\n\n"

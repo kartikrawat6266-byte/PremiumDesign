@@ -373,6 +373,7 @@ async def game_plans(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
         
 # =========================================
+# =========================================
 # CREATE PAYMENT
 # =========================================
 
@@ -459,20 +460,23 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             [
                 InlineKeyboardButton(
-                    "✅ VERIFY PAYMENT",
+                    "🧚🏻 Verify Payment",
                     callback_data=f"verify|{order_id}"
                 )
             ],
 
             [
                 InlineKeyboardButton(
-                    "❌ CANCEL",
+                    "🪩 Cancel Payment",
                     callback_data="cancel_order"
                 )
             ]
         ]
 
-        await query.message.delete()
+        try:
+            await query.message.delete()
+        except:
+            pass
 
         await context.bot.send_photo(
             chat_id=query.message.chat.id,
@@ -485,10 +489,6 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
 
         print("PAYMENT ERROR :", e)
-
-        await query.message.reply_text(
-            f"❌ QR GENERATE ERROR\n\n{e}"
-        )
 
 # =========================================
 # VERIFY PAYMENT

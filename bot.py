@@ -1354,17 +1354,20 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if user_id not in data or not data[user_id]["orders"]:
 
         text = (
-
             "╔════════════════════╗\n"
-            "    🛒 𝗡𝗢 𝗢𝗥𝗗𝗘𝗥𝗦 𝗬𝗘𝗧 🍓\n"
+            ".    🛒 𝗡𝗢 𝗢𝗥𝗗𝗘𝗥𝗦 𝗬𝗘𝗧 🍓\n"
             "╚════════════════════╝\n\n"
 
             "✨ 𝗬𝗼𝘂𝗿 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗖𝗼𝗹𝗹𝗲𝗰𝘁𝗶𝗼𝗻 𝗜𝘀 𝗘𝗺𝗽𝘁𝘆\n\n"
 
             "🚀 𝗬𝗼𝘂 𝗛𝗮𝘃𝗲𝗻'𝘁 𝗣𝘂𝗿𝗰𝗵𝗮𝘀𝗲𝗱 𝗔𝗻𝘆\n"
-            "𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗣𝗿𝗼𝗱𝘂𝗰𝘁𝘀 𝗬𝗲𝘁.\n\n"
+            "𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗣𝗿𝗼𝗱𝘂𝗰𝘁𝘀 𝗬𝗲𝘁 𝗙𝗿𝗼𝗺 𝗢𝘂𝗿 𝗦𝘁𝗼𝗿𝗘.\n\n"
 
-            "🎯 Start Shopping Now."
+            "🎯 𝗦𝘁𝗮𝗿𝘁 𝗦𝗵𝗼𝗽𝗽𝗶𝗻𝗴 𝗧𝗼 𝗨𝗻𝗹𝗼𝗰𝗸\n"
+            "𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗙𝗲𝗮𝘁𝘂𝗿𝗲𝘀 & 𝗜𝗻𝘀𝘁𝗮𝗻𝘁 𝗗𝗲𝗹𝗶𝘃𝗲𝗿𝘆.\n\n"
+
+            "🧚🏻 𝗖𝗹𝗶𝗰𝗸 𝗕𝗲𝗹𝗼𝘄 𝗕𝘂𝘁𝘁𝗼𝗻 𝗧𝗼 𝗦𝘁𝗮𝗿𝘁\n"
+            "𝗦𝗵𝗼𝗽𝗽𝗶𝗻𝗴."
         )
 
         keyboard = [
@@ -1392,25 +1395,18 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     # =====================================
-    # ORDERS
+    # USER ORDERS
     # =====================================
 
     orders = data[user_id]["orders"]
 
     text = (
-
         "╔════════════════════╗\n"
         "     📦 𝗠𝗬 𝗢𝗥𝗗𝗘𝗥𝗦 🧚🏻\n"
         "╚════════════════════╝\n\n"
-
     )
 
     for count, order in enumerate(orders, start=1):
-
-        username = order.get("username", "No Username")
-
-        if username != "No Username":
-            username = f"@{username}"
 
         text += (
 
@@ -1420,9 +1416,13 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"⏳ Plan : {order['plan']}\n"
             f"💰 Price : ₹{order['amount']}\n\n"
 
-            f"🧑🏻 Username : {username}\n"
+            f"🧑🏻 Username : "
+            f"{('@' + order['username']) if order.get('username') != 'No Username' else 'No Username'}\n"
+
             f"🥇 User ID : {order['user_id']}\n"
-            f"🧾 Order ID : {order.get('order_id', 'Not Available')}\n\n"
+
+            f"🧾 Order ID : "
+            f"{order.get('order_id', 'Not Available')}\n\n"
 
             f"🕒 Purchase Time :\n"
             f"{order['purchase_time']}\n\n"
@@ -1433,10 +1433,9 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "━━━━━━━━━━━━━━━━━━\n\n"
 
             f"🔑 Key :\n"
-            f"{order.get('key', 'Pending')}\n\n"
+            f"<code>{order.get('key', 'Pending')}</code>\n\n"
 
             "━━━━━━━━━━━━━━━━━━\n\n"
-
         )
 
     keyboard = [
@@ -1449,12 +1448,9 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
     ]
 
-    # TELEGRAM LIMIT FIX
-    if len(text) > 4000:
-        text = text[:4000]
-
     await query.message.edit_text(
         text=text,
+        parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
     

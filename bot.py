@@ -234,15 +234,11 @@ def main_menu_keyboard():
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    user = update.effective_user
-
-    user_id = str(user.id)
+    user_id = str(update.effective_user.id)
 
     data = load_data()
 
-    # ==============================
-    # CREATE USER
-    # ==============================
+    user = update.effective_user
 
     if user_id not in data:
 
@@ -264,12 +260,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "claimed_keys": []
         }
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    user_id = str(update.effective_user.id)
-
-    data = load_data()
-
+        save_data(data)
+        
     # ==============================
     # REFERRAL SYSTEM
     # ==============================
@@ -1802,6 +1794,9 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     data = load_data()
+
+    if user_id not in data:
+        data[user_id] = {}
 
     data[user_id]["refer_message_id"] = sent_msg.message_id
 

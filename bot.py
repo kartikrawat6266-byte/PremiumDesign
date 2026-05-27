@@ -654,7 +654,12 @@ async def auto_delete_message(bot, chat_id, message_id):
 async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
-    await query.answer()
+
+    # FAST BUTTON RESPONSE
+    await query.answer(
+        text="🧚🏻 Payment Cancelled Successfully 🍓",
+        show_alert=False
+    )
 
     data = query.data.split("|")
 
@@ -692,7 +697,12 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ])
     )
 
-    # OWNER PANEL UPDATE
+    # OWNER MESSAGE INSTANT UPDATE
+    try:
+        await query.message.edit_reply_markup(reply_markup=None)
+    except:
+        pass
+
     await query.message.edit_text(
         "🍫 User Payment Cancelled Successfully"
     )

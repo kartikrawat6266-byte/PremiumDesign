@@ -1282,9 +1282,13 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # CREATE FINAL KEY
         # =====================================
 
-        days = (
-            plan.replace(" ", "")
-        )
+        try:
+
+            days = plan.split(" ")[0]
+
+        except:
+
+            days = "30Day"
 
         game_key = (
             game.upper()
@@ -1368,7 +1372,7 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         print("DELIVERY KEY ERROR :", e)
 
         await query.message.edit_text(
-            "❌ Delivery Failed."
+            f"❌ Delivery Failed.\n\n{e}"
         )
     
 # =========================================

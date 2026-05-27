@@ -45,7 +45,7 @@ UPI_ID = "kartikrawat6266@okhdfcbank"
 
 OWNER_USERNAME = "SATYAM_X_OFC"
 
-OWNER_ID = 123456789
+OWNER_ID = 1987818347
 
 IST = timezone(timedelta(hours=5, minutes=30))
 

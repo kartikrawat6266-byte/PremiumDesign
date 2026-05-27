@@ -398,16 +398,20 @@ async def game_plans(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard.append([
         InlineKeyboardButton(
-            "⬅️ BACK",
+            "📨 BACK",
             callback_data="shop_now"
         )
     ])
+
+    # =====================================
+    # DRIP CLIENT
+    # =====================================
 
     if game == "Drip ClieNt":
 
         text = (
             "╔══════════════════════╗\n"
-            "      🍓 *𝘿𝙧𝙞𝙥 𝘾𝙡𝙞𝙚𝙉𝙩* 🎨\n"
+            "       🪩 *𝘿𝙧𝙞𝙥 𝘾𝙡𝙞𝙚𝙉𝙩* 🥇\n"
             "╚══════════════════════╝\n\n"
 
             "🔥 *Premium Rage + Legit Experience*\n"
@@ -416,14 +420,18 @@ async def game_plans(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "🎯 *Powerful Premium Features*\n"
             "🚀 *Trusted By Premium Players*\n\n"
 
-            "🔮 *Select Your Premium Plan Below.*"
+            "🧚🏻 *Select Your Premium Plan Below.*"
         )
+
+    # =====================================
+    # PRIME HOOK
+    # =====================================
 
     elif game == "Prime HooK":
 
         text = (
             "╔══════════════════════╗\n"
-            "       🧚🏻 *𝙋𝙧𝙞𝙢𝙚 𝙃𝙤𝙤𝙆* 💸\n"
+            "      🧚🏻 *𝙋𝙧𝙞𝙢𝙚 𝙃𝙤𝙤𝙆* 🎖️\n"
             "╚══════════════════════╝\n\n"
 
             "🎯 *Deadly Premium Features*\n"
@@ -432,14 +440,18 @@ async def game_plans(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "🚀 *Fastest Performance Ever*\n"
             "💎 *Best Premium Experience*\n\n"
 
-            "💸 *Select Your Premium Plan Below.*"
+            "🧚🏻 *Select Your Premium Plan Below.*"
         )
+
+    # =====================================
+    # PATO TEAM
+    # =====================================
 
     elif game == "PaTo TeaM":
 
         text = (
             "╔══════════════════════╗\n"
-            "       🐼 *𝙋𝙖𝙏𝙤 𝙏𝙚𝙖𝙈* 🈲\n"
+            "       🐼 *𝙋𝙖𝙏𝙤 𝙏𝙚𝙖𝙈* 🍓\n"
             "╚══════════════════════╝\n\n"
 
             "⚡ *Powerful Premium Gameplay*\n"
@@ -448,14 +460,18 @@ async def game_plans(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "🛡️ *High Protection System*\n"
             "🚀 *Trusted By Real Users*\n\n"
 
-            "💎 *Select Your Premium Plan Below.*"
+            "🧚🏻 *Select Your Premium Plan Below.*"
         )
+
+    # =====================================
+    # HG CHEATS
+    # =====================================
 
     elif game == "Hg ChEaTs":
 
         text = (
             "╔══════════════════════╗\n"
-            "      🌈 *𝙃𝙜 𝘾𝙝𝙀𝙖𝙏𝙨* 👑\n"
+            "      👑 *𝙃𝙜 𝘾𝙝𝙀𝙖𝙏𝙨* 🚀\n"
             "╚══════════════════════╝\n\n"
 
             "🔥 *High Quality Premium Client*\n"
@@ -464,14 +480,18 @@ async def game_plans(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "🛡️ *Strong Security Protection*\n"
             "🚀 *Stable & Fast Updates*\n\n"
 
-            "💎 *Select Your Premium Plan Below.*"
+            "🧚🏻 *Select Your Premium Plan Below.*"
         )
+
+    # =====================================
+    # FLUORITE IOS
+    # =====================================
 
     elif game == "Fʟᴜᴏʀɪᴛᴇ Ff Ios [Iphone]":
 
         text = (
             "╔══════════════════════╗\n"
-            "      🙆🏻‍♂️ *𝙁𝙡𝙪𝙤𝙧𝙞𝙩𝙚 𝙄𝙊𝙎* 🍎\n"
+            "      🍎 *𝙁𝙡𝙪𝙤𝙧𝙞𝙩𝙚 𝙄𝙊𝙎* ✨\n"
             "╚══════════════════════╝\n\n"
 
             "⚡ *Premium IOS Experience*\n"
@@ -480,14 +500,18 @@ async def game_plans(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "🛡️ *Safe For Iphone Users*\n"
             "🚀 *Luxury Premium Feeling*\n\n"
 
-            "🧑🏻‍🚀 *Select Your Premium Plan Below.*"
+            "🧚🏻 *Select Your Premium Plan Below.*"
         )
+
+    # =====================================
+    # SPOTIFY ENJECT
+    # =====================================
 
     elif game == "SpotifY EnJecT RooT":
 
         text = (
             "╔══════════════════════╗\n"
-            "     🎨 *𝙎𝙥𝙤𝙩𝙞𝙛𝙔 𝙀𝙣𝙅𝙚𝙘𝙏* 🎵\n"
+            "    🎵 *𝙎𝙥𝙤𝙩𝙞𝙛𝙔 𝙀𝙣𝙅𝙚𝙘𝙏* 💸\n"
             "╚══════════════════════╝\n\n"
 
             "🔥 *Premium Root Experience*\n"
@@ -496,60 +520,26 @@ async def game_plans(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "🛡️ *Safe & Stable Working*\n"
             "🚀 *Best Performance Ever*\n\n"
 
-            "🏞️ *Select Your Premium Plan Below.*"
+            "🧚🏻 *Select Your Premium Plan Below.*"
         )
+
+    # =====================================
+    # DEFAULT
+    # =====================================
 
     else:
 
-        if game == "Drip ClieNt":
+        text = (
+            f"🎮 *{game}*\n\n"
+            "🧚🏻 *Select Your Premium Plan Below.*"
+        )
 
-    text = (
-        "╔════════════════╗\n"
-        " 🪩 *DRIP CLIENT* 🥇\n"
-        "╚════════════════╝\n\n"
-
-        "🥇 *Ultra Smooth Premium Panel*\n"
-        "⚡ *High Safe & Stable Experience*\n"
-        "🚀 *Fast Updates & Instant Access*\n\n"
-
-        "🧚🏻 *Select Your Premium Plan Below*"
+    await query.message.edit_text(
+        text=text,
+        parse_mode="Markdown",
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
-
-elif game == "Prime HooK":
-
-    text = (
-        "╔════════════════╗\n"
-        " 🧚🏻 *PRIME HOOK* 🎖️\n"
-        "╚════════════════╝\n\n"
-
-        "🎯 *Powerful Premium Features*\n"
-        "🔥 *Smooth Performance & Security*\n"
-        "💎 *Trusted By Premium Users*\n\n"
-
-        "🧚🏻 *Select Your Premium Plan Below*"
-    )
-
-elif game == "PaTo TeaM":
-
-    text = (
-        "╔════════════════╗\n"
-        " 🐼 *PATO TEAM* 🍓\n"
-        "╚════════════════╝\n\n"
-
-        "🍓 *Premium Private Access*\n"
-        "🚀 *Stable & Fast Experience*\n"
-        "✨ *Highly Recommended Setup*\n\n"
-
-        "🧚🏻 *Select Your Premium Plan Below*"
-    )
-
-
- await query.message.edit_text(
-    text=text,
-    parse_mode="Markdown",
-    reply_markup=InlineKeyboardMarkup(keyboard)
-)
-    
+   
 # =========================================
 # CREATE PAYMENT
 # =========================================

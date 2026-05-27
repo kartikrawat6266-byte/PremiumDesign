@@ -440,26 +440,26 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard = [
 
-        [
-            InlineKeyboardButton(
-                "✅ VERIFY PAYMENT",
-                callback_data=f"verify|{game}|{plan}|{amount}|{order_id}"
-            )
-        ],
+    [
+        InlineKeyboardButton(
+            "✅ VERIFY PAYMENT",
+            callback_data=f"verify|{game}|{plan}|{amount}|{order_id}"
+        )
+    ],
 
-        [
-            InlineKeyboardButton(
-                "❌ CANCEL ORDER",
-                callback_data="cancel_order"
-            )
-        ],
+    [
+        InlineKeyboardButton(
+            "❌ CANCEL ORDER",
+            callback_data="cancel_order"
+        )
+    ],
 
-        [
-            InlineKeyboardButton(
-                "⬅️ BACK TO MAIN MENU",
-                callback_data="shop_now"
-            )
-        ]
+    [
+        InlineKeyboardButton(
+            "⬅️ BACK TO MAIN MENU",
+            callback_data="main_menu"
+        )
+    ]
     ]
 
     await query.message.delete()

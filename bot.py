@@ -223,17 +223,17 @@ async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
     update_user(user_id)
 
     text = (
-        "╔══════════════════════════════╗\n"
-        "     🔳 W E L C O M E 🔳\n"
-        "╚══════════════════════════════╝\n\n"
+        "╔══════════════════╗\n"
+        " 🅵🆁🅴🅴 🅵🅸🆁🅴 🆂🅷🅾🅿\n"
+        "╚══════════════════╝\n\n"
 
         "👋 *Welcome To BeSt ChEat SHOP* 👋\n\n"
 
-        "❄️ _Here you can purchase all tg_\n"
-        "_premium hacks for Android & IOS.._ 💥\n\n"
+        "❄️ _Here you can purchase all tg premium_\n"
+        "_hacks for Android & IOS.._ 💥\n\n"
 
-        "🔻 _Continue Shopping Premium_\n"
-        "_Option Below.._ 🛍️"
+        "🔻 *Continue Shopping Premium*\n"
+        "*Option Below..* 🛍️"
     )
 
     await query.message.edit_text(

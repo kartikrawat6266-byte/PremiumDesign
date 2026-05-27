@@ -1094,8 +1094,19 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "expiry_time": expiry_time_text
         }
 
+        data[user_id_str]["pending_delivery"] = {
+
+            "order_id": order_id,
+            "game": game,
+            "plan": clean_plan,
+            "amount": amount,
+            "payment_time": payment_time_text,
+            "expiry_time": expiry_time_text
+        }
+
+        save_data(data)
+
         # =====================================
-# =====================================
         # SAVE USER ORDER HISTORY
         # =====================================
 
@@ -1196,113 +1207,157 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    data = query.data.split("|")
-
-    user_id = int(data[1])
-    order_id = data[2]
-
-    if "delivery_data" not in context.bot_data:
-
-        return
-
-    if order_id not in context.bot_data["delivery_data"]:
-
-        await query.message.edit_text(
-            "❌ Delivery data expired."
-        )
-
-        return
-
-    delivery_data = context.bot_data["delivery_data"][order_id]
-
-    game = delivery_data["game"]
-    plan = delivery_data["plan"]
-    amount = delivery_data["amount"]
-    payment_time = delivery_data["payment_time"]
-    expiry_time = delivery_data["expiry_time"]
-
-    # USERNAME FIX
     try:
 
-        user_info = await context.bot.get_chat(user_id)
+        data = query.data.split("|")
 
-        if user_info.username and user_info.username.lower() != "none":
-            username_text = f"@{user_info.username}"
-        else:
+        user_id = int(data[1])
+        order_id = data[2]
+
+        # =====================================
+        # LOAD DATABASE
+        # =====================================
+
+        data_db = load_data()
+
+        user_id_str = str(user_id)
+
+        if user_id_str not in data_db:
+
+            await query.message.edit_text(
+                "❌ User data not found."
+            )
+
+            return
+
+        if "pending_delivery" not in data_db[user_id_str]:
+
+            await query.message.edit_text(
+                "❌ Delivery data expired."
+            )
+
+            return
+
+        delivery_data = data_db[user_id_str]["pending_delivery"]
+
+        game = delivery_data["game"]
+        plan = delivery_data["plan"]
+        amount = delivery_data["amount"]
+        payment_time = delivery_data["payment_time"]
+        expiry_time = delivery_data["expiry_time"]
+
+        # =====================================
+        # USERNAME FIX
+        # =====================================
+
+        try:
+
+            user_info = await context.bot.get_chat(user_id)
+
+            if user_info.username and user_info.username.lower() != "none":
+
+                username_text = f"@{user_info.username}"
+
+            else:
+
+                username_text = "No Username"
+
+        except:
+
             username_text = "No Username"
 
-    except:
+        # =====================================
+        # CREATE FINAL KEY
+        # =====================================
 
-        username_text = "No Username"
+        days = (
+            plan.replace(" ", "")
+        )
 
-    days = (
-        plan.replace(" ", "")
-    )
+        game_key = (
+            game.upper()
+            .replace(" ", "-")
+            .replace("[", "")
+            .replace("]", "")
+        )
 
-    game_key = (
-        game.upper()
-        .replace(" ", "-")
-        .replace("[", "")
-        .replace("]", "")
-    )
+        final_key = f"{days}x-{game_key}"
 
-    final_key = f"{days}x-{game_key}"
+        # =====================================
+        # USER MESSAGE
+        # =====================================
 
-    text = (
+        text = (
 
-        "🎉 *Payment Successful!*\n\n"
+            "🎉 *Payment Successful!*\n\n"
 
-        f"🎮 Game : {game}\n"
-        f"⏳ Duration : {plan}\n"
-        f"💰 Price : ₹{amount}\n\n"
+            f"🎮 Game : {game}\n"
+            f"⏳ Duration : {plan}\n"
+            f"💰 Price : ₹{amount}\n\n"
 
-        "📋 *Order Details :*\n\n"
+            "📋 *Order Details :*\n\n"
 
-        f"👤 Username : {username_text}\n"
-        f"🙆🏻‍♂️ User Id : `{user_id}`\n\n"
+            f"👤 Username : {username_text}\n"
+            f"🙆🏻‍♂️ User Id : `{user_id}`\n\n"
 
-        f"🧾 Order ID : `{order_id}`\n"
-        f"🕒 Purchase Time : {payment_time}\n"
-        f"⚠️ Expire Time : {expiry_time}\n\n"
+            f"🧾 Order ID : `{order_id}`\n"
+            f"🕒 Purchase Time : {payment_time}\n"
+            f"⚠️ Expire Time : {expiry_time}\n\n"
 
-        "━━━━━━━━━━━━━━━━━━\n\n"
+            "━━━━━━━━━━━━━━━━━━\n\n"
 
-        f"🔑 Your Key :\n`{final_key}`\n\n"
+            f"🔑 Your Key :\n`{final_key}`\n\n"
 
-        "━━━━━━━━━━━━━━━━━━\n\n"
+            "━━━━━━━━━━━━━━━━━━\n\n"
 
-        "❄️ Thanks For Purchasing 💥"
+            "❄️ Thanks For Purchasing 💥"
 
-    )
+        )
 
-    await context.bot.send_message(
-        chat_id=user_id,
-        text=text,
-        parse_mode="Markdown"
-    )
+        await context.bot.send_message(
+            chat_id=user_id,
+            text=text,
+            parse_mode="Markdown"
+        )
 
-    # =====================================
-    # UPDATE ORDER KEY
-    # =====================================
+        # =====================================
+        # UPDATE ORDER KEY
+        # =====================================
 
-    data = load_data()
+        if user_id_str in data_db:
 
-    user_id_str = str(user_id)
+            for order in data_db[user_id_str]["orders"]:
 
-    if user_id_str in data:
+                if order.get("order_id") == order_id:
 
-        for order in data[user_id_str]["orders"]:
+                    order["key"] = final_key
+                    break
 
-            if order.get("order_id") == order_id:
+        # =====================================
+        # REMOVE PENDING DELIVERY
+        # =====================================
 
-                order["key"] = final_key
-                break
+        if "pending_delivery" in data_db[user_id_str]:
 
-    save_data(data)
+            del data_db[user_id_str]["pending_delivery"]
 
-    await query.message.edit_text(
-        "🍓 KeY Delevery Successfully"
-    )
+        save_data(data_db)
+
+        # =====================================
+        # OWNER SUCCESS MESSAGE
+        # =====================================
+
+        await query.message.edit_text(
+            "🍓 Key Delivery Successfully"
+        )
+
+    except Exception as e:
+
+        print("DELIVERY KEY ERROR :", e)
+
+        await query.message.edit_text(
+            "❌ Delivery Failed."
+        )
     
 # =========================================
 # MY ORDERS

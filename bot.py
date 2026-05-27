@@ -1221,33 +1221,22 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     try:
 
+        # DOUBLE CLICK FIX
+        await query.edit_message_reply_markup(reply_markup=None)
+
         data = query.data.split("|")
 
         user_id = int(data[1])
         order_id = data[2]
-
-        # =====================================
-        # LOAD DATABASE
-        # =====================================
 
         data_db = load_data()
 
         user_id_str = str(user_id)
 
         if user_id_str not in data_db:
-
-            await query.message.edit_text(
-                "❌ User data not found."
-            )
-
             return
 
         if "pending_delivery" not in data_db[user_id_str]:
-
-            await query.message.edit_text(
-                "❌ Delivery data expired."
-            )
-
             return
 
         delivery_data = data_db[user_id_str]["pending_delivery"]
@@ -1258,36 +1247,23 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         payment_time = delivery_data["payment_time"]
         expiry_time = delivery_data["expiry_time"]
 
-        # =====================================
-        # USERNAME FIX
-        # =====================================
-
+        # USERNAME
         try:
 
             user_info = await context.bot.get_chat(user_id)
 
-            if user_info.username and user_info.username.lower() != "none":
-
+            if user_info.username:
                 username_text = f"@{user_info.username}"
-
             else:
-
                 username_text = "No Username"
 
         except:
-
             username_text = "No Username"
 
-        # =====================================
-        # CREATE FINAL KEY
-        # =====================================
-
+        # KEY
         try:
-
             days = plan.split(" ")[0]
-
         except:
-
             days = "30Day"
 
         game_key = (
@@ -1298,10 +1274,6 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
         final_key = f"{days}x-{game_key}"
-
-        # =====================================
-        # USER MESSAGE
-        # =====================================
 
         text = (
 
@@ -1330,47 +1302,28 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         )
 
+        # ONLY ONE MESSAGE
         await context.bot.send_message(
             chat_id=user_id,
             text=text,
             parse_mode="Markdown"
         )
 
-        await context.bot.send_message(
-            chat_id=user_id,
-            text=text,
-            parse_mode="Markdown"
-        )
+        # UPDATE ORDER
+        for order in data_db[user_id_str]["orders"]:
 
-        # =====================================
-        # UPDATE ORDER KEY
-        # =====================================
+            if order.get("order_id") == order_id:
 
-        if user_id_str in data_db:
+                order["key"] = final_key
+                break
 
-            for order in data_db[user_id_str]["orders"]:
-
-                if order.get("order_id") == order_id:
-
-                    order["key"] = final_key
-                    break
-
-        # =====================================
-        # REMOVE PENDING DELIVERY
-        # =====================================
-
-        if "pending_delivery" in data_db[user_id_str]:
-
-            del data_db[user_id_str]["pending_delivery"]
+        # REMOVE DELIVERY DATA
+        del data_db[user_id_str]["pending_delivery"]
 
         save_data(data_db)
 
-        # =====================================
-        # OWNER SUCCESS MESSAGE
-        # =====================================
-
         await query.message.edit_text(
-            "🍓 Key Delivery Successfully"
+            "✅ Key Delivered Successfully"
         )
 
     except Exception as e:
@@ -1378,7 +1331,7 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         print("DELIVERY KEY ERROR :", e)
 
         await query.message.edit_text(
-            f"❌ Delivery Failed.\n\n{e}"
+            f"❌ Delivery Failed\n\n{e}"
         )
     
 # =========================================
@@ -1396,96 +1349,58 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if user_id not in data or not data[user_id]["orders"]:
 
-        text = (
-
-            "╔════════════════════╗\n"
-            "    🛒 *𝗡𝗢 𝗢𝗥𝗗𝗘𝗥𝗦 𝗬𝗘𝗧* 🍓\n"
-            "╚════════════════════╝\n\n"
-
-            "✨ *𝗬𝗼𝘂𝗿 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗖𝗼𝗹𝗹𝗲𝗰𝘁𝗶𝗼𝗻 𝗜𝘀 𝗘𝗺𝗽𝘁𝘆*"
-        )
-
-        keyboard = [
-
-            [
-                InlineKeyboardButton(
-                    "🎨 Shop Now 🈲",
-                    callback_data="shop_now"
-                )
-            ],
-
-            [
-                InlineKeyboardButton(
-                    "🍓 Back To Menu",
-                    callback_data="main_menu"
-                )
-            ]
-        ]
-
         await query.message.edit_text(
-            text=text,
-            parse_mode="Markdown",
-            reply_markup=InlineKeyboardMarkup(keyboard)
+            text="❌ No Orders Found.",
+            reply_markup=InlineKeyboardMarkup([
+
+                [
+                    InlineKeyboardButton(
+                        "⬅️ Back",
+                        callback_data="main_menu"
+                    )
+                ]
+            ])
         )
 
         return
 
     orders = data[user_id]["orders"]
 
-    text = (
-
-        "╔════════════════════╗\n"
-        "     📦 𝗠𝗬 𝗢𝗥𝗗𝗘𝗥𝗦 🧚🏻\n"
-        "╚════════════════════╝\n\n"
-
-    )
+    text = "📦 YOUR ORDERS\n\n"
 
     for count, order in enumerate(orders, start=1):
 
         text += (
 
-            f"✨ *Order {count}*\n\n"
+            f"━━━━━━━━━━━━━━\n"
+            f"🛒 Order {count}\n\n"
 
-            f"🎮 Game : {order['game']}\n"
-            f"⏳ Plan : {order['plan']}\n"
-            f"💰 Price : ₹{order['amount']}\n\n"
+            f"🎮 Game: {order['game']}\n"
+            f"⏳ Plan: {order['plan']}\n"
+            f"💰 Price: ₹{order['amount']}\n\n"
 
-            f"🧑🏻 Username : {('@' + order['username']) if order.get('username') != 'No Username' else 'No Username'}\n"
-            f"🥇 User ID : `{order['user_id']}`\n"
-            f"🧾 Order ID : `{order.get('order_id', 'Not Available')}`\n\n"
+            f"🆔 Order ID:\n"
+            f"{order.get('order_id', 'N/A')}\n\n"
 
-            f"🕒 Purchase Time :\n"
-            f"`{order['purchase_time']}`\n\n"
-
-            f"⚠️ Expire Time :\n"
-            f"`{order['expiry_time']}`\n\n"
-
-            "━━━━━━━━━━━━━━━━━━\n\n"
-
-            f"🔑 Key :\n`{order.get('key', 'Pending')}`\n\n"
-
-            "━━━━━━━━━━━━━━━━━━\n\n"
-
+            f"🔑 Key:\n"
+            f"{order.get('key', 'Pending')}\n\n"
         )
 
-    # TELEGRAM MESSAGE LIMIT FIX
+    # MESSAGE LIMIT FIX
     if len(text) > 4000:
         text = text[:4000]
 
-    keyboard = [
-
-        [
-            InlineKeyboardButton(
-                "📨 Back To Menu",
-                callback_data="main_menu"
-            )
-        ]
-    ]
-
     await query.message.edit_text(
         text=text,
-        parse_mode="Markdown",
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup([
+
+            [
+                InlineKeyboardButton(
+                    "⬅️ Back To Menu",
+                    callback_data="main_menu"
+                )
+            ]
+        ])
     )
     
 # =========================================

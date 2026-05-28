@@ -223,10 +223,8 @@ def main_menu_keyboard(user_id=None):
             InlineKeyboardButton(
                 "🪩 MY ORDERS 📦",
                 callback_data="my_orders"
-            )
-        ],
+            ),
 
-        [
             InlineKeyboardButton(
                 "🎨 MY PROFILE 🙆🏻‍♂️",
                 callback_data="profile"
@@ -237,10 +235,8 @@ def main_menu_keyboard(user_id=None):
             InlineKeyboardButton(
                 "🌌 HOW TO USE 🈲",
                 callback_data="how_to_use"
-            )
-        ],
+            ),
 
-        [
             InlineKeyboardButton(
                 "📩 SUPPORT CENTER 📬",
                 callback_data="support"
@@ -2454,8 +2450,8 @@ async def owner_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InlineKeyboardButton(
                     "🈲 UpDaTe 📜",
                     callback_data="owner_users"
-                ),
-
+                )
+             ],
                 InlineKeyboardButton(
                     "🧝🏻‍♀️ BacK",
                     callback_data="owner_panel"

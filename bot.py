@@ -2248,19 +2248,22 @@ async def owner_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = (
         "╔════════════════════╗\n"
-        " 👑 OWNER CONTROL PANEL\n"
+        " <b>👑 OWNER CONTROL PANEL</b>\n"
         "╚════════════════════╝\n\n"
 
-        f"👥 Total Users : {total_users}\n"
-        f"📦 Total Orders : {total_orders}\n"
-        f"💰 Total Earnings : ₹{total_earnings}\n\n"
+        f"👥 <b>TOTAL USERS :</b> <code>{total_users}</code>\n\n"
 
-        "⚡ Premium Owner Controls Active"
-    )
+        f"📦 <b>TOTAL ORDERS :</b> <code>{total_orders}</code>\n\n"
 
-    await query.message.edit_text(
-        text=text,
-        reply_markup=owner_panel_keyboard()
+        f"💰 <b>TOTAL EARNINGS :</b> <code>₹{total_earnings}</code>\n\n"
+
+        "<b>⚡ PREMIUM OWNER CONTROLS ACTIVE</b>"
+)
+
+await query.message.edit_text(
+    text=text,
+    parse_mode="HTML",
+    reply_markup=owner_panel_keyboard()
     )
 
 async def owner_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -2367,11 +2370,6 @@ async def stats_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InlineKeyboardButton(
                     "🈲 UpDaTe 📜",
                     callback_data="owner_stats"
-                ),
-
-                InlineKeyboardButton(
-                    "🗑️ ClEaR DatA",
-                    callback_data="clear_stats"
                 )
             ],
 
@@ -2387,39 +2385,7 @@ async def stats_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
             ]
         ])
-    )
-
-
-# =========================================
-# CLEAR STATS DATA
-# =========================================
-
-async def clear_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    query = update.callback_query
-    await query.answer()
-
-    if not is_owner(query.from_user.id):
-        return
-
-    data = load_data()
-
-    for uid in data:
-
-        data[uid]["orders"] = []
-        data[uid]["last_activity"] = "None"
-        data[uid]["last_button"] = "None"
-
-    save_data(data)
-
-    BANNED_USERS.clear()
-
-    await query.answer(
-        text="🗑️ Status Data Cleared Successfully 🧚🏻",
-        show_alert=True
-    )
-
-    await stats_callback(update, context)    
+    )    
     
 # =========================================
 # OWNER PENDING
@@ -2475,12 +2441,7 @@ async def owner_pending(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InlineKeyboardButton(
                     "🈲 UpDaTe 📜",
                     callback_data="owner_pending"
-                ),
-
-                InlineKeyboardButton(
-                    "🗑️ ClEaR DatA",
-                    callback_data="clear_pending"
-                )
+                )                
             ],
 
             [
@@ -2496,28 +2457,6 @@ async def owner_pending(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         ])
     )
-
-
-# =========================================
-# CLEAR PENDING DATA
-# =========================================
-
-async def clear_pending(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    query = update.callback_query
-    await query.answer()
-
-    if not is_owner(query.from_user.id):
-        return
-
-    context.bot_data["verify_orders"] = {}
-
-    await query.answer(
-        text="🗑️ Pending Data Cleared Successfully 🧚🏻",
-        show_alert=True
-    )
-
-    await owner_pending(update, context)
     
 # =========================================
 # OWNER VERIFIED
@@ -2577,12 +2516,7 @@ async def owner_verified(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InlineKeyboardButton(
                     "🈲 UpDaTe 🍫",
                     callback_data="owner_verified"
-                ),
-
-                InlineKeyboardButton(
-                    "🗑️ ClEaR DatA",
-                    callback_data="clear_verified"
-                )
+                )            
             ],
 
             [
@@ -2598,34 +2532,6 @@ async def owner_verified(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         ])
     )
-
-
-# =========================================
-# CLEAR VERIFIED DATA
-# =========================================
-
-async def clear_verified(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    query = update.callback_query
-    await query.answer()
-
-    if not is_owner(query.from_user.id):
-        return
-
-    data = load_data()
-
-    for uid in data:
-
-        data[uid]["orders"] = []
-
-    save_data(data)
-
-    await query.answer(
-        text="🗑️ Verified Data Cleared Successfully 🧚🏻",
-        show_alert=True
-    )
-
-    await owner_verified(update, context)
 
 # =========================================
 # OWNER ACTIVITY
@@ -2694,13 +2600,9 @@ async def owner_activity(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InlineKeyboardButton(
                     "🛡️ UpDaTe 📜",
                     callback_data="owner_activity"
-                ),
-
-                InlineKeyboardButton(
-                    "🗑️ Clear Data",
-                    callback_data="clear_activity"
                 )
-            ],
+
+            ],    
             
             [
                 InlineKeyboardButton(
@@ -2716,35 +2618,6 @@ async def owner_activity(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ])
     )
 
-
-# =========================================
-# CLEAR ACTIVITY DATA
-# =========================================
-
-async def clear_activity(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    query = update.callback_query
-    await query.answer()
-
-    if not is_owner(query.from_user.id):
-        return
-
-    data = load_data()
-
-    for user_id in data:
-
-        data[user_id]["last_activity"] = "Cleared"
-        data[user_id]["last_button"] = "Cleared"
-
-    save_data(data)
-
-    await query.answer(
-        text="🧝🏻‍♀️ Activity Data Cleared Successfully 🧚🏻",
-        show_alert=True
-    )
-
-    await owner_activity(update, context)
-    
 # =========================================
 # BAN USER
 # =========================================
@@ -3030,34 +2903,6 @@ def main():
         CallbackQueryHandler(
             owner_verified,
             pattern="^owner_verified$"
-        )
-    )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            clear_stats,
-            pattern="^clear_stats$"
-        )
-    )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            clear_pending,
-            pattern="^clear_pending$"
-        )
-    )
-    
-    app.add_handler(
-        CallbackQueryHandler(
-            clear_verified,
-            pattern="^clear_verified$"
-        )
-    )
-    
-    app.add_handler(
-        CallbackQueryHandler(
-            clear_activity,
-            pattern="^clear_activity$"
         )
     )
 

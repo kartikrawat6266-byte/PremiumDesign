@@ -2285,9 +2285,12 @@ async def owner_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if user_data.get("last_activity"):
             active_users += 1
 
-text = (
+@app.on_callback_query(filters.regex("stats"))
+async def stats_callback(client, query):
+
+    text = (
         "╔════════════════════╗\n"
-        " 📊 <b>BoT LiVe StaTuS</b>\n"
+        "   📊 <b>BoT LiVe StaTuS</b>\n"
         "╚════════════════════╝\n\n"
 
         f"🙆🏻‍♂️ <b>Total Users :</b> <code>{total_users}</code>\n\n"
@@ -2303,13 +2306,13 @@ text = (
         "🍓 <b>Bot Status :</b> <code>ONLINE</code>"
     )
 
-await query.message.edit_text(
+    await query.message.edit_text(
         text=text,
         parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup([
             [
-                InlineKeyboardButton("🧝🏻‍♀️ Back", callback_data="owner_panel"),
-                InlineKeyboardButton("🌈 Main Menu", callback_data="main_menu")
+                InlineKeyboardButton("🧝🏻‍♀️ BacK", callback_data="owner_panel"),
+                InlineKeyboardButton("🌈 MaiN MenU", callback_data="main_menu")
             ]
         ])
     )

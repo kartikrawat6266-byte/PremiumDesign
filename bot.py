@@ -1047,7 +1047,7 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "⚠️ *𝗣𝗔𝗬𝗠𝗘𝗡𝗧 𝗡𝗢𝗧 𝗥𝗘𝗖𝗘𝗜𝗩𝗘𝗗 𝗬𝗘𝗧*\n\n"
             "🧚🏻 *𝗣𝗹𝗲𝗮𝘀𝗘 𝗧𝗿𝘆 𝗔𝗴𝗮𝗶𝗻*\n"
             "*𝗜𝗻 𝗔 𝗙𝗲𝘄 𝗦𝗲𝗰𝗼𝗻𝗱𝘀.*"
-        ),),
+        ),
         reply_markup=InlineKeyboardMarkup([
 
             [

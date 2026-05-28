@@ -416,7 +416,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if is_owner(user_id):
         keyboard.append([
             InlineKeyboardButton(
-                "👑 OWNER CONTROL",
+                "🧝🏻‍♀️ AuRa KaRtiK FaTheR 🈲",
                 callback_data="owner_panel"
             )
         ])
@@ -454,6 +454,17 @@ async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         "🔻 *Continue Shopping Premium*\n"
         "*Option Below...* 🛍️"
     )
+
+    keyboard = list(main_menu_keyboard().inline_keyboard)
+
+    # OWNER BUTTON FIX
+    if is_owner(query.from_user.id):
+        keyboard.append([
+            InlineKeyboardButton(
+                "🧝🏻‍♀️ AuRa KaRtiK FaTheR 🈲",
+                callback_data="owner_panel"
+            )
+        ])
 
     await query.message.edit_text(
         text=text,

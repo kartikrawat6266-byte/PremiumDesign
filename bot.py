@@ -1334,7 +1334,7 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 " 🧚🏻 𝗣𝗔𝗬𝗠𝗘𝗡𝗧 𝗩𝗘𝗥𝗜𝗙𝗜𝗘𝗗 🪩\n"
                 "╚════════════════════╝\n\n"
 
-                "✅ <b>𝗣𝗔𝗬𝗠𝗘𝗡𝗧 𝗩𝗘𝗥𝗜𝗙𝗜𝗘𝗗</b>\n\n"
+                "🈲 <b>𝗣𝗔𝗬𝗠𝗘𝗡𝗧 𝗩𝗘𝗥𝗜𝗙𝗜𝗘𝗗</b>\n\n"
 
                 "⚡ <b>𝗬𝗼𝘂𝗿 𝗞𝗲𝘆 𝗪𝗶𝗹𝗹 𝗕𝗲</b>\n"
                 "<b>𝗗𝗲𝗹𝗶𝘃𝗲𝗿𝗲𝗱 𝗦𝗵𝗼𝗿𝘁𝗹𝘆.</b>"
@@ -1388,6 +1388,15 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "payment_time": payment_time_text,
             "expiry_time": expiry_time_text
         }
+
+        # REMOVE FROM PENDING PAYMENTS
+        if "verify_orders" in context.bot_data:
+
+            if str(user_id) in context.bot_data["verify_orders"]:
+                del context.bot_data["verify_orders"][str(user_id)]
+
+            elif user_id in context.bot_data["verify_orders"]:
+                del context.bot_data["verify_orders"][user_id]
 
         save_data(data)
 

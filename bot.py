@@ -2285,8 +2285,39 @@ async def owner_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if user_data.get("last_activity"):
             active_users += 1
 
-@app.on_callback_query(filters.regex("stats"))
-async def stats_callback(client, query):
+async def stats_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    if not is_owner(query.from_user.id):
+        return
+
+    data = load_data()
+
+    # TOTAL USERS
+    total_users = len(data)
+
+    # ACTIVE USERS
+    active_users = 0
+
+    # BLOCKED USERS
+    blocked_users = len(BANNED_USERS)
+
+    # ADMINS
+    total_admins = 1
+
+    # DELIVERIES
+    total_deliveries = 0
+
+    for user_data in data.values():
+
+        orders = user_data.get("orders", [])
+
+        total_deliveries += len(orders)
+
+        if user_data.get("last_activity"):
+            active_users += 1
 
     text = (
         "╔════════════════════╗\n"
@@ -2311,12 +2342,18 @@ async def stats_callback(client, query):
         parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup([
             [
-                InlineKeyboardButton("🧝🏻‍♀️ BacK", callback_data="owner_panel"),
-                InlineKeyboardButton("🌈 MaiN MenU", callback_data="main_menu")
+                InlineKeyboardButton(
+                    "🧝🏻‍♀️ BacK",
+                    callback_data="owner_panel"
+                ),
+
+                InlineKeyboardButton(
+                    "🌈 MaiN MenU",
+                    callback_data="main_menu"
+                )
             ]
         ])
-    )
-    
+    )    
 async def owner_pending(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
@@ -2551,7 +2588,7 @@ def main():
 
     app.add_handler(
         CallbackQueryHandler(
-            owner_stats,
+            stats_callback,
             pattern="^owner_stats$"
         )
     )

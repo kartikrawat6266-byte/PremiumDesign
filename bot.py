@@ -1707,7 +1707,7 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         f"📅 <b>𝗝𝗼𝗶𝗻𝗘𝗱 :</b> <i>{user_data['joined']}</i>\n\n"
 
-        f"🧙🏻‍♂️ <b>𝗟𝗮𝗦𝘁 𝗦𝗲𝗲𝗡 :</b> "
+        f"🧙🏻‍♂️ <b>𝗟-𝗦𝗲𝗲𝗡 :</b> "
         f"<i>{user_data.get('last_activity', 'Unknown')}</i>\n\n"
 
         f"🧝🏻‍♀️ <b>𝗥𝗲𝗖𝗲𝗻𝘁 𝗖𝗹𝗶𝗰𝗞 :</b> "

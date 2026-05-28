@@ -43,7 +43,7 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
 UPI_ID = "kartikrawat6266@okhdfcbank"
 
-OWNER_USERNAME = "SATYAM_X_OFC"
+OWNER_USERNAME = "BeStChEaT_OwNeR"
 
 OWNER_ID = 1987818347
 
@@ -108,6 +108,34 @@ def expiry_time():
         datetime.now(IST) + timedelta(minutes=10)
     ).strftime("%d/%m/%Y %I:%M:%S %p")
 
+# =========================================
+# UPDATE LAST ACTIVITY
+# =========================================
+
+def update_last_activity(user_id, button_name="Unknown"):
+
+    data = load_data()
+
+    user_id = str(user_id)
+
+    if user_id not in data:
+        get_user(user_id)
+        data = load_data()
+
+    now = datetime.now(IST)
+
+    data[user_id]["last_activity"] = (
+        now.strftime("%d/%m/%Y %I:%M:%S %p")
+    )
+
+    data[user_id]["last_button"] = button_name
+
+    data[user_id]["last_activity_timestamp"] = (
+        now.strftime("%H:%M:%S")
+    )
+
+    save_data(data)
+    
 # =========================================
 # DATABASE
 # =========================================
@@ -398,6 +426,11 @@ async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
     query = update.callback_query
     await query.answer()
 
+    update_last_activity(
+        query.from_user.id,
+        "MAIN MENU"
+    )
+
     text = (
         "╔══════════════════╗\n"
         " 🅵🆁🅴🅴 🅵🅸🆁🅴 🆂🅷🅾🅿\n"
@@ -427,6 +460,10 @@ async def shop_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    update_last_activity(
+        query.from_user.id,
+        "SHOP NOW"
+    )
     keyboard = []
 
     # DRIP CLIENT
@@ -511,6 +548,10 @@ async def game_plans(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    update_last_activity(
+        query.from_user.id,
+        "GAME PLANS"
+    )
     game = query.data.replace("game_", "")
 
     keyboard = []
@@ -677,6 +718,10 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    update_last_activity(
+        query.from_user.id,
+        "CREATE PAYMENT"
+    )
     try:
 
         data = query.data.split("|")
@@ -804,6 +849,10 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.answer()
 
+    update_last_activity(
+        query.from_user.id,
+        "VERIFY PAYMENT"
+    )
     try:
 
         data = query.data.split("|")
@@ -962,6 +1011,10 @@ async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.answer()
 
+    update_last_activity(
+        query.from_user.id,
+        "CANCEL ORDER"
+    )
     # DELETE QR MESSAGE
     try:
         await query.message.delete()
@@ -1000,6 +1053,10 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.answer()
 
+    update_last_activity(
+        query.from_user.id,
+        "CANCEL PAYMENT"
+    )
     user_id = int(query.data.split("|")[1])
 
     # REMOVE OWNER BUTTONS FAST
@@ -1069,6 +1126,10 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.answer()
 
+    update_last_activity(
+        query.from_user.id,
+        "APPROVE PAYMENT"
+    )
     try:
 
         data = query.data.split("|")
@@ -1347,6 +1408,10 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    update_last_activity(
+        query.from_user.id,
+        "DELIVERY KEY"
+    )
     try:
 
         # DOUBLE CLICK FIX
@@ -1480,6 +1545,10 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    update_last_activity(
+        query.from_user.id,
+        "MY ORDERS"
+    )
     user_id = str(query.from_user.id)
 
     data = load_data()
@@ -1600,6 +1669,10 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    update_last_activity(
+        query.from_user.id,
+        "PROFILE"
+    )
     user_id = str(query.from_user.id)
 
     user_data = get_user(user_id)
@@ -1659,6 +1732,10 @@ async def how_to_use(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    update_last_activity(
+        query.from_user.id,
+        "HOW TO USE"
+    )
     await query.message.edit_text(
         text=(
             "╔══════════════════════╗\n"
@@ -1724,6 +1801,10 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    update_last_activity(
+        query.from_user.id,
+        "SUPPORT"
+    )
     text = (
         "╔══════════════════════╗\n"
         " 🈲 🆂🆄🅿🅿🅾🆁🆃 🅲🅴🅽🆃🅴🆁\n"
@@ -1786,6 +1867,10 @@ async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    update_last_activity(
+        query.from_user.id,
+        "REFER & EARN"
+    )
     user_id = str(query.from_user.id)
 
     user_data = get_user(user_id)
@@ -1871,6 +1956,10 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
 
+    update_last_activity(
+        query.from_user.id,
+        "CLAIM FREE KEY"
+    )
     user_id = str(query.from_user.id)
 
     data = load_data()

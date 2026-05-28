@@ -943,6 +943,8 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         verify_datetime = datetime.now(IST)
 
         context.bot_data["verify_orders"][str(user_id)] = {
+
+            "username": username,
             "game": game,
             "plan": plan,
             "amount": amount,
@@ -2478,7 +2480,12 @@ async def owner_pending(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not is_owner(query.from_user.id):
         return
 
-    verify_orders = context.bot_data.get("verify_orders", {})
+    data = load_data()
+
+    verify_orders = context.bot_data.get(
+        "verify_orders",
+        {}
+    )
 
     text = ""
 
@@ -2497,7 +2504,7 @@ async def owner_pending(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "<b>🅿🅴🅽🅳🅸🅽🅶 🅿🅰🆈🅼🅴🅽🆃🆂</b>\n\n"
 
                 f"🥇 <b>𝗨𝗦𝗘𝗥𝗡𝗔𝗠𝗘 :</b> "
-                f"<b>@{user.get('username', 'No Username')}</b>\n\n"
+                f"<b>@{order.get('username', 'No Username')}</b>\n\n"
 
                 f"🙆🏻‍♂️ <b>𝗨𝗦𝗘𝗥 𝗜𝗗 :</b> "
                 f"<b><code>{uid}</code></b>\n\n"
@@ -2523,7 +2530,7 @@ async def owner_pending(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InlineKeyboardButton(
                     "🈲 UpDaTe 📜",
                     callback_data="owner_pending"
-                )                
+                )
             ],
 
             [
@@ -2584,8 +2591,8 @@ async def owner_verified(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"<code>{order.get('key')}</code>\n\n"
 
                 "━━━━━━━━━━━━━━━━━━\n\n"
-           )
-            
+            )
+
     if not found:
 
         text = (
@@ -2601,7 +2608,7 @@ async def owner_verified(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InlineKeyboardButton(
                     "🈲 UpDaTe 🍫",
                     callback_data="owner_verified"
-                )            
+                )
             ],
 
             [

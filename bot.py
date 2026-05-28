@@ -2749,14 +2749,7 @@ def main():
             pattern="^owner_activity$"
         )
     )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            owner_ban,
-            pattern="^owner_ban$"
-        )
-    )
-
+    
     print("BOT STARTED SUCCESSFULLY")
 
     app.run_polling()

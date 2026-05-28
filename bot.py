@@ -2779,11 +2779,23 @@ async def ban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     BANNED_USERS.add(user_id)
 
+    # OWNER MESSAGE
     await update.message.reply_text(
-        f"🚫 User {user_id} banned successfully."
+
+        "╔════════════════════╗\n"
+        "   🚫 𝗨𝗦𝗘𝗥 𝗕𝗔𝗡𝗡𝗘𝗗 🚫\n"
+        "╚════════════════════╝\n\n"
+
+        f"🙆🏻‍♂️ <b>USER ID :</b> <code>{user_id}</code>\n\n"
+
+        "⚡ <b>User Successfully Banned</b>\n\n"
+
+        "🛡️ <b>All Bot Access Removed</b>",
+
+        parse_mode="HTML"
     )
 
-    # AUTO MESSAGE TO BANNED USER
+    # SEND AUTO MESSAGE TO USER
     try:
 
         text = (
@@ -2801,11 +2813,21 @@ async def ban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(
             chat_id=user_id,
             text=text,
-            parse_mode="HTML"
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup([
+
+                [
+                    InlineKeyboardButton(
+                        "🧝🏻‍♀️ Contact FaTheR 🈲",
+                        url="http://BESTCHEAT_OWNER.t.me"
+                    )
+                ]
+            ])
         )
 
     except:
         pass
+
 
 # =========================================
 # UNBAN COMMAND
@@ -2828,11 +2850,23 @@ async def unban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     BANNED_USERS.discard(user_id)
 
+    # OWNER MESSAGE
     await update.message.reply_text(
-        f"🈲 User {user_id} unbanned successfully."
+
+        "╔════════════════════╗\n"
+        "  🌈 𝗨𝗦𝗘𝗥 𝗨𝗡𝗕𝗔𝗡𝗡𝗘𝗗 🌈\n"
+        "╚════════════════════╝\n\n"
+
+        f"🙆🏻‍♂️ <b>USER ID :</b> <code>{user_id}</code>\n\n"
+
+        "✨ <b>User Successfully Unbanned</b>\n\n"
+
+        "⚡ <b>Bot Access Restored</b>",
+
+        parse_mode="HTML"
     )
 
-    # AUTO MESSAGE
+    # SEND AUTO MESSAGE TO USER
     try:
 
         text = (
@@ -2850,7 +2884,16 @@ async def unban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(
             chat_id=user_id,
             text=text,
-            parse_mode="HTML"
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup([
+
+                [
+                    InlineKeyboardButton(
+                        "🌈 Go Back To Main Menu 🧚🏻",
+                        callback_data="main_menu"
+                    )
+                ]
+            ])
         )
 
     except:

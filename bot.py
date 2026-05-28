@@ -209,13 +209,12 @@ def update_user(user_id, updates=None):
 # =========================================
 
 def main_menu_keyboard(user_id=None):
-def main_menu_keyboard(user_id=None):
 
     keyboard = [
 
         [
             InlineKeyboardButton(
-                "🕹️ ALL GAMES HACKS FF 🛒",
+                "🗳️ ALL GAMES HACKS FF 🛒",
                 callback_data="shop_now"
             )
         ],

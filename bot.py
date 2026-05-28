@@ -273,12 +273,7 @@ def main_menu_keyboard(user_id=None):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    # BAN CHECK
-    if update.effective_user.id in BANNED_USERS:
-
-        await update.message.reply_text(
-            "🚫 You Are Banned From Using This Bot."
-        )
+    if await check_banned(update):
         return
 
     user_id = str(update.effective_user.id)
@@ -452,6 +447,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    if await check_banned(update):
+        return
+        
     query = update.callback_query
     await query.answer()
 
@@ -497,6 +495,9 @@ async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 async def shop_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    if await check_banned(update):
+        return
+        
     query = update.callback_query
     await query.answer()
 
@@ -585,6 +586,9 @@ async def shop_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def game_plans(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    if await check_banned(update):
+        return
+        
     query = update.callback_query
     await query.answer()
 
@@ -755,6 +759,9 @@ async def game_plans(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    if await check_banned(update):
+        return
+    
     query = update.callback_query
     await query.answer()
 
@@ -885,6 +892,9 @@ async def create_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    if await check_banned(update):
+        return
+        
     query = update.callback_query
 
     await query.answer()
@@ -1057,6 +1067,9 @@ async def auto_delete_cancel_msg(bot, chat_id, message_id):
 
 async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    if await check_banned(update):
+        return
+    
     query = update.callback_query
 
     await query.answer()
@@ -1099,6 +1112,9 @@ async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    if await check_banned(update):
+        return
+    
     query = update.callback_query
 
     await query.answer()
@@ -1190,6 +1206,9 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    if await check_banned(update):
+        return
+    
     query = update.callback_query
 
     await query.answer()
@@ -1480,6 +1499,9 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    if await check_banned(update):
+        return
+        
     query = update.callback_query
     await query.answer()
 
@@ -1636,6 +1658,9 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    if await check_banned(update):
+        return
+        
     query = update.callback_query
     await query.answer()
 
@@ -1760,6 +1785,9 @@ async def my_orders(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    if await check_banned(update):
+        return
+        
     query = update.callback_query
     await query.answer()
 
@@ -1827,6 +1855,9 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def how_to_use(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    if await check_banned(update):
+        return
+        
     query = update.callback_query
     await query.answer()
 
@@ -1896,6 +1927,9 @@ async def how_to_use(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    if await check_banned(update):
+        return
+        
     query = update.callback_query
     await query.answer()
 
@@ -1969,6 +2003,9 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def refer_earn(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    if await check_banned(update):
+        return
+    
     query = update.callback_query
     await query.answer()
 
@@ -2680,7 +2717,47 @@ async def unban_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="HTML",
         reply_markup=owner_panel_keyboard()
     )
-    
+
+# =========================================
+# CHECK BANNED USER
+# =========================================
+
+async def check_banned(update):
+
+    user_id = update.effective_user.id
+
+    if user_id in BANNED_USERS:
+
+        text = (
+            "╔════════════════════╗\n"
+            "  🚫 𝗔𝗖𝗖𝗢𝗨𝗡𝗧 𝗕𝗔𝗡𝗡𝗘𝗗 🚫\n"
+            "╚════════════════════╝\n\n"
+
+            "🈲 <b>Your Access Has Been Removed</b>\n\n"
+
+            "⚠️ <b>You Cannot Use This Bot</b>\n\n"
+
+            "🧝🏻‍♀️ <b>Contact Owner For Unban</b>"
+        )
+
+        if update.callback_query:
+
+            await update.callback_query.message.edit_text(
+                text=text,
+                parse_mode="HTML"
+            )
+
+        elif update.message:
+
+            await update.message.reply_text(
+                text=text,
+                parse_mode="HTML"
+            )
+
+        return True
+
+    return False
+
 # =========================================
 # BAN COMMAND
 # =========================================
@@ -2691,9 +2768,11 @@ async def ban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if not context.args:
+
         await update.message.reply_text(
             "Usage:\n/ban USER_ID"
         )
+
         return
 
     user_id = int(context.args[0])
@@ -2703,6 +2782,30 @@ async def ban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         f"🚫 User {user_id} banned successfully."
     )
+
+    # AUTO MESSAGE TO BANNED USER
+    try:
+
+        text = (
+            "╔════════════════════╗\n"
+            "  🚫 𝗔𝗖𝗖𝗢𝗨𝗡𝗧 𝗕𝗔𝗡𝗡𝗘𝗗 🚫\n"
+            "╚════════════════════╝\n\n"
+
+            "🈲 <b>Your Access Has Been Removed</b>\n\n"
+
+            "⚠️ <b>You Cannot Use This Bot</b>\n\n"
+
+            "🧝🏻‍♀️ <b>Contact Owner For Unban</b>"
+        )
+
+        await context.bot.send_message(
+            chat_id=user_id,
+            text=text,
+            parse_mode="HTML"
+        )
+
+    except:
+        pass
 
 # =========================================
 # UNBAN COMMAND
@@ -2714,9 +2817,11 @@ async def unban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if not context.args:
+
         await update.message.reply_text(
             "Usage:\n/unban USER_ID"
         )
+
         return
 
     user_id = int(context.args[0])
@@ -2727,6 +2832,30 @@ async def unban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"🈲 User {user_id} unbanned successfully."
     )
 
+    # AUTO MESSAGE
+    try:
+
+        text = (
+            "╔════════════════════╗\n"
+            " 🌈 𝗔𝗖𝗖𝗢𝗨𝗡𝗧 𝗨𝗡𝗕𝗔𝗡𝗡𝗘𝗗 🌈\n"
+            "╚════════════════════╝\n\n"
+
+            "✨ <b>Your Access Has Been Restored</b>\n\n"
+
+            "🧝🏻‍♀️ <b>You Can Use Bot Again</b>\n\n"
+
+            "⚡ <b>Welcome Back Buddy</b>"
+        )
+
+        await context.bot.send_message(
+            chat_id=user_id,
+            text=text,
+            parse_mode="HTML"
+        )
+
+    except:
+        pass
+        
 # =========================================
 # MAIN
 # =========================================

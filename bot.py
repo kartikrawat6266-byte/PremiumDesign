@@ -1616,29 +1616,29 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
         " 🧝🏻‍♀️ 🆈🅾🆄🆁 🅿🆁🅾🅵🅸🅻🅴 🧚🏻\n"
         "╚══════════════════╝\n\n"
 
-       f"🙆🏻‍♂️ ***𝗡𝗮𝗺𝗘 :*** _{user_data['name']}_\n"
-       f"🥇 ***𝗨𝘀𝗘𝗿𝗻𝗮𝗺𝗘 :*** _{username}_\n"
-       f"🧾 ***𝗨𝘀𝗘𝗿 𝗜𝗗 :*** _`{user_id}`_\n\n"
+        f"🙆🏻‍♂️ <b>𝗡𝗮𝗺𝗘 :</b> <i>{user_data['name']}</i>\n"
+        f"🥇 <b>𝗨𝘀𝗘𝗿𝗻𝗮𝗺𝗘 :</b> <i>{username}</i>\n"
+        f"🧾 <b>𝗨𝘀𝗘𝗿 𝗜𝗗 :</b> <code>{user_id}</code>\n\n"
 
         "╔══════════════════╗\n"
         " 💸 🆈🅾🆄🆁 🆂🆃🅰🆃🆄🆂 📦\n"
         "╚══════════════════╝\n\n"
 
-       f"🗳️ ***𝗧𝗼𝘁𝗮𝗹 𝗢𝗿𝗱𝗘𝗿𝘀 :*** _{user_data['total_orders']}_\n"
-       f"📩 ***𝗥𝗘𝗳𝗘𝗿𝗿𝗮𝗹 𝗘𝗮𝗿𝗻𝗶𝗻𝗴𝘀 :*** _₹{user_data['referral_earnings']:.2f}_\n"
-       f"🧙🏻‍♂️ ***𝗧𝗼𝘁𝗮𝗹 𝗥𝗘𝗳𝗘𝗿𝘀 :*** _{user_data['total_refers']}_\n\n"
+        f"🗳️ <b>𝗧𝗼𝘁𝗮𝗹 𝗢𝗿𝗱𝗘𝗿𝘀 :</b> <i>{user_data['total_orders']}</i>\n"
+        f"📩 <b>𝗥𝗘𝗳𝗘𝗿𝗿𝗮𝗹 𝗘𝗮𝗿𝗻𝗶𝗻𝗴𝘀 :</b> <i>₹{user_data['referral_earnings']:.2f}</i>\n"
+        f"🧙🏻‍♂️ <b>𝗧𝗼𝘁𝗮𝗹 𝗥𝗘𝗳𝗘𝗿𝘀 :</b> <i>{user_data['total_refers']}</i>\n\n"
 
         "╔══════════════════╗\n"
         " ⏰ 🅰🅲🆃🅸🆅🅸🆃🆈 🆃🅸🅼🅴 🪩\n"
         "╚══════════════════╝\n\n"
 
-       f"📅 ***𝗝𝗼𝗶𝗻𝗘𝗱 :*** _{user_data['joined']}_\n"
-       f"🪄 ***𝗟𝗮𝘀𝘁 𝗔𝗰𝘁𝗶𝘃𝗶𝘁𝘆 :*** _{user_data['last_activity']}_"
+        f"📅 <b>𝗝𝗼𝗶𝗻𝗘𝗱 :</b> <i>{user_data['joined']}</i>\n"
+        f"🪄 <b>𝗟𝗮𝘀𝘁 𝗔𝗰𝘁𝗶𝘃𝗶𝘁𝘆 :</b> <i>{user_data['last_activity']}</i>"
     )
 
     await query.message.edit_text(
         text=text,
-        parse_mode="Markdown",
+        parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup([
 
             [

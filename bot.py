@@ -26,6 +26,8 @@ from telegram.ext import (
     CommandHandler,
     CallbackQueryHandler,
     ContextTypes,
+    MessageHandler,
+    filters
 )
 
 # =========================================
@@ -2145,7 +2147,81 @@ async def claim_free_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         ])
     )    
-    
+
+# =========================================
+# OWNER PANEL
+# =========================================
+
+async def owner_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    user_id = str(update.effective_user.id)
+
+    if user_id != str(OWNER_ID):
+        return
+
+    keyboard = ReplyKeyboardMarkup(
+        [
+            ["📜 NEW USERS HISTORY"],
+            ["🏚️ BACK TO MENU"]
+        ],
+        resize_keyboard=True
+    )
+
+    await update.message.reply_text(
+        "⚙️ OWNER PANEL OPENED",
+        reply_markup=keyboard
+    )
+
+# =========================================
+# NEW USERS HISTORY
+# =========================================
+
+async def new_users_history(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    user_id = str(update.effective_user.id)
+
+    if user_id != str(OWNER_ID):
+        return
+
+    data = load_data()
+
+    text = "📜 ALL USERS HISTORY\n\n"
+
+    count = 0
+
+    for uid, user in data.items():
+
+        count += 1
+
+        text += (
+            f"👤 USER {count}\n\n"
+
+            f"🙆🏻‍♂️ Name : {user.get('name', 'Unknown')}\n"
+
+            f"🧾 User ID : {uid}\n"
+
+            f"🌐 Username : @{user.get('username', 'None')}\n"
+
+            f"📅 Joined : {user.get('joined', 'Unknown')}\n"
+
+            f"🧚🏻 Last Seen : {user.get('last_activity', 'Unknown')}\n"
+
+            f"🎯 Last Click : {user.get('last_button', 'None')}\n"
+
+            f"🛒 Orders : {user.get('total_orders', 0)}\n"
+
+            f"💸 Referral Earnings : ₹{user.get('referral_earnings', 0)}\n"
+
+            f"👥 Total Refers : {user.get('total_refers', 0)}\n\n"
+
+            "━━━━━━━━━━━━━━━━━━\n\n"
+        )
+
+    if count == 0:
+        text = "❌ No Users Found"
+
+    await update.message.reply_text(text)
+
 # =========================================
 # MAIN
 # =========================================
@@ -2156,6 +2232,16 @@ def main():
 
     app.add_handler(CommandHandler("start", start))
 
+    app.add_handler(MessageHandler(
+        filters.TEXT & filters.Regex("^⚙️ OWNER PANEL$"),
+        owner_panel
+    ))
+
+    app.add_handler(MessageHandler(
+        filters.TEXT & filters.Regex("^📜 NEW USERS HISTORY$"),
+        new_users_history
+    ))
+    
     app.add_handler(
         CallbackQueryHandler(
             main_menu_callback,

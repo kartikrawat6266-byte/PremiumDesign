@@ -213,7 +213,7 @@ def main_menu_keyboard():
 
         [
             InlineKeyboardButton(
-                "🗳️ PREMIUM SHOP 🛒",
+                "🗳️ ALL GAMES HACKS FF 🛒",
                 callback_data="shop_now"
             )
         ],

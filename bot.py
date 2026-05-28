@@ -272,12 +272,15 @@ def main_menu_keyboard(user_id=None):
 # =========================================
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    # BAN CHECK
     if update.effective_user.id in BANNED_USERS:
 
-    await update.message.reply_text(
-        "🚫 You Are Banned From Using This Bot."
-    )
-    return
+        await update.message.reply_text(
+            "🚫 You Are Banned From Using This Bot."
+        )
+        return
+
     user_id = str(update.effective_user.id)
 
     data = load_data()

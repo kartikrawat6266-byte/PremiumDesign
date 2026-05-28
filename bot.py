@@ -413,12 +413,29 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "*Option Below..* 🛍️"
     )
 
-    await update.message.reply_text(
-        text=text,
-        parse_mode="Markdown",
-        reply_markup=main_menu_keyboard()
-    )
+    # OWNER BUTTON
+    if owner_keyboard:
 
+        await update.message.reply_text(
+            text=text,
+            parse_mode="Markdown",
+            reply_markup=owner_keyboard
+        )
+
+        await update.message.reply_text(
+            "🧚🏻 Main Menu",
+            reply_markup=main_menu_keyboard()
+        )
+
+    # NORMAL USER
+    else:
+
+        await update.message.reply_text(
+            text=text,
+            parse_mode="Markdown",
+            reply_markup=main_menu_keyboard()
+        )
+    
 # =========================================
 # MAIN MENU
 # =========================================

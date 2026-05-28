@@ -905,8 +905,17 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # USER CHECKING MESSAGE
         checking_msg = await context.bot.send_message(
             chat_id=user_id,
-            text="🔍 Checking Your Payment Please Wait..."
-        )
+            text=(
+               "╔════════════════════╗\n"
+               " 🧚🏻 𝗖𝗛𝗘𝗖𝗞𝗜𝗡𝗚 𝗣𝗔𝗬𝗠𝗘𝗡𝗧 🪩\n"
+               "╚════════════════════╝\n\n"
+
+               "🔍 <b>𝗣𝗟𝗘𝗔𝗦𝗘 𝗪𝗔𝗜𝗧...</b>\n\n"
+
+               "⚡ <b>𝗬𝗼𝘂𝗿 𝗣𝗮𝘆𝗺𝗲𝗻𝘁 𝗜𝘀 𝗕𝗲𝗶𝗻𝗴</b>\n"
+               "<b>𝗩𝗲𝗿𝗶𝗳𝗶𝗲𝗱 𝗕𝘆 𝗢𝘂𝗿 𝗦𝘆𝘀𝘁𝗲𝗺.</b>"
+        ),
+        parse_mode="HTML"
 
         # AUTO DELETE AFTER 15 SEC
         asyncio.create_task(

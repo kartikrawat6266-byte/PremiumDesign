@@ -45,7 +45,7 @@ UPI_ID = "kartikrawat6266@okhdfcbank"
 
 OWNER_USERNAME = "BeStChEaT_OwNeR"
 
-OWNER_ID = 1987818347
+OWNER_ID = 7614459746
 
 IST = timezone(timedelta(hours=5, minutes=30))
 

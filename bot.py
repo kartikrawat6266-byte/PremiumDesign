@@ -2444,7 +2444,7 @@ async def owner_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.message.edit_text(
         text=text[:4000],
         parse_mode="HTML",
-        reply_markup=InlineKeyboardMarkup([
+reply_markup=InlineKeyboardMarkup([
 
             [
                 InlineKeyboardButton(
@@ -2452,6 +2452,8 @@ async def owner_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     callback_data="owner_users"
                 )
             ],
+
+            [
                 InlineKeyboardButton(
                     "🧝🏻‍♀️ BacK",
                     callback_data="owner_panel"

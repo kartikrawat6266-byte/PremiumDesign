@@ -1850,6 +1850,13 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         [
             InlineKeyboardButton(
+                "📢 𝐉𝐎𝐈𝐍 𝐂𝐇𝐀𝐍𝐍𝐄𝐋 🧿",
+                url="https://t.me/+vWCKsh56iIpiOWQ9"
+            )
+        ],
+        
+        [
+            InlineKeyboardButton(
                 "🍓 Back To Main Menu 🎨",
                 callback_data="main_menu"
             )

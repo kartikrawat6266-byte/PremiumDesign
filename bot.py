@@ -2285,7 +2285,7 @@ async def owner_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if user_data.get("last_activity"):
             active_users += 1
 
-    text = (
+text = (
         "╔════════════════════╗\n"
         " 📊 <b>BoT LiVe StaTuS</b>\n"
         "╚════════════════════╝\n\n"
@@ -2303,10 +2303,15 @@ async def owner_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "🍓 <b>Bot Status :</b> <code>ONLINE</code>"
     )
 
-    await query.message.edit_text(
+await query.message.edit_text(
         text=text,
         parse_mode="HTML",
-        reply_markup=owner_panel_keyboard()
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton("🧝🏻‍♀️ Back", callback_data="owner_panel"),
+                InlineKeyboardButton("🌈 Main Menu", callback_data="main_menu")
+            ]
+        ])
     )
     
 async def owner_pending(update: Update, context: ContextTypes.DEFAULT_TYPE):

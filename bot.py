@@ -411,7 +411,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "*Option Below..* 🛍️"
     )
 
-    keyboard = main_menu_keyboard().inline_keyboard
+    keyboard = list(main_menu_keyboard().inline_keyboard)
 
     if is_owner(user_id):
         keyboard.append([

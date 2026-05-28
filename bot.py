@@ -2442,17 +2442,22 @@ async def owner_activity(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     data = load_data()
 
-    text = "🕒 RECENT ACTIVITY\n\n"
+    text = (
+        "<b>🅰🅲🆃🅸🆅🅸🆃🆈 🆃🅸🅼🅴</b>\n\n"
 
-    for uid, user in list(data.items())[-20:]:
+        f"🙆🏻‍♂️ <b>𝗡𝗮𝗺𝗘 :</b> <b>{user_data['name']}</b>\n"
+        f"🥇 <b>𝗨𝘀𝗘𝗿𝗻𝗮𝗺𝗘 :</b> <b>{username}</b>\n"
+        f"🧾 <b>𝗨𝘀𝗘𝗿 𝗜𝗗 :</b> <b><code>{user_id}</code></b>\n\n"
 
-        text += (
-            f"👤 {user.get('name', 'Unknown')}\n"
-            f"🆔 {uid}\n"
-            f"🔘 {user.get('last_button', 'None')}\n"
-            f"🕒 {user.get('last_activity', 'Unknown')}\n\n"
-        )
+        f"📅 <b>𝗝𝗼𝗶𝗻𝗘𝗱 :</b> <b>{user_data['joined']}</b>\n\n"
 
+        f"🧙🏻‍♂️ <b>𝗟-𝗦𝗲𝗲𝗡 :</b> "
+        f"<b>{user_data.get('last_activity', 'Unknown')}</b>\n\n"
+
+        f"🧝🏻‍♀️ <b>𝗥𝗲𝗖𝗲𝗻𝘁 𝗖𝗹𝗶𝗰𝗞 :</b> "
+        f"<b>{user_data.get('last_button', 'None')}</b>"
+    )
+    
     await query.message.edit_text(
         text=text[:4000],
         reply_markup=owner_panel_keyboard()

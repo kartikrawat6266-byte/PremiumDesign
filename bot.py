@@ -2497,6 +2497,13 @@ async def owner_activity(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             [
                 InlineKeyboardButton(
+                    "🛡️ UpDaTe 📜",
+                    callback_data="owner_activity"
+                )
+            ],
+            
+            [
+                InlineKeyboardButton(
                     "🧝🏻‍♀️ BacK",
                     callback_data="owner_panel"
                 ),

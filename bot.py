@@ -2258,12 +2258,12 @@ async def owner_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"💰 <b>TOTAL EARNINGS :</b> <code>₹{total_earnings}</code>\n\n"
 
         "<b>⚡ PREMIUM OWNER CONTROLS ACTIVE</b>"
-)
+    )
 
-await query.message.edit_text(
-    text=text,
-    parse_mode="HTML",
-    reply_markup=owner_panel_keyboard()
+    await query.message.edit_text(
+        text=text,
+        parse_mode="HTML",
+        reply_markup=owner_panel_keyboard()
     )
 
 async def owner_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):

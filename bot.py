@@ -1094,7 +1094,15 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "⚡ <b>𝗨𝘀𝗲𝗿 𝗣𝗮𝘆𝗺𝗲𝗻𝘁 𝗛𝗮𝘀</b>\n"
                 "<b>𝗕𝗲𝗲𝗻 𝗖𝗮𝗻𝗰𝗲𝗹𝗹𝗲𝗱.</b>"
             ),
-            parse_mode="HTML"
+            reply_markup=InlineKeyboardMarkup([
+
+                [
+                    InlineKeyboardButton(
+                        "🧚🏻 Go To Back Main Menu 🪩",
+                        callback_data="main_menu"
+                    )
+                ]
+            ])
         )
 
     except:

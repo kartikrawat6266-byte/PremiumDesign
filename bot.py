@@ -1705,16 +1705,14 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
         " 🅰🅲🆃🅸🆅🅸🆃🆈 🆃🅸🅼🅴\n"
         "╚══════════════════╝\n\n"
 
-        f"📅 <b>𝗝𝗼𝗶𝗻𝗘𝗱 :</b> <i>{user_data['joined']}</i>\n"
+        f"📅 <b>𝗝𝗼𝗶𝗻𝗘𝗱 :</b> <i>{user_data['joined']}</i>\n\n"
 
-        
-        f"🧙🏻‍♂️ <b>𝗟 𝗔𝗰𝘁𝗶𝘃𝗶𝘁𝘆 :</b> "
+        f"🧙🏻‍♂️ <b>𝗟𝗮𝗦𝘁 𝗦𝗲𝗲𝗡 :</b> "
         f"<i>{user_data.get('last_activity', 'Unknown')}</i>\n\n"
-        
-        f"🧝🏻‍♀️ <b>𝗟𝗮𝘀𝘁 𝗕𝘂𝘁𝘁𝗼𝗻 :</b> "
+
+        f"🧝🏻‍♀️ <b>𝗥𝗲𝗖𝗲𝗻𝘁 𝗖𝗹𝗶𝗰𝗞 :</b> "
         f"<i>{user_data.get('last_button', 'None')}</i>"
     )
-
     await query.message.edit_text(
         text=text,
         parse_mode="HTML",

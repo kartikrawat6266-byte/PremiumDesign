@@ -2432,6 +2432,10 @@ async def owner_verified(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=owner_panel_keyboard()
     )
 
+# =========================================
+# OWNER ACTIVITY
+# =========================================
+
 async def owner_activity(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
@@ -2442,27 +2446,68 @@ async def owner_activity(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     data = load_data()
 
-    text = (
-        "<b>🅰🅲🆃🅸🆅🅸🆃🆈 🆃🅸🅼🅴</b>\n\n"
+    text = ""
 
-        f"🙆🏻‍♂️ <b>𝗡𝗮𝗺𝗘 :</b> <b>{user_data['name']}</b>\n"
-        f"🥇 <b>𝗨𝘀𝗘𝗿𝗻𝗮𝗺𝗘 :</b> <b>{username}</b>\n"
-        f"🧾 <b>𝗨𝘀𝗘𝗿 𝗜𝗗 :</b> <b><code>{user_id}</code></b>\n\n"
+    if not data:
 
-        f"📅 <b>𝗝𝗼𝗶𝗻𝗘𝗱 :</b> <b>{user_data['joined']}</b>\n\n"
+        text = (
+            "❌ <b>𝗡𝗼 𝗨𝘀𝗲𝗿 𝗔𝗰𝘁𝗶𝘃𝗶𝘁𝘆 𝗙𝗼𝘂𝗻𝗱</b>"
+        )
 
-        f"🧙🏻‍♂️ <b>𝗟-𝗦𝗲𝗲𝗡 :</b> "
-        f"<b>{user_data.get('last_activity', 'Unknown')}</b>\n\n"
+    else:
 
-        f"🧝🏻‍♀️ <b>𝗥𝗲𝗖𝗲𝗻𝘁 𝗖𝗹𝗶𝗰𝗞 :</b> "
-        f"<b>{user_data.get('last_button', 'None')}</b>"
-    )
-    
+        for user_id, user_data in data.items():
+
+            username = user_data.get("username")
+
+            if username:
+                username = f"@{username}"
+            else:
+                username = "No Username"
+
+            text += (
+
+                "🅰🅲🆃🅸🆅🅸🆃🆈 🆃🅸🅼🅴\n\n"
+
+                f"🙆🏻‍♂️ <b>𝗡𝗮𝗺𝗘 :</b> "
+                f"<b>{user_data.get('name', 'Unknown')}</b>\n"
+
+                f"🥇 <b>𝗨𝘀𝗘𝗿𝗻𝗮𝗺𝗘 :</b> "
+                f"<b>{username}</b>\n"
+
+                f"🧾 <b>𝗨𝘀𝗘𝗿 𝗜𝗗 :</b> "
+                f"<b><code>{user_id}</code></b>\n\n"
+
+                f"📅 <b>𝗝𝗼𝗶𝗻𝗘𝗱 :</b> "
+                f"<b>{user_data.get('joined', 'Unknown')}</b>\n\n"
+
+                f"🧙🏻‍♂️ <b>𝗟-𝗦𝗲𝗲𝗡 :</b> "
+                f"<b>{user_data.get('last_activity', 'Unknown')}</b>\n\n"
+
+                f"🧝🏻‍♀️ <b>𝗥𝗲𝗖𝗲𝗻𝘁 𝗖𝗹𝗶𝗰𝗞 :</b> "
+                f"<b>{user_data.get('last_button', 'None')}</b>\n\n"
+
+                "━━━━━━━━━━━━━━━━━━\n\n"
+            )
+
     await query.message.edit_text(
         text=text[:4000],
-        reply_markup=owner_panel_keyboard()
-    )
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([
 
+            [
+                InlineKeyboardButton(
+                    "🧝🏻‍♀️ BacK",
+                    callback_data="owner_panel"
+                ),
+
+                InlineKeyboardButton(
+                    "🌈 MaiN MenU",
+                    callback_data="main_menu"
+                )
+            ]
+        ])
+    )
 # =========================================
 # BAN USER
 # =========================================

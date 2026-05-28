@@ -1044,9 +1044,10 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sent_msg = await context.bot.send_message(
         chat_id=user_id,
         text=(
-            "⚠️ Payment not received yet.\n"
-            "Please try again in a few seconds."
-        ),
+            "⚠️ *𝗣𝗔𝗬𝗠𝗘𝗡𝗧 𝗡𝗢𝗧 𝗥𝗘𝗖𝗘𝗜𝗩𝗘𝗗 𝗬𝗘𝗧*\n\n"
+            "🧚🏻 *𝗣𝗹𝗲𝗮𝘀𝗘 𝗧𝗿𝘆 𝗔𝗴𝗮𝗶𝗻*\n"
+            "*𝗜𝗻 𝗔 𝗙𝗲𝘄 𝗦𝗲𝗰𝗼𝗻𝗱𝘀.*"
+        ),),
         reply_markup=InlineKeyboardMarkup([
 
             [
@@ -1657,7 +1658,7 @@ async def how_to_use(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.message.edit_text(
         text=(
             "╔══════════════════════╗\n"
-            "     🈲 🅷🅾🆆 🆃🅾 🆄🆂🅴 🧚🏻\n"
+            "    🈲 🅷🅾🆆 🆃🅾 🆄🆂🅴 🧚🏻\n"
             "╚══════════════════════╝\n\n"
 
             "✨ *𝗪𝗲𝗹𝗰𝗼𝗺𝗘 𝗧𝗼 𝗕𝗲𝗦𝘁𝗖𝗵𝗲𝗮𝘁*\n"

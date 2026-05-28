@@ -272,7 +272,12 @@ def main_menu_keyboard(user_id=None):
 # =========================================
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id in BANNED_USERS:
 
+    await update.message.reply_text(
+        "🚫 You Are Banned From Using This Bot."
+    )
+    return
     user_id = str(update.effective_user.id)
 
     data = load_data()
@@ -2193,22 +2198,26 @@ def owner_panel_keyboard():
     return InlineKeyboardMarkup([
 
         [
-            InlineKeyboardButton("📊 Stats", callback_data="owner_stats"),
-            InlineKeyboardButton("👥 Users", callback_data="owner_users")
+            InlineKeyboardButton("📊 Status", callback_data="owner_stats"),
+            InlineKeyboardButton("🧝🏻‍♀️ Users", callback_data="owner_users")
         ],
 
         [
-            InlineKeyboardButton("💳 Pending", callback_data="owner_pending"),
-            InlineKeyboardButton("✅ Verified", callback_data="owner_verified")
+            InlineKeyboardButton("🛒 Pending", callback_data="owner_pending"),
+            InlineKeyboardButton("🌈 Verified", callback_data="owner_verified")
         ],
 
         [
-            InlineKeyboardButton("🕒 Activity", callback_data="owner_activity"),
-            InlineKeyboardButton("🚫 Ban System", callback_data="owner_ban")
+            InlineKeyboardButton("🕹️ Activity", callback_data="owner_activity"),            
         ],
 
         [
-            InlineKeyboardButton("🏠 Main Menu", callback_data="main_menu")
+           InlineKeyboardButton("🚫 Ban User", callback_data="ban_user"),
+           InlineKeyboardButton("🕹️ Unban User", callback_data="unban_user")
+        ],
+
+        [
+            InlineKeyboardButton("🎨 Main Menu", callback_data="main_menu")
         ]
     ])
 
@@ -2446,7 +2455,11 @@ async def owner_activity(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=owner_panel_keyboard()
     )
 
-async def owner_ban(update: Update, context: ContextTypes.DEFAULT_TYPE):
+# =========================================
+# BAN USER
+# =========================================
+
+async def ban_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
     await query.answer()
@@ -2454,14 +2467,99 @@ async def owner_ban(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not is_owner(query.from_user.id):
         return
 
+    text = (
+        "╔════════════════════╗\n"
+        "   🚫 BAN USER SYSTEM\n"
+        "╚════════════════════╝\n\n"
+
+        "🧚🏻 Reply Command Format:\n\n"
+
+        "/ban USER_ID\n\n"
+
+        "Example:\n"
+        "/ban 123456789"
+    )
+
     await query.message.edit_text(
-        text=(
-            "🚫 BAN SYSTEM READY\n\n"
-            "Use code edit later for manual user ban/unban."
-        ),
+        text=text,
         reply_markup=owner_panel_keyboard()
     )
 
+# =========================================
+# UNBAN USER
+# =========================================
+
+async def unban_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    if not is_owner(query.from_user.id):
+        return
+
+    text = (
+        "╔════════════════════╗\n"
+        "  ✅ UNBAN USER SYSTEM\n"
+        "╚════════════════════╝\n\n"
+
+        "🧚🏻 Reply Command Format:\n\n"
+
+        "/unban USER_ID\n\n"
+
+        "Example:\n"
+        "/unban 123456789"
+    )
+
+    await query.message.edit_text(
+        text=text,
+        reply_markup=owner_panel_keyboard()
+    )
+
+# =========================================
+# BAN COMMAND
+# =========================================
+
+async def ban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    if update.effective_user.id != OWNER_ID:
+        return
+
+    if not context.args:
+        await update.message.reply_text(
+            "Usage:\n/ban USER_ID"
+        )
+        return
+
+    user_id = int(context.args[0])
+
+    BANNED_USERS.add(user_id)
+
+    await update.message.reply_text(
+        f"🚫 User {user_id} banned successfully."
+    )
+
+# =========================================
+# UNBAN COMMAND
+# =========================================
+
+async def unban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    if update.effective_user.id != OWNER_ID:
+        return
+
+    if not context.args:
+        await update.message.reply_text(
+            "Usage:\n/unban USER_ID"
+        )
+        return
+
+    user_id = int(context.args[0])
+
+    BANNED_USERS.discard(user_id)
+
+    await update.message.reply_text(
+        f"🈲 User {user_id} unbanned successfully."
+    )
 
 # =========================================
 # MAIN
@@ -2593,6 +2691,34 @@ def main():
         )
     )
 
+    app.add_handler(
+        CallbackQueryHandler(
+            ban_user,
+            pattern="^ban_user$"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            unban_user,
+            pattern="^unban_user$"
+        )
+    )
+
+    app.add_handler(
+        CommandHandler(
+            "ban",
+            ban_command
+        )
+    )
+
+    app.add_handler(
+        CommandHandler(
+            "unban",
+            unban_command
+         )
+    )
+    
     app.add_handler(
         CallbackQueryHandler(
             owner_users,

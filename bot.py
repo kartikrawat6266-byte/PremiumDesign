@@ -2472,21 +2472,23 @@ async def ban_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = (
         "╔════════════════════╗\n"
-        "   🚫 BAN USER SYSTEM\n"
+        "   🚫 <b>BAN USER SYSTEM</b>\n"
         "╚════════════════════╝\n\n"
 
-        "🧚🏻 Reply Command Format:\n\n"
+        "🧝🏻‍♀️ <b>REPLY COMMAND FORMAT:</b>\n\n"
 
-        "/ban USER_ID\n\n"
+        "<code>/ban USER_ID</code>\n\n"
 
-        "Example:\n"
-        "/ban 123456789"
+        "<b>EXAMPLE:</b>\n"
+        "<code>/ban 123456789</code>"
     )
 
     await query.message.edit_text(
         text=text,
+        parse_mode="HTML",
         reply_markup=owner_panel_keyboard()
     )
+
 
 # =========================================
 # UNBAN USER
@@ -2502,22 +2504,23 @@ async def unban_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = (
         "╔════════════════════╗\n"
-        "  ✅ UNBAN USER SYSTEM\n"
+        "  🧚🏻 <b>UNBAN USER SYSTEM</b>\n"
         "╚════════════════════╝\n\n"
 
-        "🧚🏻 Reply Command Format:\n\n"
+        "🧚🏻 <b>REPLY COMMAND FORMAT:</b>\n\n"
 
-        "/unban USER_ID\n\n"
+        "<code>/unban USER_ID</code>\n\n"
 
-        "Example:\n"
-        "/unban 123456789"
+        "<b>EXAMPLE:</b>\n"
+        "<code>/unban 123456789</code>"
     )
 
     await query.message.edit_text(
         text=text,
+        parse_mode="HTML",
         reply_markup=owner_panel_keyboard()
     )
-
+    
 # =========================================
 # BAN COMMAND
 # =========================================

@@ -1656,27 +1656,60 @@ async def how_to_use(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.message.edit_text(
         text=(
-            "📖 *HOW TO BUY PREMIUM*\n\n"
+            "╔══════════════════════╗\n"
+            "     🈲 🅷🅾🆆 🆃🅾 🆄🆂🅴 🧚🏻\n"
+            "╚══════════════════════╝\n\n"
 
-            "1️⃣ Click Premium Shop\n"
-            "2️⃣ Select Your Product\n"
-            "3️⃣ Select Plan\n"
-            "4️⃣ Scan QR & Pay\n"
-            "5️⃣ Click Verify Payment\n"
-            "6️⃣ Receive Key 🚀"
+            "✨ *𝗪𝗲𝗹𝗰𝗼𝗺𝗘 𝗧𝗼 𝗕𝗲𝗦𝘁𝗖𝗵𝗲𝗮𝘁*\n"
+            "*𝗣𝗿𝗘𝗺𝗶𝘂𝗺 𝗦𝘁𝗼𝗿𝗘* ✨\n\n"
+
+            "🧚🏻 *𝗙𝗼𝗹𝗹𝗼𝘄 𝗔𝗹𝗹 𝗦𝘁𝗲𝗽𝘀*\n"
+            "*𝗖𝗮𝗿𝗘𝗳𝘂𝗹𝗹𝘆 𝗧𝗼 𝗚𝗲𝘁*\n"
+            "*𝗬𝗼𝘂𝗿 𝗣𝗿𝗘𝗺𝗶𝘂𝗺 𝗞𝗘𝘆*\n\n"
+
+            "━━━━━━━━━━━━━━━━━━\n\n"
+
+            "1️⃣ *𝗖𝗹𝗶𝗰𝗸 𝗢𝗻*\n"
+            "🛒 *𝗣𝗥𝗘𝗠𝗜𝗨𝗠 𝗦𝗛𝗢𝗣*\n\n"
+
+            "2️⃣ *𝗦𝗘𝗹𝗘𝗰𝘁 𝗬𝗼𝘂𝗿*\n"
+            "🎮 *𝗙𝗮𝘃𝗼𝗿𝗶𝘁𝗘 𝗚𝗮𝗺𝗘*\n\n"
+
+            "3️⃣ *𝗖𝗵𝗼𝗼𝘀𝗘 𝗬𝗼𝘂𝗿*\n"
+            "⏳ *𝗣𝗿𝗘𝗺𝗶𝘂𝗺 𝗣𝗹𝗮𝗻*\n\n"
+
+            "4️⃣ *𝗦𝗰𝗮𝗻 𝗧𝗵𝗘*\n"
+            "💸 *𝗣𝗔𝗬𝗠𝗘𝗡𝗧 𝗤𝗥*\n\n"
+
+            "5️⃣ *𝗖𝗼𝗺𝗽𝗹𝗘𝘁𝗘 𝗣𝗮𝘆𝗺𝗘𝗻𝘁*\n"
+            "*𝗔𝗻𝗱 𝗖𝗹𝗶𝗰𝗸*\n"
+            "🧚🏻 *𝗩𝗘𝗥𝗜𝗙𝗬 𝗣𝗔𝗬𝗠𝗘𝗡𝗧*\n\n"
+
+            "6️⃣ *𝗚𝗘𝘁 𝗬𝗼𝘂𝗿*\n"
+            "🔑 *𝗣𝗥𝗘𝗠𝗜𝗨𝗠 𝗞𝗘𝗬*\n"
+            "*𝗔𝗨𝗧𝗢𝗠𝗔𝗧𝗜𝗖𝗔𝗟𝗟𝗬*\n\n"
+
+            "━━━━━━━━━━━━━━━━━━\n\n"
+
+            "🎨 *𝗙𝗮𝘀𝘁 𝗗𝗘𝗹𝗶𝘃𝗘𝗿𝘆*\n"
+            "🛡️ *𝗦𝗮𝗳𝗘 & 𝗧𝗿𝘂𝘀𝘁𝗘𝗱*\n"
+            "🚀 *𝗣𝗥𝗘𝗠𝗜𝗨𝗠 𝗦𝗘𝗥𝗩𝗜𝗖𝗘*\n\n"
+
+            "🔻 *𝗖𝗹𝗶𝗰𝗸 𝗕𝗮𝗰𝗸*\n"
+            "*𝗧𝗼 𝗖𝗼𝗻𝘁𝗶𝗻𝘂𝗘 𝗦𝗵𝗼𝗽𝗽𝗶𝗻𝗴*"
         ),
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup([
 
             [
                 InlineKeyboardButton(
-                    "⬅️ BACK TO MENU",
+                    "🪄 Go Back To Main Menu 🧝🏻‍♀️",
                     callback_data="main_menu"
                 )
             ]
         ])
     )
-
+    
 # =========================================
 # SUPPORT CENTER
 # =========================================

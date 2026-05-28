@@ -209,12 +209,13 @@ def update_user(user_id, updates=None):
 # =========================================
 
 def main_menu_keyboard(user_id=None):
+def main_menu_keyboard(user_id=None):
 
     keyboard = [
 
         [
             InlineKeyboardButton(
-                "🗳️ ALL GAMES HACKS FF 🛒",
+                "🕹️ ALL GAMES HACKS FF 🛒",
                 callback_data="shop_now"
             )
         ],
@@ -223,8 +224,10 @@ def main_menu_keyboard(user_id=None):
             InlineKeyboardButton(
                 "🪩 MY ORDERS 📦",
                 callback_data="my_orders"
-            ),
+            )
+        ],
 
+        [
             InlineKeyboardButton(
                 "🎨 MY PROFILE 🙆🏻‍♂️",
                 callback_data="profile"
@@ -235,8 +238,10 @@ def main_menu_keyboard(user_id=None):
             InlineKeyboardButton(
                 "🌌 HOW TO USE 🈲",
                 callback_data="how_to_use"
-            ),
+            )
+        ],
 
+        [
             InlineKeyboardButton(
                 "📩 SUPPORT CENTER 📬",
                 callback_data="support"

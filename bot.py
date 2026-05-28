@@ -1181,6 +1181,39 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         pass
 
+# REMOVE FROM PENDING PAYMENTS
+    verify_orders = context.bot_data.get(
+        "verify_orders",
+        {}
+    )
+
+    if str(user_id) in verify_orders:
+
+        del verify_orders[
+            str(user_id)
+        ]
+
+    elif user_id in verify_orders:
+
+        del verify_orders[
+            user_id
+        ]
+
+    # REMOVE PENDING DELIVERY
+    data = load_data()
+
+    user_id_str = str(user_id)
+
+    if user_id_str in data:
+
+        if "pending_delivery" in data[user_id_str]:
+
+            del data[user_id_str][
+                "pending_delivery"
+            ]
+
+    save_data(data)
+    
     # USER MESSAGE
     sent_msg = await context.bot.send_message(
         chat_id=user_id,
@@ -2463,6 +2496,9 @@ async def owner_pending(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
                 "<b>🅿🅴🅽🅳🅸🅽🅶 🅿🅰🆈🅼🅴🅽🆃🆂</b>\n\n"
 
+                f"🥇 <b>𝗨𝗦𝗘𝗥𝗡𝗔𝗠𝗘 :</b> "
+                f"<b>@{user.get('username', 'No Username')}</b>\n\n"
+
                 f"🙆🏻‍♂️ <b>𝗨𝗦𝗘𝗥 𝗜𝗗 :</b> "
                 f"<b><code>{uid}</code></b>\n\n"
 
@@ -2531,6 +2567,9 @@ async def owner_verified(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text += (
 
                 "<b>🆅🅴🆁🅸🅵🅸🅴🅳 🅿🅰🆈🅼🅴🅽🆃🆂</b>\n\n"
+
+                f"🥇 <b>𝗨𝗦𝗘𝗥𝗡𝗔𝗠𝗘 :</b> "
+                f"<b>@{user.get('username', 'No Username')}</b>\n\n"
 
                 f"🙆🏻‍♂️ <b>𝗨𝗦𝗘𝗥 𝗜𝗗 :</b> "
                 f"<b><code>{uid}</code></b>\n\n"

@@ -1084,7 +1084,17 @@ async def cancel_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         await context.bot.send_message(
             chat_id=query.message.chat.id,
-            text="🍫 User Payment Cancelled Successfully"
+            text=(
+                "╔════════════════════╗\n"
+                " 🍫 𝗣𝗔𝗬𝗠𝗘𝗡𝗧 𝗖𝗔𝗡𝗖𝗘𝗟𝗟𝗘𝗗 🎭\n"
+                "╚════════════════════╝\n\n"
+
+                "❌ <b>𝗣𝗔𝗬𝗠𝗘𝗡𝗧 𝗖𝗔𝗡𝗖𝗘𝗟𝗟𝗘𝗗</b>\n\n"
+
+                "⚡ <b>𝗨𝘀𝗲𝗿 𝗣𝗮𝘆𝗺𝗲𝗻𝘁 𝗛𝗮𝘀</b>\n"
+                "<b>𝗕𝗲𝗲𝗻 𝗖𝗮𝗻𝗰𝗲𝗹𝗹𝗲𝗱.</b>"
+            ),
+            parse_mode="HTML"
         )
 
     except:
@@ -1253,9 +1263,16 @@ async def approve_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         verify_msg = await context.bot.send_message(
             chat_id=user_id,
             text=(
-                "🧚🏻 Payment Verified Successfully\n\n"
-                "Your key will be delivered shortly."
-            )
+                "╔════════════════════╗\n"
+                " 🧚🏻 𝗣𝗔𝗬𝗠𝗘𝗡𝗧 𝗩𝗘𝗥𝗜𝗙𝗜𝗘𝗗 🪩\n"
+                "╚════════════════════╝\n\n"
+
+                "✅ <b>𝗣𝗔𝗬𝗠𝗘𝗡𝗧 𝗩𝗘𝗥𝗜𝗙𝗜𝗘𝗗</b>\n\n"
+
+                "⚡ <b>𝗬𝗼𝘂𝗿 𝗞𝗲𝘆 𝗪𝗶𝗹𝗹 𝗕𝗲</b>\n"
+                "<b>𝗗𝗲𝗹𝗶𝘃𝗲𝗿𝗲𝗱 𝗦𝗵𝗼𝗿𝘁𝗹𝘆.</b>"
+            ),
+            parse_mode="HTML"
         )
 
         # AUTO DELETE AFTER 15 SEC
@@ -1535,7 +1552,17 @@ async def delivery_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         save_data(data_db)
 
         await query.message.edit_text(
-            "🍓 Key Delivered Successfully 🗳️"
+                    text=(
+                        "╔════════════════════╗\n"
+                        " 🍓 𝗞𝗘𝗬 𝗗𝗘𝗟𝗜𝗩𝗘𝗥𝗘𝗗 🗳️\n"
+                        "╚════════════════════╝\n\n"
+
+                        "🧝🏻‍♀️ <b>𝗞𝗘𝗬 𝗗𝗘𝗟𝗜𝗩𝗘𝗥𝗘𝗗</b>\n\n"
+
+                        "⚡ <b>𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗞𝗲𝘆 𝗛𝗮𝘀</b>\n"
+                        "<b>𝗕𝗲𝗲𝗻 𝗦𝗲𝗻𝘁 𝗧𝗼 𝗨𝘀𝗲𝗿.</b>"
+                    ),
+                    parse_mode="HTML"
         )
 
     except Exception as e:

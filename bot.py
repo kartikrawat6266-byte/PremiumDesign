@@ -2297,6 +2297,10 @@ async def owner_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if user_data.get("last_activity"):
             active_users += 1
 
+# =========================================
+# BOT LIVE STATUS
+# =========================================
+
 async def stats_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
@@ -2332,27 +2336,45 @@ async def stats_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             active_users += 1
 
     text = (
-        "╔════════════════════╗\n"
-        "   📊 <b>BoT LiVe StaTuS</b>\n"
-        "╚════════════════════╝\n\n"
 
-        f"🙆🏻‍♂️ <b>Total Users :</b> <code>{total_users}</code>\n\n"
+        "<b>🅱🅾🆃 🅻🅸🆅🅴 🆂🆃🅰🆃🆄🆂</b>\n\n"
 
-        f"🧝🏻‍♀️ <b>Active Users :</b> <code>{active_users}</code>\n\n"
+        f"🙆🏻‍♂️ <b>𝗧𝗼𝘁𝗮𝗹 𝗨𝘀𝗲𝗿𝘀 :</b> "
+        f"<code>{total_users}</code>\n\n"
 
-        f"🚫 <b>Blocked Users :</b> <code>{blocked_users}</code>\n\n"
+        f"🧝🏻‍♀️ <b>𝗔𝗰𝘁𝗶𝘃𝗲 𝗨𝘀𝗲𝗿𝘀 :</b> "
+        f"<code>{active_users}</code>\n\n"
 
-        f"👨‍💻 <b>Total Admins :</b> <code>{total_admins}</code>\n\n"
+        f"🚫 <b>𝗕𝗹𝗼𝗰𝗸𝗲𝗱 𝗨𝘀𝗲𝗿𝘀 :</b> "
+        f"<code>{blocked_users}</code>\n\n"
 
-        f"🗳️ <b>Total Deliveries :</b> <code>{total_deliveries}</code>\n\n"
+        f"👨‍💻 <b>𝗧𝗼𝘁𝗮𝗹 𝗔𝗱𝗺𝗶𝗻𝘀 :</b> "
+        f"<code>{total_admins}</code>\n\n"
 
-        "🍓 <b>Bot Status :</b> <code>ONLINE</code>"
+        f"🗳️ <b>𝗧𝗼𝘁𝗮𝗹 𝗗𝗲𝗹𝗶𝘃𝗲𝗿𝗶𝗲𝘀 :</b> "
+        f"<code>{total_deliveries}</code>\n\n"
+
+        "🍓 <b>𝗕𝗼𝘁 𝗦𝘁𝗮𝘁𝘂𝘀 :</b> "
+        "<code>ONLINE</code>"
     )
 
     await query.message.edit_text(
         text=text,
         parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup([
+
+            [
+                InlineKeyboardButton(
+                    "🈲 UpDaTe 📜",
+                    callback_data="owner_stats"
+                ),
+
+                InlineKeyboardButton(
+                    "🗑️ ClEaR DatA",
+                    callback_data="clear_stats"
+                )
+            ],
+
             [
                 InlineKeyboardButton(
                     "🧝🏻‍♀️ BacK",
@@ -2365,7 +2387,44 @@ async def stats_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
             ]
         ])
-    )    
+    )
+
+
+# =========================================
+# CLEAR STATS DATA
+# =========================================
+
+async def clear_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    if not is_owner(query.from_user.id):
+        return
+
+    data = load_data()
+
+    for uid in data:
+
+        data[uid]["orders"] = []
+        data[uid]["last_activity"] = "None"
+        data[uid]["last_button"] = "None"
+
+    save_data(data)
+
+    BANNED_USERS.clear()
+
+    await query.answer(
+        text="🗑️ Status Data Cleared Successfully 🧚🏻",
+        show_alert=True
+    )
+
+    await stats_callback(update, context)    
+    
+# =========================================
+# OWNER PENDING
+# =========================================
+
 async def owner_pending(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
@@ -2376,26 +2435,93 @@ async def owner_pending(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     verify_orders = context.bot_data.get("verify_orders", {})
 
-    text = "💳 PENDING PAYMENTS\n\n"
+    text = ""
 
     if not verify_orders:
-        text += "No pending payments."
+
+        text = (
+            "❌ <b>𝗡𝗼 𝗣𝗲𝗻𝗱𝗶𝗻𝗴 𝗣𝗮𝘆𝗺𝗲𝗻𝘁𝘀 𝗙𝗼𝘂𝗻𝗱</b>"
+        )
 
     else:
 
         for uid, order in verify_orders.items():
 
             text += (
-                f"👤 User : {uid}\n"
-                f"🎮 {order['game']}\n"
-                f"💰 ₹{order['amount']}\n"
-                f"🧾 {order['order_id']}\n\n"
+
+                "<b>🅿🅴🅽🅳🅸🅽🅶 🅿🅰🆈🅼🅴🅽🆃🆂</b>\n\n"
+
+                f"🙆🏻‍♂️ <b>𝗨𝗦𝗘𝗥 𝗜𝗗 :</b> "
+                f"<b><code>{uid}</code></b>\n\n"
+
+                f"🎮 <b>𝗚𝗔𝗠𝗘 :</b> "
+                f"<b>{order.get('game')}</b>\n\n"
+
+                f"💰 <b>𝗔𝗠𝗢𝗨𝗡𝗧 :</b> "
+                f"<b>₹{order.get('amount')}</b>\n\n"
+
+                f"🧾 <b>𝗢𝗥𝗗𝗘𝗥 𝗜𝗗 :</b>\n"
+                f"<code>{order.get('order_id')}</code>\n\n"
+
+                "━━━━━━━━━━━━━━━━━━\n\n"
             )
 
     await query.message.edit_text(
         text=text[:4000],
-        reply_markup=owner_panel_keyboard()
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([
+
+            [
+                InlineKeyboardButton(
+                    "🈲 UpDaTe 📜",
+                    callback_data="owner_pending"
+                ),
+
+                InlineKeyboardButton(
+                    "🗑️ ClEaR DatA",
+                    callback_data="clear_pending"
+                )
+            ],
+
+            [
+                InlineKeyboardButton(
+                    "🧝🏻‍♀️ BacK",
+                    callback_data="owner_panel"
+                ),
+
+                InlineKeyboardButton(
+                    "🌈 MaiN MenU",
+                    callback_data="main_menu"
+                )
+            ]
+        ])
     )
+
+
+# =========================================
+# CLEAR PENDING DATA
+# =========================================
+
+async def clear_pending(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    if not is_owner(query.from_user.id):
+        return
+
+    context.bot_data["verify_orders"] = {}
+
+    await query.answer(
+        text="🗑️ Pending Data Cleared Successfully 🧚🏻",
+        show_alert=True
+    )
+
+    await owner_pending(update, context)
+    
+# =========================================
+# OWNER VERIFIED
+# =========================================
 
 async def owner_verified(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
@@ -2407,7 +2533,7 @@ async def owner_verified(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     data = load_data()
 
-    text = "✅ VERIFIED PAYMENTS\n\n"
+    text = ""
 
     found = False
 
@@ -2418,19 +2544,88 @@ async def owner_verified(update: Update, context: ContextTypes.DEFAULT_TYPE):
             found = True
 
             text += (
-                f"👤 {uid}\n"
-                f"🎮 {order.get('game')}\n"
-                f"💰 ₹{order.get('amount')}\n"
-                f"🔑 {order.get('key')}\n\n"
-            )
 
+                "<b>🆅🅴🆁🅸🅵🅸🅴🅳 🅿🅰🆈🅼🅴🅽🆃🆂</b>\n\n"
+
+                f"🙆🏻‍♂️ <b>𝗨𝗦𝗘𝗥 𝗜𝗗 :</b> "
+                f"<b><code>{uid}</code></b>\n\n"
+
+                f"🎮 <b>𝗚𝗔𝗠𝗘 :</b> "
+                f"<b>{order.get('game')}</b>\n\n"
+
+                f"💰 <b>𝗔𝗠𝗢𝗨𝗡𝗧 :</b> "
+                f"<b>₹{order.get('amount')}</b>\n\n"
+
+                f"🔑 <b>𝗞𝗘𝗬 :</b>\n"
+                f"<code>{order.get('key')}</code>\n\n"
+
+                "━━━━━━━━━━━━━━━━━━\n\n"
+           )
+            
     if not found:
-        text += "No verified payments."
+
+        text = (
+            "❌ <b>𝗡𝗼 𝗩𝗲𝗿𝗶𝗳𝗶𝗲𝗱 𝗣𝗮𝘆𝗺𝗲𝗻𝘁𝘀 𝗙𝗼𝘂𝗻𝗱</b>"
+        )
 
     await query.message.edit_text(
         text=text[:4000],
-        reply_markup=owner_panel_keyboard()
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([
+
+            [
+                InlineKeyboardButton(
+                    "🈲 UpDaTe 🍫",
+                    callback_data="owner_verified"
+                ),
+
+                InlineKeyboardButton(
+                    "🗑️ ClEaR DatA",
+                    callback_data="clear_verified"
+                )
+            ],
+
+            [
+                InlineKeyboardButton(
+                    "🧝🏻‍♀️ BacK",
+                    callback_data="owner_panel"
+                ),
+
+                InlineKeyboardButton(
+                    "🌈 MaiN MenU",
+                    callback_data="main_menu"
+                )
+            ]
+        ])
     )
+
+
+# =========================================
+# CLEAR VERIFIED DATA
+# =========================================
+
+async def clear_verified(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    if not is_owner(query.from_user.id):
+        return
+
+    data = load_data()
+
+    for uid in data:
+
+        data[uid]["orders"] = []
+
+    save_data(data)
+
+    await query.answer(
+        text="🗑️ Verified Data Cleared Successfully 🧚🏻",
+        show_alert=True
+    )
+
+    await owner_verified(update, context)
 
 # =========================================
 # OWNER ACTIVITY
@@ -2499,6 +2694,11 @@ async def owner_activity(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InlineKeyboardButton(
                     "🛡️ UpDaTe 📜",
                     callback_data="owner_activity"
+                ),
+
+                InlineKeyboardButton(
+                    "🗑️ Clear Data",
+                    callback_data="clear_activity"
                 )
             ],
             
@@ -2515,6 +2715,36 @@ async def owner_activity(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         ])
     )
+
+
+# =========================================
+# CLEAR ACTIVITY DATA
+# =========================================
+
+async def clear_activity(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    if not is_owner(query.from_user.id):
+        return
+
+    data = load_data()
+
+    for user_id in data:
+
+        data[user_id]["last_activity"] = "Cleared"
+        data[user_id]["last_button"] = "Cleared"
+
+    save_data(data)
+
+    await query.answer(
+        text="🧝🏻‍♀️ Activity Data Cleared Successfully 🧚🏻",
+        show_alert=True
+    )
+
+    await owner_activity(update, context)
+    
 # =========================================
 # BAN USER
 # =========================================
@@ -2800,6 +3030,34 @@ def main():
         CallbackQueryHandler(
             owner_verified,
             pattern="^owner_verified$"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            clear_stats,
+            pattern="^clear_stats$"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            clear_pending,
+            pattern="^clear_pending$"
+        )
+    )
+    
+    app.add_handler(
+        CallbackQueryHandler(
+            clear_verified,
+            pattern="^clear_verified$"
+        )
+    )
+    
+    app.add_handler(
+        CallbackQueryHandler(
+            clear_activity,
+            pattern="^clear_activity$"
         )
     )
 

@@ -2260,47 +2260,54 @@ async def owner_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     data = load_data()
 
+    # TOTAL USERS
     total_users = len(data)
-    total_orders = 0
+
+    # ACTIVE USERS
+    active_users = 0
+
+    # BLOCKED USERS
+    blocked_users = len(BANNED_USERS)
+
+    # ADMINS
+    total_admins = 1
+
+    # DELIVERIES
+    total_deliveries = 0
 
     for user_data in data.values():
-        total_orders += user_data.get("total_orders", 0)
 
-    await query.message.edit_text(
-        text=(
-            "📊 BOT STATISTICS\n\n"
-            f"👥 Users : {total_users}\n"
-            f"📦 Orders : {total_orders}"
-        ),
-        reply_markup=owner_panel_keyboard()
+        orders = user_data.get("orders", [])
+
+        total_deliveries += len(orders)
+
+        if user_data.get("last_activity"):
+            active_users += 1
+
+    text = (
+        "╔════════════════════╗\n"
+        " 📊 <b>BoT LiVe StaTuS</b>\n"
+        "╚════════════════════╝\n\n"
+
+        f"🙆🏻‍♂️ <b>Total Users :</b> <code>{total_users}</code>\n\n"
+
+        f"🧝🏻‍♀️ <b>Active Users :</b> <code>{active_users}</code>\n\n"
+
+        f"🚫 <b>Blocked Users :</b> <code>{blocked_users}</code>\n\n"
+
+        f"👨‍💻 <b>Total Admins :</b> <code>{total_admins}</code>\n\n"
+
+        f"🗳️ <b>Total Deliveries :</b> <code>{total_deliveries}</code>\n\n"
+
+        "🍓 <b>Bot Status :</b> <code>ONLINE</code>"
     )
 
-async def owner_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    query = update.callback_query
-    await query.answer()
-
-    if not is_owner(query.from_user.id):
-        return
-
-    data = load_data()
-
-    text = "👥 USER DATABASE\n\n"
-
-    for uid, user in list(data.items())[:20]:
-
-        text += (
-            f"👤 {user.get('name', 'Unknown')}\n"
-            f"🆔 {uid}\n"
-            f"📦 Orders : {user.get('total_orders', 0)}\n"
-            f"🕒 {user.get('last_activity', 'Unknown')}\n\n"
-        )
-
     await query.message.edit_text(
-        text=text[:4000],
+        text=text,
+        parse_mode="HTML",
         reply_markup=owner_panel_keyboard()
     )
-
+    
 async def owner_pending(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query

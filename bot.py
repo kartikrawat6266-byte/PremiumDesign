@@ -2396,6 +2396,80 @@ async def owner_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
             active_users += 1
 
 # =========================================
+# OWNER USERS
+# =========================================
+
+async def owner_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    if not is_owner(query.from_user.id):
+        return
+
+    data = load_data()
+
+    text = ""
+
+    if not data:
+
+        text = (
+            "❌ <b>𝗡𝗼 𝗨𝘀𝗲𝗿𝘀 𝗙𝗼𝘂𝗻𝗱</b>"
+        )
+
+    else:
+
+        for uid, user_data in data.items():
+
+            username = user_data.get(
+                "username",
+                "No Username"
+            )
+
+            text += (
+
+                "<b>🆄🆂🅴🆁🆂 🅷🅸🆂🆃🅾🆁🆈</b>\n\n"
+
+                f"🥇 <b>𝗨𝗦𝗘𝗥𝗡𝗔𝗠𝗘 :</b> "
+                f"<b>@{username}</b>\n\n"
+
+                f"🙆🏻‍♂️ <b>𝗨𝗦𝗘𝗥 𝗜𝗗 :</b>\n"
+                f"<code>{uid}</code>\n\n"
+
+                f"👤 <b>𝗡𝗔𝗠𝗘 :</b> "
+                f"<b>{user_data.get('name', 'Unknown')}</b>\n\n"
+
+                f"📅 <b>𝗝𝗢𝗜𝗡𝗘𝗗 :</b>\n"
+                f"<b>{user_data.get('joined', 'Unknown')}</b>\n\n"
+
+                "━━━━━━━━━━━━━━━━━━\n\n"
+            )
+
+    await query.message.edit_text(
+        text=text[:4000],
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([
+
+            [
+                InlineKeyboardButton(
+                    "🈲 UpDaTe 📜",
+                    callback_data="owner_users"
+                ),
+
+                InlineKeyboardButton(
+                    "🧝🏻‍♀️ BacK",
+                    callback_data="owner_panel"
+                ),
+
+                InlineKeyboardButton(
+                    "🌈 MaiN MenU",
+                    callback_data="main_menu"
+                )
+            ]
+        ])
+    )
+    
+# =========================================
 # BOT LIVE STATUS
 # =========================================
 

@@ -2924,6 +2924,24 @@ async def ban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     BANNED_USERS.add(user_id)
 
+    # DELETE ALL OLD CHAT MESSAGES
+    try:
+
+        for msg_id in range(1, 1000):
+
+            try:
+
+                await context.bot.delete_message(
+                    chat_id=user_id,
+                    message_id=msg_id
+                )
+
+            except:
+                pass
+
+    except:
+        pass
+
     # OWNER MESSAGE
     await update.message.reply_text(
 

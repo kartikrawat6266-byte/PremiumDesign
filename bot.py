@@ -994,18 +994,32 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(
             chat_id=OWNER_ID,
             text=(
-                f"🧚🏻 New Payment Request 🪩\n\n"
+                "╔════════════════════╗\n"
+                " 🧚🏻 <b>𝗡𝗘𝗪 𝗣𝗔𝗬𝗠𝗘𝗡𝗧 𝗥𝗘𝗤𝗨𝗘𝗦𝗧</b> 🪩\n"
+                "╚════════════════════╝\n\n"
 
-                f"🎮 Game : {game}\n"
-                f"📦 Plan : {clean_plan}\n"
-                f"💵 Price : ₹{amount}\n"
-                f"🆔 Order ID : {order_id}\n\n"
+                f"🎮 <b>𝗚𝗔𝗠𝗘 :</b> "
+                f"<b>{game}</b>\n\n"
 
-                f"👤 User ID : {user_id}\n"
-                f"🌐 Username : {username_text}\n\n"
+                f"📦 <b>𝗣𝗟𝗔𝗡 :</b> "
+                f"<b>{clean_plan}</b>\n\n"
 
-                f"🕒 Verify Time : {verify_time}"
+                f"💵 <b>𝗣𝗥𝗜𝗖𝗘 :</b> "
+                f"<b>₹{amount}</b>\n\n"
+
+                f"🆔 <b>𝗢𝗥𝗗𝗘𝗥 𝗜𝗗 :</b>\n"
+                f"<code>{order_id}</code>\n\n"
+
+                f"👤 <b>𝗨𝗦𝗘𝗥 𝗜𝗗 :</b>\n"
+                f"<code>{user_id}</code>\n\n"
+
+                f"🌐 <b>𝗨𝗦𝗘𝗥𝗡𝗔𝗠𝗘 :</b> "
+                f"<b>{username_text}</b>\n\n"
+
+                f"🕒 <b>𝗩𝗘𝗥𝗜𝗙𝗬 𝗧𝗜𝗠𝗘 :</b>\n"
+                f"<b>{verify_time}</b>"
             ),
+            parse_mode="HTML",
             reply_markup=InlineKeyboardMarkup([
 
                 [
@@ -2576,7 +2590,7 @@ async def owner_verified(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "<b>🆅🅴🆁🅸🅵🅸🅴🅳 🅿🅰🆈🅼🅴🅽🆃🆂</b>\n\n"
 
                 f"🥇 <b>𝗨𝗦𝗘𝗥𝗡𝗔𝗠𝗘 :</b> "
-                f"<b>@{user.get('username', 'No Username')}</b>\n\n"
+                f"<b>@{order.get('username', 'No Username')}</b>\n\n"
 
                 f"🙆🏻‍♂️ <b>𝗨𝗦𝗘𝗥 𝗜𝗗 :</b> "
                 f"<b><code>{uid}</code></b>\n\n"

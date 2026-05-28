@@ -207,7 +207,7 @@ def update_user(user_id, updates=None):
 # KEYBOARD
 # =========================================
 
-def main_menu_keyboard():
+def main_menu_keyboard(user_id=None):
 
     keyboard = [
 
@@ -254,8 +254,18 @@ def main_menu_keyboard():
         ]
     ]
 
-    return InlineKeyboardMarkup(keyboard)
+    # OWNER BUTTON AUTO FIX
+    if user_id and int(user_id) == OWNER_ID:
 
+        keyboard.append([
+            InlineKeyboardButton(
+                "🧝🏻‍♀️ AuRa KaRtiK FaTheR 🈲",
+                callback_data="owner_panel"
+            )
+        ])
+
+    return InlineKeyboardMarkup(keyboard)
+    
 # =========================================
 # START
 # =========================================
@@ -469,7 +479,7 @@ async def main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
     await query.message.edit_text(
         text=text,
         parse_mode="Markdown",
-        reply_markup=main_menu_keyboard()
+        reply_markup=main_menu_keyboard(query.from_user.id)
     )
 
 # =========================================
@@ -1071,7 +1081,7 @@ async def cancel_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
         chat_id=query.message.chat.id,
         text=text,
         parse_mode="Markdown",
-        reply_markup=main_menu_keyboard()
+        reply_markup=main_menu_keyboard(query.from_user.id)
     )
     
 # =========================================

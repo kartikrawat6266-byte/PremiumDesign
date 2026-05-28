@@ -1686,7 +1686,7 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = (
         "╔══════════════════╗\n"
-        " 🧝🏻‍♀️ 🆈🅾🆄🆁 🅿🆁🅾🅵🅸🅻🅴 🧚🏻\n"
+        "  🆈🅾🆄🆁 🅿🆁🅾🅵🅸🅻🅴\n"
         "╚══════════════════╝\n\n"
 
         f"🙆🏻‍♂️ <b>𝗡𝗮𝗺𝗘 :</b> <i>{user_data['name']}</i>\n"
@@ -1694,7 +1694,7 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"🧾 <b>𝗨𝘀𝗘𝗿 𝗜𝗗 :</b> <code>{user_id}</code>\n\n"
 
         "╔══════════════════╗\n"
-        " 💸 🆈🅾🆄🆁 🆂🆃🅰🆃🆄🆂 📦\n"
+        "   🆈🅾🆄🆁 🆂🆃🅰🆃🆄🆂 \n"
         "╚══════════════════╝\n\n"
 
         f"🗳️ <b>𝗧𝗼𝘁𝗮𝗹 𝗢𝗿𝗱𝗘𝗿𝘀 :</b> <i>{user_data['total_orders']}</i>\n"
@@ -1702,7 +1702,7 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"🧙🏻‍♂️ <b>𝗧𝗼𝘁𝗮𝗹 𝗥𝗘𝗳𝗘𝗿𝘀 :</b> <i>{user_data['total_refers']}</i>\n\n"
 
         "╔══════════════════╗\n"
-        " ⏰ 🅰🅲🆃🅸🆅🅸🆃🆈 🆃🅸🅼🅴 🪩\n"
+        " 🅰🅲🆃🅸🆅🅸🆃🆈 🆃🅸🅼🅴\n"
         "╚══════════════════╝\n\n"
 
         f"📅 <b>𝗝𝗼𝗶𝗻𝗘𝗱 :</b> <i>{user_data['joined']}</i>\n"

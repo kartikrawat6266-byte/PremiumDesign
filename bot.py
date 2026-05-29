@@ -2430,27 +2430,39 @@ async def send_message_panel(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 ),
 
                 InlineKeyboardButton(
-                    "🅱️ Bold",
+                    "🧝🏻‍♀️ Bold 🧚🏻",
                     callback_data="msg_bold"
                 )
             ],
 
             [
                 InlineKeyboardButton(
-                    "✍️ Italic",
+                    "🌈 Italic 🎨",
                     callback_data="msg_italic"
                 ),
 
                 InlineKeyboardButton(
-                    "🔥 Bold + Italic",
+                    "🍫 Bold + Italic 🍓",
                     callback_data="msg_bolditalic"
                 )
             ],
 
             [
                 InlineKeyboardButton(
-                    "🌈 Premium",
+                    "🏚️ Premium 🧛🏻‍♂️",
                     callback_data="msg_premium"
+                )
+            ],
+
+            [
+                InlineKeyboardButton(
+                    "🧙🏻‍♂️ BacK 🪩",
+                    callback_data="owner_panel"
+                ),
+
+                InlineKeyboardButton(
+                    "🌈 MaiN MenU 🈲",
+                    callback_data="main_menu"
                 )
             ]
         ])

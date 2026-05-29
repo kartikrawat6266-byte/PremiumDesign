@@ -2630,23 +2630,6 @@ async def owner_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "━━━━━━━━━━━━━━━━━━\n\n"
             )
 
-            text += (
-
-                "<b>🆄🆂🅴🆁🆂 🅷🅸🆂🆃🅾🆁🆈</b>\n\n"
-
-                f"🥇 <b>𝗨𝘀𝗘𝗿𝗻𝗮𝗺𝗘 :</b> <i>{username}</i>\n"
-
-                f"🙆🏻‍♂️ <b>𝗨𝗦𝗘𝗥 𝗜𝗗 :</b>\n"
-                f"<code>{uid}</code>\n\n"
-
-                f"🙆🏻‍♂️ <b>𝗡𝗮𝗺𝗘 :</b> <i>{user_data['name']}</i>\n"
-
-                f"📅 <b>𝗝𝗢𝗜𝗡𝗘𝗗 :</b>\n"
-                f"<b>{user_data.get('joined', 'Unknown')}</b>\n\n"
-
-                "━━━━━━━━━━━━━━━━━━\n\n"
-            )
-
     await query.message.edit_text(
         text=text[:4000],
         parse_mode="HTML",

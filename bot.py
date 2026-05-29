@@ -2591,11 +2591,37 @@ async def owner_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     else:
 
-        for uid, user_data in data.items():
+for uid, user_data in data.items():
 
-            username = user_data.get(
-                "username",
-                "No Username"
+            username = user_data.get("username")
+
+            if username:
+                username = f"@{username}"
+            else:
+                username = "Not Set"
+
+            first_name = user_data.get("name")
+
+            if not first_name:
+                first_name = "Not Available"
+
+            text += (
+
+                "<b>🆄🆂🅴🆁🆂 🅷🅸🆂🆃🅾🆁🆈</b>\n\n"
+
+                f"🥇 <b>𝗨𝗦𝗘𝗥𝗡𝗔𝗠𝗘 :</b> "
+                f"<b>{username}</b>\n\n"
+
+                f"🙆🏻‍♂️ <b>𝗨𝗦𝗘𝗥 𝗜𝗗 :</b>\n"
+                f"<code>{uid}</code>\n\n"
+
+                f"👤 <b>𝗡𝗔𝗠𝗘 :</b> "
+                f"<b>{first_name}</b>\n\n"
+
+                f"📅 <b>𝗝𝗢𝗜𝗡𝗘𝗗 :</b>\n"
+                f"<b>{user_data.get('joined', 'Unknown')}</b>\n\n"
+
+                "━━━━━━━━━━━━━━━━━━\n\n"
             )
 
             text += (

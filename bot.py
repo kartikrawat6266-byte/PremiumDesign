@@ -2535,7 +2535,7 @@ async def broadcast_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         msg = (
             "╔════════════════════╗\n"
-            "  📢 <b> 𝗡𝗢𝗧𝗜𝗖𝗘 𝗕𝗢𝗔𝗥𝗗 </b>📢\n"
+            "    ⚠️ <b> 𝗡𝗢𝗧𝗜𝗖𝗘 𝗕𝗢𝗔𝗥𝗗 </b>🚫\n"
             "╚════════════════════╝\n\n"
 
             f"<b>{msg}</b>"
@@ -2562,7 +2562,7 @@ async def broadcast_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(
 
-          f"🌈 <b>𝗠𝗘𝗦𝗦𝗔𝗚𝗘 𝗦𝗘𝗡𝗧 𝗧𝗢 {success} 𝗨𝗦𝗘𝗥𝗦</b> 🈲",
+          f"🧚🏻 <b>𝗠𝗘𝗦𝗦𝗔𝗚𝗘 𝗦𝗘𝗡𝗧 𝗧𝗢 {success} 𝗨𝗦𝗘𝗥𝗦</b>",
 
         parse_mode="HTML"
     )

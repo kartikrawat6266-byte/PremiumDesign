@@ -2296,6 +2296,10 @@ def owner_panel_keyboard():
     return InlineKeyboardMarkup([
 
         [
+            InlineKeyboardButton("📩 SeNd MeSSaGe 🪩", callback_data="send_message_panel"),
+        ],
+            
+        [
             InlineKeyboardButton("📊 Status", callback_data="owner_stats"),
             InlineKeyboardButton("🧝🏻‍♀️ Users", callback_data="owner_users")
         ],
@@ -2395,6 +2399,156 @@ async def owner_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if user_data.get("last_activity"):
             active_users += 1
 
+# =========================================
+# SEND MESSAGE PANEL
+# =========================================
+
+async def send_message_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    text = (
+        "╔════════════════════╗\n"
+        " 📩 <b>𝗦𝗘𝗡𝗗 𝗠𝗘𝗦𝗦𝗔𝗚𝗘</b>\n"
+        "╚════════════════════╝\n\n"
+
+        "🎭 <b>Select Message Style</b>"
+    )
+
+    await query.message.edit_text(
+        text=text,
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([
+
+            [
+                InlineKeyboardButton(
+                    "📝 Normal",
+                    callback_data="msg_normal"
+                ),
+
+                InlineKeyboardButton(
+                    "🅱️ Bold",
+                    callback_data="msg_bold"
+                )
+            ],
+
+            [
+                InlineKeyboardButton(
+                    "✍️ Italic",
+                    callback_data="msg_italic"
+                ),
+
+                InlineKeyboardButton(
+                    "🔥 Bold + Italic",
+                    callback_data="msg_bolditalic"
+                )
+            ],
+
+            [
+                InlineKeyboardButton(
+                    "🌈 Premium",
+                    callback_data="msg_premium"
+                )
+            ]
+        ])
+    )
+
+# =========================================
+# SELECT MESSAGE STYLE
+# =========================================
+
+async def select_message_style(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    style = query.data.replace(
+        "msg_",
+        ""
+    )
+
+    context.user_data["broadcast_style"] = style
+
+    await query.message.reply_text(
+
+        "📝 Send Your Message Now\n\n"
+        "⚡ Selected Style Saved",
+
+        parse_mode="HTML"
+    )
+
+    context.user_data["waiting_broadcast"] = True
+
+# =========================================
+# BROADCAST MESSAGE
+# =========================================
+
+async def broadcast_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    if update.effective_user.id != OWNER_ID:
+        return
+
+    if not context.user_data.get("waiting_broadcast"):
+        return
+
+    context.user_data["waiting_broadcast"] = False
+
+    style = context.user_data.get(
+        "broadcast_style",
+        "normal"
+    )
+
+    msg = update.message.text
+
+    if style == "bold":
+
+        msg = f"<b>{msg}</b>"
+
+    elif style == "italic":
+
+        msg = f"<i>{msg}</i>"
+
+    elif style == "bolditalic":
+
+        msg = f"<b><i>{msg}</i></b>"
+
+    elif style == "premium":
+
+        msg = (
+            "╔════════════════════╗\n"
+            " 🌈 <b>𝗣𝗥𝗘𝗠𝗜𝗨𝗠 𝗠𝗘𝗦𝗦𝗔𝗚𝗘</b>\n"
+            "╚════════════════════╝\n\n"
+
+            f"<b>{msg}</b>"
+        )
+
+    data = load_data()
+
+    success = 0
+
+    for uid in data:
+
+        try:
+
+            await context.bot.send_message(
+                chat_id=int(uid),
+                text=msg,
+                parse_mode="HTML"
+            )
+
+            success += 1
+
+        except:
+            pass
+
+    await update.message.reply_text(
+
+        f"🌈 Message Sent To {success} Users 🈲",
+
+        parse_mode="HTML"
+    )
+    
 # =========================================
 # OWNER USERS
 # =========================================
@@ -3200,6 +3354,27 @@ def main():
             "unban",
             unban_command
          )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            send_message_panel,
+            pattern="^send_message_panel$"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            select_message_style,
+            pattern="^msg_"
+        )
+    )
+
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT & ~filters.COMMAND,
+            broadcast_message
+        )
     )
     
     app.add_handler(

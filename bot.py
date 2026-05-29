@@ -2536,7 +2536,7 @@ async def broadcast_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         msg = (
             "╔════════════════════╗\n"
             "   ⚠️ <b> 𝗡𝗢𝗧𝗜𝗖𝗘 𝗕𝗢𝗔𝗥𝗗 </b> 🚫\n"
-            "╚═\"╚════════════════════╝\\n\\n\"═══════════════════╝\n\n"
+            "╚════════════════════╝\n\n"
 
             f"<b>{msg}</b>"
         )

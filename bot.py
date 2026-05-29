@@ -2412,7 +2412,7 @@ async def send_message_panel(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     text = (
         "╔════════════════════╗\n"
-        " 📩 <b>𝗦𝗘𝗡𝗗 𝗠𝗘𝗦𝗦𝗔𝗚𝗘</b>\n"
+        "    📩 <b>𝗦𝗘𝗡𝗗 𝗠𝗘𝗦𝗦𝗔𝗚𝗘</b>\n"
         "╚════════════════════╝\n\n"
 
         "🎭 <b>Select Message Style</b>"
@@ -2425,7 +2425,7 @@ async def send_message_panel(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
             [
                 InlineKeyboardButton(
-                    "📝 Normal",
+                    "📝 Normal ❄️",
                     callback_data="msg_normal"
                 ),
 
@@ -2486,10 +2486,14 @@ async def select_message_style(update: Update, context: ContextTypes.DEFAULT_TYP
 
     await query.message.reply_text(
 
-        "📝 Send Your Message Now\n\n"
-        "⚡ Selected Style Saved",
+        "📝 <b>𝗦𝗘𝗡𝗗 𝗬𝗢𝗨𝗥 𝗠𝗘𝗦𝗦𝗔𝗚𝗘 𝗡𝗢𝗪</b>\n\n"
 
-        parse_mode="HTML"
+        "⚡ <b>𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗦𝗧𝗬𝗟𝗘 𝗦𝗔𝗩𝗘𝗗</b>\n\n"
+
+        "🌈 <b>Your Message Will Be Sent</b>\n"
+        "<b>In Selected Premium Style</b>",
+
+        parse_mode="HTML",
     )
 
     context.user_data["waiting_broadcast"] = True
@@ -2531,7 +2535,7 @@ async def broadcast_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         msg = (
             "╔════════════════════╗\n"
-            " 🌈 <b>𝗣𝗥𝗘𝗠𝗜𝗨𝗠 𝗠𝗘𝗦𝗦𝗔𝗚𝗘</b>\n"
+            "  📢 <b> 𝗡𝗢𝗧𝗜𝗖𝗘 𝗕𝗢𝗔𝗥𝗗 </b>📢\n"
             "╚════════════════════╝\n\n"
 
             f"<b>{msg}</b>"
@@ -2558,7 +2562,7 @@ async def broadcast_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(
 
-        f"🌈 Message Sent To {success} Users 🈲",
+          f"🌈 <b>𝗠𝗘𝗦𝗦𝗔𝗚𝗘 𝗦𝗘𝗡𝗧 𝗧𝗢 {success} 𝗨𝗦𝗘𝗥𝗦</b> 🈲",
 
         parse_mode="HTML"
     )

@@ -2591,7 +2591,14 @@ async def owner_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     else:
 
+        shown_users = set()
+
         for uid, user_data in data.items():
+
+            if uid in shown_users:
+                continue
+
+            shown_users.add(uid)
 
             username = user_data.get("username")
 

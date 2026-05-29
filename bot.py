@@ -2349,16 +2349,16 @@ async def owner_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = (
         "╔════════════════════╗\n"
-        " <b>👑 OWNER CONTROL PANEL</b>\n"
+        " <b>  OWNER CONTROL PANEL</b>\n"
         "╚════════════════════╝\n\n"
 
-        f"👥 <b>TOTAL USERS :</b> <code>{total_users}</code>\n\n"
+        f"🧙🏻‍♂️ <b>TOTAL USERS :</b> <code>{total_users}</code>\n\n"
 
-        f"📦 <b>TOTAL ORDERS :</b> <code>{total_orders}</code>\n\n"
+        f"🛒 <b>TOTAL ORDERS :</b> <code>{total_orders}</code>\n\n"
 
-        f"💰 <b>TOTAL EARNINGS :</b> <code>₹{total_earnings}</code>\n\n"
+        f"💸 <b>TOTAL EARNINGS :</b> <code>₹{total_earnings}</code>\n\n"
 
-        "<b>⚡ PREMIUM OWNER CONTROLS ACTIVE</b>"
+        "<b>🍓 PREMIUM OWNER CONTROLS ACTIVE</b>"
     )
 
     await query.message.edit_text(
